@@ -74,7 +74,7 @@ export default function PremiumHero() {
             transition={{ duration: 1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
             className="relative"
           >
-            <div className="aspect-square rounded-[3rem] glass p-8 animate-glow">
+            <div className="aspect-square rounded-[3rem] glass p-8 shadow-glass">
               <div className="w-full h-full rounded-[2.5rem] bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 flex items-center justify-center animate-float">
                 <div className="text-center">
                   <div className="w-32 h-32 mx-auto mb-6 rounded-full bg-gradient-to-br from-cyan-500 to-emerald-500/50 flex items-center justify-center">
