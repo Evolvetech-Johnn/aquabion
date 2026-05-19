@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { OrganizationSchema, WebSiteSchema } from "@/components/StructuredData";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -69,39 +70,48 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className="dark">
+    <html lang="pt-BR">
       <head>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              name: "Aquabion Brasil",
-              alternateName: "Aquabion",
-              url: "https://aquabionbrasil.com.br",
-              logo: "https://aquabionbrasil.com.br/logo.png",
-              description: "Tecnologia alemã patenteada que elimina incrustações sem química, sem energia e sem manutenção.",
-              contactPoint: {
-                "@type": "ContactPoint",
-                telephone: "+55-11-99999-9999",
-                contactType: "customer service",
-                availableLanguage: ["Portuguese", "English"],
-              },
-              sameAs: [
-                "https://www.linkedin.com/company/aquabionbrasil",
-                "https://www.instagram.com/aquabionbrasil",
-              ],
-            }),
+            __html: JSON.stringify([
+              OrganizationSchema({
+                name: "Aquabion Brasil",
+                url: "https://aquabionbrasil.com.br",
+                logo: "https://aquabionbrasil.com.br/logo.png",
+                description: "Tecnologia alemã patenteada que elimina incrustações sem química, sem energia e sem manutenção.",
+                sameAs: [
+                  "https://www.linkedin.com/company/aquabionbrasil",
+                  "https://www.instagram.com/aquabionbrasil",
+                ],
+              }),
+              WebSiteSchema({
+                name: "Aquabion Brasil",
+                url: "https://aquabionbrasil.com.br",
+                description: "Tecnologia alemã patenteada que elimina incrustações sem química, sem energia e sem manutenção.",
+                potentialAction: {
+                  "@type": "SearchAction",
+                  target: "https://aquabionbrasil.com.br/?search_term_string={search_term_string}",
+                  "query-input": "required name=search_term_string",
+                },
+              }),
+            ]),
           }}
         />
       </head>
       <body className={cn(
-        "min-h-screen bg-[#071B34] font-sans antialiased flex flex-col",
+        "min-h-screen bg-slate-50 text-slate-950 font-sans antialiased flex flex-col",
         inter.variable
       )}>
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 rounded bg-slate-950 px-4 py-2 text-white"
+        >
+          Pular para o conteúdo
+        </a>
         <Navbar />
-        <main className="pt-20 flex-grow">
+        <main id="main-content" className="pt-20 flex-grow">
           {children}
         </main>
         <Footer />

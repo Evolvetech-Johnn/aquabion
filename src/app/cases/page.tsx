@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { CheckCircle, TrendingUp, Droplets, Award } from 'lucide-react';
+import { CheckCircle, TrendingUp, Award } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export const metadata = {
@@ -56,50 +56,47 @@ export default function CasesPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#071B34] text-white py-24">
+    <div className="min-h-screen bg-slate-50 text-slate-950 py-24">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-16">
-          <Link href="/" className="inline-flex items-center gap-2 text-cyan-400 hover:text-cyan-300 mb-6">
+        <div className="max-w-4xl mx-auto rounded-[2rem] bg-white border border-slate-200 p-12 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.18)] text-center mb-16">
+          <Link href="/" className="inline-flex items-center gap-2 text-cyan-600 hover:text-cyan-700 mb-6">
             ← Voltar para a página inicial
           </Link>
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            Cases de Sucesso
-          </h1>
-          <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-            Milhares de empresas ao redor do mundo já transformaram sua gestão hídrica
-            com a tecnologia Aquabion.
+          <h1 className="text-4xl md:text-6xl font-semibold mb-6">Cases de sucesso</h1>
+          <p className="text-lg leading-8 text-slate-600 mx-auto max-w-3xl">
+            Empresas de alto impacto já reduziram custos e ampliaram eficiência com Aquabion.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 mb-16">
+        <div className="grid gap-8 md:grid-cols-2 mb-16">
           {cases.map((caseStudy, index) => (
-            <div key={index} className="p-8 rounded-2xl bg-white/5 border border-white/10 hover:border-cyan-500/30 transition-all duration-300">
-              <div className="flex items-start justify-between mb-6">
+            <div key={index} className="rounded-[1.75rem] border border-slate-200 bg-white p-8 shadow-sm transition-all duration-300 hover:-translate-y-1">
+              <div className="flex items-start justify-between mb-6 gap-6">
                 <div>
-                  <h3 className="text-2xl font-bold mb-2">{caseStudy.company}</h3>
-                  <p className="text-slate-400">{caseStudy.location}</p>
-                  <span className="inline-block mt-2 px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-400 text-sm">
+                  <h3 className="text-2xl font-semibold mb-2 text-slate-950">{caseStudy.company}</h3>
+                  <p className="text-slate-600 mb-2">{caseStudy.location}</p>
+                  <span className="inline-flex rounded-full bg-cyan-50 px-3 py-1 text-sm font-medium text-cyan-700">
                     {caseStudy.segment}
                   </span>
                 </div>
-                <Award className="w-10 h-10 text-amber-400" />
+                <Award className="w-10 h-10 text-amber-500" />
               </div>
 
-              <div className="mb-6 space-y-3">
+              <div className="mb-6 space-y-3 text-slate-600">
                 {caseStudy.results.map((result, i) => (
                   <div key={i} className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-1" />
-                    <span className="text-slate-300">{result}</span>
+                    <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-1" />
+                    <span>{result}</span>
                   </div>
                 ))}
               </div>
 
-              <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 border border-emerald-500/30">
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
                 <div className="flex items-center gap-3">
-                  <TrendingUp className="w-6 h-6 text-emerald-400" />
+                  <TrendingUp className="w-6 h-6 text-emerald-500" />
                   <div>
-                    <p className="text-slate-400 text-sm">Economia Anual Estimada</p>
-                    <p className="text-2xl font-bold text-white">{caseStudy.savings}</p>
+                    <p className="text-sm text-slate-600">Economia anual estimada</p>
+                    <p className="text-2xl font-semibold text-slate-950">{caseStudy.savings}</p>
                   </div>
                 </div>
               </div>
@@ -107,30 +104,26 @@ export default function CasesPage() {
           ))}
         </div>
 
-        <div className="text-center p-12 rounded-3xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30">
-          <div className="grid md:grid-cols-3 gap-8 mb-8">
+        <div className="rounded-[2rem] border border-slate-200 bg-white p-12 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.18)] text-center">
+          <div className="grid gap-8 md:grid-cols-3 mb-8">
             {[
-              { number: '+50', label: 'Países Atendidos' },
-              { number: '100K+', label: 'Instalações Globais' },
-              { number: '25+', label: 'Anos de Mercado' },
+              { number: '+50', label: 'Países atendidos' },
+              { number: '100K+', label: 'Instalações globais' },
+              { number: '25+', label: 'Anos de mercado' },
             ].map((stat, i) => (
               <div key={i}>
-                <div className="text-5xl font-bold text-cyan-400 mb-2">{stat.number}</div>
-                <div className="text-slate-400">{stat.label}</div>
+                <div className="text-4xl font-semibold text-cyan-600 mb-2">{stat.number}</div>
+                <div className="text-slate-600">{stat.label}</div>
               </div>
             ))}
           </div>
-
-          <h2 className="text-3xl font-bold mb-6">
-            Seja o Próximo Case de Sucesso
-          </h2>
-          <p className="text-xl text-slate-400 mb-8 max-w-2xl mx-auto">
-            Agende seu diagnóstico técnico e descubra quanto sua empresa pode economizar
-            com a tecnologia Aquabion.
+          <h2 className="text-3xl font-semibold mb-6">Seja o próximo case de sucesso</h2>
+          <p className="text-lg leading-8 text-slate-600 mb-8 max-w-3xl mx-auto">
+            Agende seu diagnóstico técnico e descubra como sua empresa pode economizar com água mais limpa e processos mais confiáveis.
           </p>
           <Link href="/contato">
-            <Button size="lg" className="h-14 px-10 text-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold">
-              Agendar Diagnóstico
+            <Button size="lg" className="h-14 px-10 text-lg bg-cyan-600 hover:bg-cyan-500 text-white font-semibold">
+              Agendar diagnóstico
             </Button>
           </Link>
         </div>

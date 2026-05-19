@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Button } from './ui/button';
 import { Menu, X, ChevronRight } from 'lucide-react';
 
@@ -14,29 +15,44 @@ export default function Navbar() {
     { name: 'Benefícios', href: '/beneficios' },
     { name: 'Aplicações', href: '/aplicacoes' },
     { name: 'Cases', href: '/cases' },
+    { name: 'Termos de Uso', href: '/termos-de-uso' },
     { name: 'Contato', href: '/contato' },
   ];
 
+  const pathname = usePathname();
+
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-[#071B34]/80 backdrop-blur-xl border-b border-white/5">
+    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-slate-200/70 bg-white/85 backdrop-blur-xl shadow-sm">
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between h-20">
-          <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-            Aquabion
+          <Link href="/" className="text-2xl font-semibold tracking-tight text-slate-950">
+            <span className="bg-gradient-to-r from-cyan-600 via-cyan-500 to-slate-900 bg-clip-text text-transparent">
+              Aquabion
+            </span>
           </Link>
 
           <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className="text-slate-300 hover:text-white transition-colors"
-              >
-                {link.name}
-              </Link>
-            ))}
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href;
+              const isLegal = link.href === '/termos-de-uso';
+              return (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className={`text-slate-600 transition-colors ${
+                    isActive
+                      ? 'rounded-full border border-slate-200/90 bg-slate-100 px-3 py-1 text-slate-950 shadow-sm'
+                      : isLegal
+                      ? 'rounded-full border border-slate-200/80 bg-slate-100 px-3 py-1 hover:bg-slate-200'
+                      : 'hover:text-slate-950'
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              );
+            })}
             <Link href="/contato">
-              <Button size="lg" className="bg-cyan-500 hover:bg-cyan-400 text-slate-950">
+              <Button size="lg" variant="default" className="shadow-none">
                 Agendar Diagnóstico
                 <ChevronRight className="w-4 h-4" />
               </Button>
@@ -44,8 +60,11 @@ export default function Navbar() {
           </div>
 
           <button
-            className="md:hidden text-white"
+            className="md:hidden text-slate-900"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label={isMenuOpen ? 'Fechar menu' : 'Abrir menu'}
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-menu"
           >
             {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -53,20 +72,27 @@ export default function Navbar() {
       </div>
 
       {isMenuOpen && (
-        <div className="md:hidden bg-[#0A2342] border-t border-white/10">
+        <div id="mobile-menu" className="md:hidden bg-white border-t border-slate-200/80 shadow-sm">
           <div className="container mx-auto px-6 py-4 space-y-4">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className="block py-2 text-slate-300 hover:text-white transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {link.name}
-              </Link>
-            ))}
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href;
+              return (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className={`block rounded-2xl px-3 py-2 transition-all ${
+                    isActive
+                      ? 'bg-slate-100 text-slate-950 shadow-sm'
+                      : 'text-slate-700 hover:text-slate-950 hover:bg-slate-50'
+                  }`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {link.name}
+                </Link>
+              );
+            })}
             <Link href="/contato" onClick={() => setIsMenuOpen(false)}>
-              <Button size="lg" className="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950">
+              <Button size="lg" className="w-full shadow-none">
                 Agendar Diagnóstico
               </Button>
             </Link>

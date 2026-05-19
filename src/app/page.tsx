@@ -7,122 +7,136 @@ import { TrendingUp, Droplets, Zap, Leaf, Shield, Clock, ArrowRight } from 'luci
 
 export default function Home() {
   const stats = [
-    { value: '+50', label: 'Países' },
-    { value: '25+', label: 'Anos de Experiência' },
-    { value: '100K+', label: 'Instalações' },
-    { value: '100%', label: 'Sustentável' },
+    { value: '+50', label: 'Países atendidos' },
+    { value: '25+', label: 'Anos de experiência' },
+    { value: '100k+', label: 'Instalações entregues' },
+    { value: '100%', label: 'Operação sustentável' },
   ];
 
   const benefits = [
     {
       icon: TrendingUp,
-      title: 'Redução de Custos',
-      description: 'Economia de até 50% no consumo energético e eliminação de custos com manutenção.',
+      title: 'Redução real de custos',
+      description: 'Tecnologia passiva que reduz custos de energia e manutenção sem comprometer resultados.',
     },
     {
       icon: Droplets,
-      title: 'Zero Desperdício',
-      description: 'Nenhuma água desperdiçada, diferente de outras tecnologias como osmose reversa.',
+      title: 'Água preservada',
+      description: 'Proteção contra incrustações sem gerar rejeitos químicos ou consumo adicional.',
     },
     {
       icon: Zap,
-      title: 'Zero Energia',
-      description: 'Sistema passivo que funciona sem consumo elétrico de nenhum tipo.',
+      title: 'Operação sem energia',
+      description: 'Sistema autônomo que funciona sem demanda elétrica ativa e sem controles complexos.',
     },
     {
       icon: Leaf,
-      title: '100% Sustentável',
-      description: 'Nenhum produto químico, impacto ambiental positivo e créditos de carbono.',
+      title: 'Sustentabilidade real',
+      description: 'Assegura água e equipamento mais limpos com impacto ambiental positivo contínuo.',
     },
     {
       icon: Shield,
-      title: 'Proteção Total',
-      description: 'Protege equipamentos contra incrustações e corrosão, aumentando vida útil.',
+      title: 'Proteção contínua',
+      description: 'Aumenta vida útil de bombas, trocadores e tubulações sem paradas inesperadas.',
     },
     {
       icon: Clock,
-      title: 'ROI Rápido',
-      description: 'Retorno do investimento em menos de 24 meses, com resultados imediatos.',
+      title: 'Retorno rápido',
+      description: 'Economia comprovada que se paga em menos de 24 meses via redução de custos.',
     },
   ];
 
   return (
-    <div className="min-h-screen bg-[#071B34] text-white">
+    <div className="min-h-screen bg-slate-50 text-slate-950">
       <PremiumHero />
 
       <AnimatedSection className="section-padding container-padding">
-        <div className="container mx-auto">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-16">
+            <p className="text-sm uppercase tracking-[0.3em] text-cyan-600">Números que inspiram confiança</p>
+            <h2 className="mt-4 text-4xl md:text-5xl font-semibold tracking-tight text-slate-950">
+              Presença global com resultados previsíveis.
+            </h2>
+          </div>
           <PremiumStats stats={stats} />
         </div>
       </AnimatedSection>
 
-      <AnimatedSection className="section-padding container-padding bg-[#0A2342]">
-        <div className="container mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              O Problema Invisível
-            </h2>
-            <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-              Incrustações custam bilhões anualmentes em energia perdida e manutenção.
-            </p>
-          </div>
+      <AnimatedSection className="section-padding container-padding bg-slate-100">
+        <div className="container mx-auto max-w-6xl">
+          <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] items-center">
+            <div>
+              <p className="text-sm uppercase tracking-[0.3em] text-cyan-600">O Desafio Invisível</p>
+              <h2 className="mt-4 text-4xl md:text-5xl font-semibold text-slate-950">
+                Incrustação apresenta riscos silenciosos para grandes operações.
+              </h2>
+              <p className="mt-6 max-w-xl text-lg leading-8 text-slate-600">
+                Cada milímetro de incrustação reduz eficiência, eleva custos e acelera desgaste de equipamentos críticos.
+                A Aquabion atua antes do problema se tornar uma parada de produção.
+              </p>
+            </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              { number: '10%', text: 'Aumento de consumo energético por 1mm de calcário' },
-              { number: '50%', text: 'Redução da vida útil dos equipamentos' },
-              { number: '3x', text: 'Mais custos com manutenção e limpeza' },
-            ].map((item, index) => (
-              <div key={index} className="premium-card">
-                <div className="text-5xl font-bold text-cyan-400 mb-4">{item.number}</div>
-                <p className="text-lg text-slate-300">{item.text}</p>
-              </div>
-            ))}
+            <div className="grid gap-6 sm:grid-cols-2">
+              {[
+                { number: '10%', text: 'Energia perdida por 1mm de incrustação' },
+                { number: '50%', text: 'Vida útil reduzida de equipamentos' },
+                { number: '3x', text: 'Aumento de custos de manutenção' },
+                { number: '0%', text: 'Aditivos químicos necessários' },
+              ].map((item, index) => (
+                <div key={index} className="premium-card">
+                  <div className="text-4xl md:text-5xl font-semibold text-slate-950 mb-3">
+                    {item.number}
+                  </div>
+                  <p className="text-slate-600 leading-7">{item.text}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </AnimatedSection>
 
       <AnimatedSection className="section-padding container-padding">
-        <div className="container mx-auto">
+        <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Benefícios da Tecnologia
+            <p className="text-sm uppercase tracking-[0.3em] text-cyan-600">Design inspirado em simplicidade</p>
+            <h2 className="mt-4 text-4xl md:text-5xl font-semibold text-slate-950">
+              Tecnologia clara, entrega consistente.
             </h2>
-            <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-              Resultados mensuráveis que transformam a operação e o balanço da sua empresa.
+            <p className="mt-6 mx-auto max-w-2xl text-lg leading-8 text-slate-600">
+              Oferecemos um caminho seguro para instalações mais eficientes, com solução passiva e gerenciamento pequeno, ideal para operações sensíveis.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {benefits.map((benefit, index) => (
               <div key={index} className="premium-card">
-                <benefit.icon className="w-12 h-12 text-cyan-400 mb-6" />
-                <h3 className="text-2xl font-bold mb-4">{benefit.title}</h3>
-                <p className="text-slate-400 text-lg">{benefit.description}</p>
+                <benefit.icon className="w-12 h-12 text-cyan-600 mb-6" />
+                <h3 className="text-2xl font-semibold mb-4 text-slate-950">{benefit.title}</h3>
+                <p className="text-slate-600 text-base leading-7">{benefit.description}</p>
               </div>
             ))}
           </div>
         </div>
       </AnimatedSection>
 
-      <AnimatedSection className="section-padding container-padding bg-gradient-to-br from-[#0A2342] to-[#071B34]">
-        <div className="container mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            O Futuro da Engenharia
-            <span className="gradient-text block">Não Combate a Natureza</span>
+      <AnimatedSection className="section-padding container-padding bg-gradient-to-r from-cyan-600 via-cyan-500 to-slate-950 text-white">
+        <div className="container mx-auto max-w-5xl text-center">
+          <p className="text-sm uppercase tracking-[0.3em] text-cyan-100/90">Solução para operações de alto nível</p>
+          <h2 className="mt-4 text-4xl md:text-5xl font-semibold tracking-tight">
+            Segurança, eficiência e confiança em cada etapa.
           </h2>
-          <p className="text-xl text-slate-400 mb-12 max-w-2xl mx-auto">
-            Trabalha com ela. Tecnologia galvânica passiva que transforma a estrutura dos minerais na água.
+          <p className="mt-6 text-lg leading-8 text-cyan-100/90">
+            De hospitais a indústrias, Aquabion entrega água mais limpa, menos falhas e processos mais previsíveis sem intervenção química.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
             <Link href="/contato">
-              <Button size="lg" className="btn-premium h-16 px-10 text-lg">
+              <Button size="lg" className="h-16 bg-white text-slate-950 shadow-xl hover:bg-slate-100">
                 Agendar Diagnóstico Técnico
                 <ArrowRight className="w-5 h-5" />
               </Button>
             </Link>
             <Link href="/tecnologia">
-              <Button size="lg" className="btn-outline h-16 px-10 text-lg">
+              <Button size="lg" variant="outline" className="h-16 border-white text-white hover:bg-white/10">
                 Conhecer a Tecnologia
               </Button>
             </Link>

@@ -4,58 +4,31 @@
 
 @layer base {
   :root {
-    --background: 215 64% 11%;
-    --foreground: 210 40% 98%;
-    --card: 215 50% 13%;
-    --card-foreground: 210 40% 98%;
-    --popover: 215 50% 13%;
-    --popover-foreground: 210 40% 98%;
+    --background: 210 24% 98%;
+    --foreground: 213 16% 14%;
+    --card: 210 100% 100%;
+    --card-foreground: 213 16% 14%;
+    --popover: 210 100% 100%;
+    --popover-foreground: 213 16% 14%;
     --primary: 199 89% 48%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
-    --radius: 0.75rem;
+    --primary-foreground: 222 47% 11%;
+    --secondary: 214 35% 16%;
+    --secondary-foreground: 213 16% 14%;
+    --muted: 216 16% 90%;
+    --muted-foreground: 217 16% 57%;
+    --accent: 199 89% 48%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 354 86% 60%;
+    --destructive-foreground: 210 16% 98%;
+    --border: 215 20% 90%;
+    --input: 210 15% 95%;
+    --ring: 199 89% 48%;
+    --radius: 1rem;
     --chart-1: 199 89% 48%;
     --chart-2: 142 76% 36%;
     --chart-3: 38 92% 50%;
     --chart-4: 262 83% 58%;
     --chart-5: 0 84% 60%;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
   }
 }
 
@@ -65,8 +38,9 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
+    font-variant-ligatures: common-ligatures;
   }
 
   html {
@@ -76,19 +50,15 @@
 
 @layer components {
   .glass {
-    @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-glass;
+    @apply bg-white/90 backdrop-blur-xl border border-slate-200/70 shadow-glass;
   }
 
   .glass-hover {
-    @apply hover:bg-white/10 hover:border-cyan-500/30 transition-all duration-300;
+    @apply hover:bg-white hover:border-cyan-200 shadow-none hover:shadow-premium transition-all duration-300;
   }
 
   .gradient-text {
-    @apply bg-gradient-to-r from-cyan-400 via-cyan-300 to-blue-500 bg-clip-text text-transparent;
-  }
-
-  .gradient-bg {
-    @apply bg-gradient-to-br from-aquabion-deep via-aquabion-oil to-aquabion-deep;
+    @apply bg-gradient-to-r from-cyan-600 via-cyan-500 to-slate-900 bg-clip-text text-transparent;
   }
 
   .section-padding {
@@ -100,15 +70,19 @@
   }
 
   .premium-card {
-    @apply glass glass-hover rounded-3xl p-8 transition-all duration-500 hover:shadow-premium;
+    @apply rounded-[2rem] p-8 bg-white border border-slate-200/70 shadow-[0_25px_65px_-35px_rgba(15,23,42,0.18)];
   }
 
   .btn-premium {
-    @apply bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-300 text-slate-950 font-semibold transition-all duration-300 hover:shadow-premium;
+    @apply bg-slate-950 text-white shadow-xl hover:bg-slate-900 font-semibold transition-all duration-300;
   }
 
   .btn-outline {
-    @apply border border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-500 transition-all duration-300;
+    @apply border border-slate-300 text-slate-950 bg-white hover:bg-slate-50 transition-all duration-300;
+  }
+
+  .hero-pill {
+    @apply inline-flex items-center gap-2 rounded-full border border-slate-200/80 bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700;
   }
 }
 
@@ -119,8 +93,8 @@
 }
 
 .animated-gradient {
-  background: linear-gradient(-45deg, #071B34, #0A2F5C, #06B6D4, #071B34);
+  background: linear-gradient(-45deg, rgba(56,189,248,0.15), rgba(14,165,233,0.15), rgba(15,23,42,0.12));
   background-size: 400% 400%;
-  animation: water-flow 15s ease infinite;
+  animation: water-flow 18s ease infinite;
 }
 

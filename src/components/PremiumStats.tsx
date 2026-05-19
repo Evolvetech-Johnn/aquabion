@@ -13,7 +13,7 @@ interface PremiumStatsProps {
 
 export default function PremiumStats({ stats }: PremiumStatsProps) {
   return (
-    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
       {stats.map((stat, index) => (
         <motion.div
           key={index}
@@ -21,12 +21,12 @@ export default function PremiumStats({ stats }: PremiumStatsProps) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: index * 0.1 }}
-          className="premium-card text-center"
+          className="rounded-[2rem] border border-slate-200/70 bg-white p-8 text-center shadow-sm"
         >
-          <div className="text-4xl md:text-5xl font-bold gradient-text mb-2">
+          <div className="text-4xl md:text-5xl font-semibold text-slate-950 mb-2">
             {stat.value}
           </div>
-          <div className="text-slate-400 text-lg">
+          <div className="text-slate-500 text-base md:text-lg">
             {stat.label}
           </div>
         </motion.div>

@@ -57,11 +57,11 @@ export default function ContactForm() {
   if (isSubmitted) {
     return (
       <div className="lg:col-span-2">
-        <div className="p-8 rounded-3xl bg-white/5 border border-white/10">
+        <div className="p-8 rounded-3xl bg-white border border-slate-200 shadow-sm">
           <div className="text-center py-12">
-            <CheckCircle2 className="w-20 h-20 text-emerald-400 mx-auto mb-6" />
-            <h3 className="text-3xl font-bold mb-4">Obrigado pelo contato!</h3>
-            <p className="text-xl text-slate-400 mb-8">
+            <CheckCircle2 className="w-20 h-20 text-emerald-500 mx-auto mb-6" />
+            <h3 className="text-3xl font-semibold mb-4 text-slate-950">Obrigado pelo contato!</h3>
+            <p className="text-lg text-slate-600 mb-8">
               Nossa equipe entrará em contato em breve para agendar seu diagnóstico técnico.
             </p>
             <Link href="/">
@@ -79,22 +79,22 @@ export default function ContactForm() {
     <div className="grid lg:grid-cols-3 gap-12">
       <div className="lg:col-span-1 space-y-8">
         <div className="space-y-6">
-          <h2 className="text-2xl font-semibold">Informações de Contato</h2>
+          <h2 className="text-2xl font-semibold text-slate-950">Informações de Contato</h2>
           {contactInfo.map((item, index) => (
-            <div key={index} className="flex items-start gap-4 p-4 rounded-xl bg-white/5 border border-white/10">
-              <item.icon className="w-6 h-6 text-cyan-400 flex-shrink-0 mt-1" />
+            <div key={index} className="flex items-start gap-4 p-5 rounded-3xl bg-white border border-slate-200 shadow-sm">
+              <item.icon className="w-6 h-6 text-cyan-600 flex-shrink-0 mt-1" />
               <div>
-                <h3 className="font-semibold text-white mb-1">{item.title}</h3>
-                <p className="text-slate-400">{item.value}</p>
+                <h3 className="font-semibold text-slate-950 mb-1">{item.title}</h3>
+                <p className="text-slate-600">{item.value}</p>
               </div>
             </div>
           ))}
         </div>
 
-        <div className="p-6 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30">
-          <MessageSquare className="w-10 h-10 text-cyan-400 mb-4" />
-          <h3 className="text-xl font-bold mb-2">Atendimento Rápido</h3>
-          <p className="text-slate-300 mb-4">
+        <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 shadow-sm">
+          <MessageSquare className="w-10 h-10 text-cyan-600 mb-4" />
+          <h3 className="text-xl font-semibold mb-2 text-slate-950">Atendimento rápido</h3>
+          <p className="text-slate-600 mb-4">
             Nossa equipe técnica está disponível para agendar seu diagnóstico personalizado.
           </p>
           <Button className="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950">
@@ -104,33 +104,37 @@ export default function ContactForm() {
       </div>
 
       <div className="lg:col-span-2">
-        <div className="p-8 rounded-3xl bg-white/5 border border-white/10">
-          <h2 className="text-2xl font-bold mb-8">Envie sua Mensagem</h2>
+        <div className="p-8 rounded-3xl bg-white border border-slate-200 shadow-sm">
+          <h2 className="text-2xl font-semibold text-slate-950 mb-8">Envie sua mensagem</h2>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-slate-400 mb-2">
+                <label htmlFor="contact-name" className="block text-sm font-medium text-slate-700 mb-2">
                   Nome completo *
                 </label>
                 <input
+                  id="contact-name"
                   type="text"
+                  autoComplete="name"
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full h-12 px-4 rounded-lg bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
+                  className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-950 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 transition-colors"
                   placeholder="Seu nome"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-400 mb-2">
+                <label htmlFor="contact-email" className="block text-sm font-medium text-slate-700 mb-2">
                   E-mail *
                 </label>
                 <input
+                  id="contact-email"
                   type="email"
+                  autoComplete="email"
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full h-12 px-4 rounded-lg bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
+                  className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-950 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 transition-colors"
                   placeholder="email@empresa.com"
                 />
               </div>
@@ -138,39 +142,44 @@ export default function ContactForm() {
 
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-slate-400 mb-2">
+                <label htmlFor="contact-phone" className="block text-sm font-medium text-slate-700 mb-2">
                   Telefone
                 </label>
                 <input
+                  id="contact-phone"
                   type="tel"
+                  autoComplete="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full h-12 px-4 rounded-lg bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
+                  className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-950 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 transition-colors"
                   placeholder="(11) 99999-9999"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-400 mb-2">
+                <label htmlFor="contact-company" className="block text-sm font-medium text-slate-700 mb-2">
                   Empresa
                 </label>
                 <input
+                  id="contact-company"
                   type="text"
+                  autoComplete="organization"
                   value={formData.company}
                   onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                  className="w-full h-12 px-4 rounded-lg bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
+                  className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-950 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 transition-colors"
                   placeholder="Nome da empresa"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-400 mb-2">
+              <label htmlFor="contact-segment" className="block text-sm font-medium text-slate-700 mb-2">
                 Segmento
               </label>
               <select
+                id="contact-segment"
                 value={formData.segment}
                 onChange={(e) => setFormData({ ...formData, segment: e.target.value })}
-                className="w-full h-12 px-4 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-cyan-500 transition-colors"
+                className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-950 focus:outline-none focus:border-cyan-500 transition-colors"
               >
                 <option value="">Selecione um segmento</option>
                 <option value="industria">Indústria</option>
@@ -183,15 +192,16 @@ export default function ContactForm() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-400 mb-2">
+              <label htmlFor="contact-message" className="block text-sm font-medium text-slate-700 mb-2">
                 Mensagem *
               </label>
               <textarea
+                id="contact-message"
                 required
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                 rows={5}
-                className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors resize-none"
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-950 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 transition-colors resize-none"
                 placeholder="Descreva seu projeto ou necessidade..."
               />
             </div>
@@ -201,10 +211,10 @@ export default function ContactForm() {
                 type="checkbox"
                 required
                 id="privacy"
-                className="mt-1 rounded border-white/20 bg-white/5 text-cyan-500 focus:ring-cyan-500"
+                className="mt-1 h-4 w-4 rounded border-slate-300 bg-white text-cyan-500 focus:ring-cyan-500"
               />
-              <label htmlFor="privacy" className="text-sm text-slate-400">
-                Li e concordo com a <Link href="/politica-privacidade" className="text-cyan-400 hover:text-cyan-300 underline">Política de Privacidade</Link> e os <Link href="/termos-de-uso" className="text-cyan-400 hover:text-cyan-300 underline">Termos de Uso</Link>.
+              <label htmlFor="privacy" className="text-sm text-slate-600">
+                Li e concordo com a <Link href="/politica-privacidade" className="text-cyan-600 hover:text-cyan-700 underline">Política de Privacidade</Link> e os <Link href="/termos-de-uso" className="text-cyan-600 hover:text-cyan-700 underline">Termos de Uso</Link>.
               </label>
             </div>
 

@@ -18,79 +18,73 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   const stats = [
-    { number: '+50', label: 'Países' },
-    { number: '25+', label: 'Anos de Experiência' },
-    { number: '100K+', label: 'Instalações' },
-    { number: '100%', label: 'Sustentável' },
+    { number: '+50', label: 'Países atendidos' },
+    { number: '25+', label: 'Anos de experiência' },
+    { number: '100k+', label: 'Instalações realizadas' },
+    { number: '100%', label: 'Operação sustentável' },
   ];
 
   return (
-    <div className="min-h-screen bg-[#071B34] text-white">
+    <div className="min-h-screen bg-slate-50 text-slate-950">
       <section className="py-24">
         <div className="container mx-auto px-6">
-          <div className="mb-12">
-            <Link href="/" className="inline-flex items-center gap-2 text-cyan-400 hover:text-cyan-300 mb-6">
+          <div className="max-w-5xl rounded-[2rem] bg-white shadow-[0_30px_80px_-40px_rgba(15,23,42,0.18)] border border-slate-200 p-12">
+            <Link href="/" className="inline-flex items-center gap-2 text-cyan-600 hover:text-cyan-700 mb-6">
               ← Voltar para a página inicial
             </Link>
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              A Nova Engenharia da Água
+            <h1 className="text-4xl md:text-6xl font-semibold leading-tight mb-6">
+              A nova engenharia da água para operações que exigem confiança absoluta.
             </h1>
-            <p className="text-xl text-slate-400 max-w-3xl">
-              Tecnologia alemã patenteada que revoluciona a gestão hídrica sem química,
-              sem energia e sem manutenção.
+            <p className="text-lg leading-8 text-slate-600 max-w-3xl">
+              Tecnologia alemã patenteada que revoluciona a gestão hídrica sem química, sem energia ativa e sem manutenção frequente.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-4 gap-6 mb-16">
+          <div className="mt-16 grid gap-6 md:grid-cols-4">
             {stats.map((stat, index) => (
-              <div key={index} className="p-8 rounded-2xl bg-white/5 border border-white/10 text-center">
-                <div className="text-5xl font-bold text-cyan-400 mb-2">{stat.number}</div>
-                <div className="text-slate-400">{stat.label}</div>
+              <div key={index} className="rounded-[1.75rem] border border-slate-200 bg-white p-8 text-center shadow-sm">
+                <div className="text-4xl md:text-5xl font-semibold text-slate-950 mb-2">{stat.number}</div>
+                <div className="text-slate-600">{stat.label}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="py-24 bg-[#0A2342]">
+      <section className="py-24">
         <div className="container mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                Nossa História
-              </h2>
-              <p className="text-lg text-slate-400 mb-6 leading-relaxed">
-                A Aquabion nasceu da visão de criar uma tecnologia que trabalhe com a natureza,
-                não contra ela. Com mais de 25 anos de pesquisa e desenvolvimento na Alemanha,
-                nossa tecnologia galvânica passiva transformou a forma como o mundo lida com
-                incrustações e corrosão.
+              <p className="text-sm uppercase tracking-[0.3em] text-cyan-600 mb-4">Nossa história</p>
+              <h2 className="text-3xl md:text-4xl font-semibold text-slate-950 mb-6">Criada para proteger água e equipamentos com a máxima eficiência.</h2>
+              <p className="text-lg leading-8 text-slate-600 mb-6">
+                A Aquabion nasceu da visão de trabalhar com a natureza, não contra ela. Com mais de 25 anos de pesquisa e desenvolvimento na Alemanha, nossa tecnologia galvânica passiva mudou a forma como o setor trata incrustações e corrosão.
               </p>
-              <p className="text-lg text-slate-400 leading-relaxed">
-                Hoje, presente em mais de 50 países com mais de 100 mil instalações, continuamos
-                comprometidos em oferecer soluções sustentáveis que geram economia real e
-                impacto ambiental positivo.
+              <p className="text-lg leading-8 text-slate-600">
+                Presente em mais de 50 países e mais de 100 mil instalações, seguimos comprometidos com soluções sustentáveis que geram economia real e maior previsibilidade para grandes operações.
               </p>
             </div>
+
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-6 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30">
-                <Award className="w-10 h-10 text-cyan-400 mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Tecnologia Patenteada</h3>
-                <p className="text-slate-400 text-sm">Inovação alemã certificada internacionalmente</p>
+              <div className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm">
+                <Award className="w-10 h-10 text-cyan-600 mb-4" />
+                <h3 className="text-xl font-semibold mb-2 text-slate-950">Tecnologia patenteada</h3>
+                <p className="text-slate-600 text-sm">Inovação alemã certificada internacionalmente.</p>
               </div>
-              <div className="p-6 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 border border-emerald-500/30">
-                <Shield className="w-10 h-10 text-emerald-400 mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Zero Química</h3>
-                <p className="text-slate-400 text-sm">Solução 100% sustentável e segura</p>
+              <div className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm">
+                <Shield className="w-10 h-10 text-emerald-500 mb-4" />
+                <h3 className="text-xl font-semibold mb-2 text-slate-950">Zero química</h3>
+                <p className="text-slate-600 text-sm">Solução 100% sustentável e segura.</p>
               </div>
-              <div className="p-6 rounded-2xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-amber-500/30">
-                <TrendingUp className="w-10 h-10 text-amber-400 mb-4" />
-                <h3 className="text-xl font-semibold mb-2">ROI Rápido</h3>
-                <p className="text-slate-400 text-sm">Retorno em menos de 24 meses</p>
+              <div className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm">
+                <TrendingUp className="w-10 h-10 text-amber-500 mb-4" />
+                <h3 className="text-xl font-semibold mb-2 text-slate-950">ROI rápido</h3>
+                <p className="text-slate-600 text-sm">Retorno em menos de 24 meses com resultados comprovados.</p>
               </div>
-              <div className="p-6 rounded-2xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30">
-                <Globe className="w-10 h-10 text-blue-400 mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Presença Global</h3>
-                <p className="text-slate-400 text-sm">+50 países atendidos</p>
+              <div className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm">
+                <Globe className="w-10 h-10 text-blue-500 mb-4" />
+                <h3 className="text-xl font-semibold mb-2 text-slate-950">Presença global</h3>
+                <p className="text-slate-600 text-sm">Atuação em mais de 50 países.</p>
               </div>
             </div>
           </div>
@@ -100,50 +94,50 @@ export default function AboutPage() {
       <section className="py-24">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Nossos Valores</h2>
-            <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-              Princípios que guiam todas as nossas decisões e ações
+            <p className="text-sm uppercase tracking-[0.3em] text-cyan-600 mb-4">Nossos valores</p>
+            <h2 className="text-3xl md:text-4xl font-semibold text-slate-950 mb-4">Princípios claros que orientam cada projeto.</h2>
+            <p className="mx-auto max-w-2xl text-lg leading-8 text-slate-600">
+              Sustentabilidade, excelência técnica e transparência em todas as etapas da jornada do cliente.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid gap-8 md:grid-cols-3">
             {[
               {
                 title: 'Sustentabilidade',
-                desc: 'Trabalhar com a natureza, não contra ela. Soluções que regeneram, não danificam.',
+                desc: 'Trabalhar com a natureza e regenerar recursos, não esgotá-los.',
               },
               {
-                title: 'Excelência Técnica',
-                desc: 'Engenharia de elite, padrão internacional. Qualidade que inspira confiança.',
+                title: 'Excelência técnica',
+                desc: 'Engenharia de elite e precisão alemã para resultados previsíveis.',
               },
               {
                 title: 'Transparência',
-                desc: 'Resultados mensuráveis, ROI real. Nossos clientes sempre sabem o que estão investindo.',
+                desc: 'Comunicação honesta e métricas claras para cada etapa do projeto.',
               },
             ].map((value, index) => (
-              <div key={index} className="p-8 rounded-2xl bg-white/5 border border-white/10">
-                <h3 className="text-2xl font-bold mb-4 text-cyan-400">{value.title}</h3>
-                <p className="text-slate-400 text-lg leading-relaxed">{value.desc}</p>
+              <div key={index} className="rounded-[1.75rem] border border-slate-200 bg-white p-8 shadow-sm">
+                <h3 className="text-2xl font-semibold mb-4 text-slate-950">{value.title}</h3>
+                <p className="text-slate-600 leading-7">{value.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="py-24 bg-[#0A2342]">
-        <div className="container mx-auto px-6 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Junte-se à Revolução
-          </h2>
-          <p className="text-xl text-slate-400 mb-8 max-w-2xl mx-auto">
-            Milhares de empresas ao redor do mundo já transformaram sua gestão hídrica
-            com a tecnologia Aquabion.
-          </p>
-          <Link href="/contato">
-            <Button size="lg" className="h-14 px-10 text-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold">
-              Agendar Diagnóstico
-            </Button>
-          </Link>
+      <section className="py-24">
+        <div className="container mx-auto px-6">
+          <div className="rounded-[2rem] bg-slate-950 px-10 py-16 text-center text-white shadow-[0_30px_80px_-40px_rgba(15,23,42,0.18)]">
+            <h2 className="text-3xl md:text-4xl font-semibold mb-6">Junte-se à revolução da água.</h2>
+            <p className="mx-auto max-w-2xl text-lg leading-8 text-slate-300 mb-8">
+              Empresas líderes já estão reduzindo custos e riscos com a tecnologia Aquabion.
+            </p>
+            <Link href="/contato">
+              <Button size="lg" className="h-14 px-10 text-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold">
+                Agendar Diagnóstico
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
     </div>
