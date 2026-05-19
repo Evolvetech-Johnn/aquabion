@@ -7,9 +7,12 @@ export default function Footer() {
       <div className="container mx-auto px-6 py-16">
         <div className="grid md:grid-cols-4 gap-12 mb-12">
           <div className="md:col-span-1">
-            <Link href="/" className="text-2xl font-semibold tracking-tight text-slate-950 mb-4 inline-block">
-              <span className="bg-gradient-to-r from-cyan-600 via-cyan-500 to-slate-900 bg-clip-text text-transparent">
-                Aquabion Brasil
+            <Link href="/" className="flex items-center gap-4 mb-4 inline-block">
+              <img src="/logoaquabion.png" alt="Aquabion Brasil" className="w-12 h-12 object-contain" />
+              <span className="text-2xl font-semibold tracking-tight text-slate-950">
+                <span className="bg-gradient-to-r from-cyan-600 via-cyan-500 to-slate-900 bg-clip-text text-transparent">
+                  Aquabion Brasil
+                </span>
               </span>
             </Link>
             <p className="text-slate-600 mb-6">

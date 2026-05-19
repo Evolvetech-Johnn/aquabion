@@ -72,6 +72,9 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <head>
+        <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Ccircle%20cx='50'%20cy='50'%20r='48'%20fill='%2306b6d4'/%3E%3Ctext%20x='50'%20y='62'%20font-size='50'%20font-family='Arial'%20font-weight='700'%20text-anchor='middle'%20fill='white'%3EA%3C/text%3E%3C/svg%3E" />
+        <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Ccircle%20cx='50'%20cy='50'%20r='48'%20fill='%2306b6d4'/%3E%3Ctext%20x='50'%20y='62'%20font-size='50'%20font-family='Arial'%20font-weight='700'%20text-anchor='middle'%20fill='white'%3EA%3C/text%3E%3C/svg%3E" />
+        <meta name="theme-color" content="#06b6d4" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -79,7 +82,7 @@ export default function RootLayout({
               OrganizationSchema({
                 name: "Aquabion Brasil",
                 url: "https://aquabionbrasil.com.br",
-                logo: "https://aquabionbrasil.com.br/logo.png",
+                logo: "/logoaquabion.png",
                 description: "Tecnologia alemã patenteada que elimina incrustações sem química, sem energia e sem manutenção.",
                 sameAs: [
                   "https://www.linkedin.com/company/aquabionbrasil",
