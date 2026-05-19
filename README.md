@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Aquabion Brasil - Plataforma Premium
 
 Plataforma de alta conversão para a tecnologia Aquabion Brasil, posicionada como solução de engenharia sustentável de padrão internacional.
@@ -120,3 +121,6 @@ O deploy será automático a cada novo push no repositório!
 - Otimizado para Lighthouse > 95
 - Imagens otimizadas
 
+=======
+# aquabion
+>>>>>>> cf63f60427ba3a3af7c2dd9476434c6c2f28bffb
