@@ -83,7 +83,7 @@ export default function Home() {
                 { number: '3x', text: 'Aumento de custos de manutenção' },
                 { number: '0%', text: 'Aditivos químicos necessários' },
               ].map((item, index) => (
-                <div key={index} className="premium-card">
+                <div key={index} className="rounded-[2rem] border border-cyan-100/70 bg-white/90 p-8 shadow-[0_20px_60px_-30px_rgba(14,165,233,0.25)]">
                   <div className="text-4xl md:text-5xl font-semibold text-slate-950 mb-3">
                     {item.number}
                   </div>
@@ -119,24 +119,24 @@ export default function Home() {
         </div>
       </AnimatedSection>
 
-      <AnimatedSection className="section-padding container-padding bg-gradient-to-r from-cyan-600 via-cyan-500 to-slate-950 text-white">
+      <AnimatedSection className="section-padding container-padding bg-gradient-to-r from-cyan-100 via-cyan-200 to-slate-950/90 text-slate-950">
         <div className="container mx-auto max-w-5xl text-center">
-          <p className="text-sm uppercase tracking-[0.3em] text-cyan-100/90">Solução para operações de alto nível</p>
-          <h2 className="mt-4 text-4xl md:text-5xl font-semibold tracking-tight">
+          <p className="text-sm uppercase tracking-[0.3em] text-cyan-700">Solução para operações de alto nível</p>
+          <h2 className="mt-4 text-4xl md:text-5xl font-semibold tracking-tight text-slate-950">
             Segurança, eficiência e confiança em cada etapa.
           </h2>
-          <p className="mt-6 text-lg leading-8 text-cyan-100/90">
+          <p className="mt-6 text-lg leading-8 text-slate-700">
             De hospitais a indústrias, Aquabion entrega água mais limpa, menos falhas e processos mais previsíveis sem intervenção química.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
             <Link href="/contato">
-              <Button size="lg" className="h-16 bg-white text-slate-950 shadow-xl hover:bg-slate-100">
+              <Button size="lg" className="h-16 bg-cyan-600 text-white shadow-xl shadow-cyan-200/40 hover:bg-cyan-500">
                 Agendar Diagnóstico Técnico
                 <ArrowRight className="w-5 h-5" />
               </Button>
             </Link>
             <Link href="/tecnologia">
-              <Button size="lg" variant="outline" className="h-16 border-white text-white hover:bg-white/10">
+              <Button size="lg" variant="outline" className="h-16 border-cyan-600 text-cyan-700 hover:bg-cyan-50">
                 Conhecer a Tecnologia
               </Button>
             </Link>

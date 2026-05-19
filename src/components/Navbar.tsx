@@ -15,6 +15,8 @@ export default function Navbar() {
     { name: 'Benefícios', href: '/beneficios' },
     { name: 'Aplicações', href: '/aplicacoes' },
     { name: 'Cases', href: '/cases' },
+    { name: 'Blog', href: '/blog' },
+    { name: 'FAQ', href: '/faq' },
     { name: 'Termos de Uso', href: '/termos-de-uso' },
     { name: 'Contato', href: '/contato' },
   ];
