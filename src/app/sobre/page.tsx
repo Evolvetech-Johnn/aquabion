@@ -1,10 +1,19 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Globe, Award, Shield, TrendingUp } from 'lucide-react';
 
-export const metadata = {
-  title: 'Sobre Nós | Aquabion Brasil',
-  description: 'Conheça a história e a missão da Aquabion Brasil',
+export const metadata: Metadata = {
+  title: 'Sobre Nós',
+  description: 'Conheça a história, valores e presença global da Aquabion Brasil. Tecnologia alemã patenteada com mais de 25 anos de experiência.',
+  openGraph: {
+    title: 'Sobre Nós | Aquabion Brasil',
+    description: 'Conheça a história, valores e presença global da Aquabion Brasil.',
+    url: 'https://aquabionbrasil.com.br/sobre',
+  },
+  alternates: {
+    canonical: 'https://aquabionbrasil.com.br/sobre',
+  },
 };
 
 export default function AboutPage() {
