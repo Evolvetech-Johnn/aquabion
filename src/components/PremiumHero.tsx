@@ -13,10 +13,11 @@ export default function PremiumHero() {
   ];
 
   return (
-    <section className="relative overflow-hidden bg-slate-50">
-      <div className="absolute inset-x-0 top-0 h-72 bg-gradient-to-b from-cyan-100/70 via-white to-white pointer-events-none" />
-      <div className="absolute right-0 top-16 h-72 w-72 rounded-full bg-cyan-100/70 blur-3xl" />
-      <div className="absolute left-0 top-28 h-56 w-56 rounded-full bg-slate-200/70 blur-3xl" />
+    <section className="relative overflow-hidden bg-gradient-to-br from-cyan-500 via-sky-500 to-slate-950 text-white">
+      <div className="absolute inset-x-0 top-0 h-80 bg-gradient-to-b from-cyan-400/40 via-transparent to-transparent pointer-events-none" />
+      <div className="absolute right-0 top-16 h-72 w-72 rounded-full bg-cyan-200/40 blur-3xl" />
+      <div className="absolute left-0 top-28 h-56 w-56 rounded-full bg-slate-100/20 blur-3xl" />
+      <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent pointer-events-none" />
 
       <div className="container mx-auto px-6 py-24 lg:py-32 relative">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
@@ -27,29 +28,29 @@ export default function PremiumHero() {
           >
             <div className="flex flex-wrap gap-3 mb-8">
               {badges.map((badge, index) => (
-                <span key={index} className="hero-pill">
-                  <CheckCircle2 className="w-4 h-4 text-cyan-600" />
+                <span key={index} className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/15 px-4 py-2 text-sm font-semibold text-white shadow-sm backdrop-blur-sm">
+                  <CheckCircle2 className="w-4 h-4 text-cyan-100" />
                   {badge.text}
                 </span>
               ))}
             </div>
 
-            <h1 className="text-5xl md:text-6xl font-semibold tracking-tight text-slate-950 leading-tight mb-6">
-              A solução de água mais moderna para empresas que exigem alta confiabilidade.
+            <h1 className="text-5xl md:text-6xl font-semibold tracking-tight leading-tight mb-6">
+              A solução de água mais moderna para operações que exigem confiança absoluta.
             </h1>
-            <p className="max-w-2xl text-lg text-slate-600 leading-8 mb-10">
-              Aquabion transforma água e infraestrutura com um sistema galvânico passivo, sem energia ativa, sem química e sem retrabalho.
+            <p className="max-w-2xl text-lg text-cyan-100 leading-8 mb-10">
+              Aquabion transforma água e infraestrutura com um sistema galvânico passivo, sem energia ativa, sem química e com performance comprovada.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
               <Link href="/contato">
-                <Button size="lg" variant="default" className="h-16 px-8">
+                <Button size="lg" className="h-16 px-8 bg-white text-slate-950 shadow-xl hover:bg-slate-100">
                   Agendar Diagnóstico Técnico
                   <ArrowRight className="w-5 h-5" />
                 </Button>
               </Link>
               <Link href="/tecnologia">
-                <Button size="lg" variant="outline" className="h-16 px-8">
+                <Button size="lg" variant="outline" className="h-16 px-8 border-white text-white hover:bg-white/10">
                   <PlayCircle className="w-5 h-5 mr-2" />
                   Ver Como Funciona
                 </Button>
@@ -63,7 +64,7 @@ export default function PremiumHero() {
             transition={{ duration: 0.9, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
             className="relative"
           >
-            <div className="overflow-hidden rounded-[2.5rem] border border-slate-200/80 bg-white shadow-[0_30px_80px_-40px_rgba(15,23,42,0.18)]">
+            <div className="overflow-hidden rounded-[2.5rem] border border-white/15 bg-white shadow-[0_30px_80px_-40px_rgba(15,23,42,0.18)]">
               <div className="p-8 md:p-10">
                 <div className="rounded-[2rem] bg-slate-950 px-6 py-5 text-white shadow-lg">
                   <p className="text-sm uppercase tracking-[0.24em] text-cyan-300 font-semibold">Solução passiva</p>
