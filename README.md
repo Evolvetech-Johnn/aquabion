@@ -20,7 +20,7 @@ Plataforma de alta conversão para a tecnologia Aquabion Brasil, posicionada com
 2. Instale as dependências:
 
 ```bash
-npm install
+npm install --legacy-peer-deps
 ```
 
 ## Execução
@@ -52,9 +52,14 @@ src/
 │   ├── page.tsx         # Página inicial
 │   └── globals.css      # Estilos globais
 ├── components/
+│   ├── Navbar.tsx       # Navegação
+│   ├── Footer.tsx       # Rodapé
+│   ├── ContactForm.tsx  # Formulário de contato
+│   ├── Aquabion3D.tsx   # Componente 3D
 │   └── ui/              # Componentes Shadcn/UI
 └── lib/
-    └── utils.ts         # Utilitários
+    ├── utils.ts         # Utilitários
+    └── supabase.ts      # Cliente Supabase
 ```
 
 ## Funcionalidades Principais
@@ -68,6 +73,9 @@ src/
 - ✅ Sustentabilidade e ESG
 - ✅ Prova social e autoridade
 - ✅ CTA final premium
+- ✅ Navbar responsiva
+- ✅ Footer completo
+- ✅ Formulário de contato
 
 ## Configuração do Supabase
 
@@ -79,11 +87,31 @@ NEXT_PUBLIC_SUPABASE_URL=seu-url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=sua-chave
 ```
 
-## Deploy na Vercel
+## Deploy no GitHub e Vercel
 
-1. Conecte o repositório ao Vercel
-2. Adicione as variáveis de ambiente
-3. Deploy automático a cada push
+### 1. Criar repositório no GitHub
+
+1. Vá para [GitHub](https://github.com) e crie um novo repositório
+2. Não inicialize com README, .gitignore ou licença (já temos esses arquivos)
+
+### 2. Conectar repositório local ao GitHub
+
+```bash
+git remote add origin https://github.com/SEU-USUARIO/SEU-REPOSITORIO.git
+git branch -M main
+git push -u origin main
+```
+
+### 3. Deploy na Vercel
+
+1. Acesse [Vercel](https://vercel.com) e conecte sua conta do GitHub
+2. Importe o repositório do Aquabion Brasil
+3. Adicione as variáveis de ambiente (se houver):
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+4. Clique em "Deploy"
+
+O deploy será automático a cada novo push no repositório!
 
 ## SEO e Desempenho
 
@@ -91,3 +119,4 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=sua-chave
 - Dados estruturados Schema.org
 - Otimizado para Lighthouse > 95
 - Imagens otimizadas
+
