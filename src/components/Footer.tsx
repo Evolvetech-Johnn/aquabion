@@ -7,9 +7,9 @@ export default function Footer() {
       <div className="container mx-auto px-6 py-16">
         <div className="grid md:grid-cols-4 gap-12 mb-12">
           <div className="md:col-span-1">
-            <div className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-4">
+            <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-4 inline-block">
               Aquabion Brasil
-            </div>
+            </Link>
             <p className="text-slate-400 mb-6">
               A nova engenharia da água. Tecnologia alemã patenteada para eliminação de incrustações.
             </p>
@@ -18,20 +18,18 @@ export default function Footer() {
           <div>
             <h4 className="text-lg font-semibold mb-4">Produto</h4>
             <ul className="space-y-3">
-              <li><Link href="#como-funciona" className="text-slate-400 hover:text-white transition-colors">Tecnologia</Link></li>
-              <li><Link href="#beneficios" className="text-slate-400 hover:text-white transition-colors">Benefícios</Link></li>
-              <li><Link href="#aplicacoes" className="text-slate-400 hover:text-white transition-colors">Aplicações</Link></li>
-              <li><Link href="#cases" className="text-slate-400 hover:text-white transition-colors">Casos de Sucesso</Link></li>
+              <li><Link href="/tecnologia" className="text-slate-400 hover:text-white transition-colors">Tecnologia</Link></li>
+              <li><Link href="/beneficios" className="text-slate-400 hover:text-white transition-colors">Benefícios</Link></li>
+              <li><Link href="/aplicacoes" className="text-slate-400 hover:text-white transition-colors">Aplicações</Link></li>
+              <li><Link href="/cases" className="text-slate-400 hover:text-white transition-colors">Casos de Sucesso</Link></li>
             </ul>
           </div>
 
           <div>
             <h4 className="text-lg font-semibold mb-4">Empresa</h4>
             <ul className="space-y-3">
-              <li><Link href="#" className="text-slate-400 hover:text-white transition-colors">Sobre Nós</Link></li>
-              <li><Link href="#" className="text-slate-400 hover:text-white transition-colors">Certificações</Link></li>
-              <li><Link href="#" className="text-slate-400 hover:text-white transition-colors">Imprensa</Link></li>
-              <li><Link href="#" className="text-slate-400 hover:text-white transition-colors">Blog</Link></li>
+              <li><Link href="/sobre" className="text-slate-400 hover:text-white transition-colors">Sobre Nós</Link></li>
+              <li><Link href="/contato" className="text-slate-400 hover:text-white transition-colors">Contato</Link></li>
             </ul>
           </div>
 
@@ -59,8 +57,8 @@ export default function Footer() {
             © 2025 Aquabion Brasil. Todos os direitos reservados.
           </p>
           <div className="flex gap-6 text-slate-500 text-sm">
-            <Link href="#" className="hover:text-white transition-colors">Política de Privacidade</Link>
-            <Link href="#" className="hover:text-white transition-colors">Termos de Uso</Link>
+            <Link href="/politica-privacidade" className="hover:text-white transition-colors">Política de Privacidade</Link>
+            <Link href="/termos-de-uso" className="hover:text-white transition-colors">Termos de Uso</Link>
           </div>
         </div>
       </div>
