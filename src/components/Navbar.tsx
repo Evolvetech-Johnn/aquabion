@@ -27,13 +27,8 @@ export default function Navbar() {
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-slate-200/70 bg-white/85 backdrop-blur-xl shadow-sm">
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between h-20">
-          <Link href="/" className="flex items-center gap-3">
-            <img src="/logoaquabion.png" alt="Aquabion Brasil" className="w-10 h-10 object-contain" />
-            <span className="text-2xl font-semibold tracking-tight text-slate-950">
-              <span className="bg-gradient-to-r from-cyan-600 via-cyan-500 to-slate-900 bg-clip-text text-transparent">
-                Aquabion
-              </span>
-            </span>
+          <Link href="/" className="flex items-center gap-3" aria-label="Aquabion Brasil - Página Inicial">
+            <img src="/logoaquabion.png" alt="Aquabion Brasil" className="w-[54px] h-[54px] object-contain" />
           </Link>
 
           <div className="hidden md:flex items-center gap-8">
