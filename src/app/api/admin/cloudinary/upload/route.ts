@@ -7,18 +7,19 @@ import { isAdminRequest } from '@/lib/adminAuth'
 import { addMedia } from '@/lib/cloudinaryStore'
 
 // Configura o Cloudinary se as variáveis existirem
-const isCloudinaryConfigured = !!(
-  process.env.CLOUDINARY_CLOUD_NAME &&
-  process.env.CLOUDINARY_API_KEY &&
-  process.env.CLOUDINARY_API_SECRET
-)
-
+const getEnv = (key: string): string => (process.env[key] || '').trim()
+const CLOUD_NAME = getEnv('CLOUDINARY_CLOUD_NAME')
+const CLOUD_API_KEY = getEnv('CLOUDINARY_API_KEY')
+const CLOUD_API_SECRET = getEnv('CLOUDINARY_API_SECRET');
+const isCloudinaryConfigured = !!(CLOUD_NAME && CLOUD_API_KEY && CLOUD_API_SECRET);
 if (isCloudinaryConfigured) {
   cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-  })
+    cloud_name: CLOUD_NAME,
+    api_key: CLOUD_API_KEY,
+    api_secret: CLOUD_API_SECRET,
+  });
+} else {
+  console.warn('Cloudinary not configured: missing environment variables');
 }
 
 export async function POST(request: NextRequest) {
