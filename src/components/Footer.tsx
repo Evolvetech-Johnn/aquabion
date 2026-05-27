@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import Image from 'next/image';
+import NextImage from 'next/image';
 import { Mail, Phone, MapPin } from 'lucide-react';
 
 export default function Footer() {
@@ -9,7 +9,7 @@ export default function Footer() {
         <div className="grid md:grid-cols-4 gap-12 mb-12">
           <div className="md:col-span-1">
             <Link href="/" className="flex items-center gap-4 mb-4">
-              <Image src="/logoaquabion.png" alt="Aquabion Brasil" width={64} height={64} className="object-contain" />
+              <NextImage src="/logoaquabion.png" alt="Aquabion Brasil" width={64} height={64} className="object-contain" />
               <span className="text-2xl font-semibold tracking-tight text-slate-950">
                 <span className="bg-gradient-to-r from-cyan-600 via-cyan-500 to-slate-900 bg-clip-text text-transparent">
                   Aquabion Brasil
