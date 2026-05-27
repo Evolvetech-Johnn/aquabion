@@ -12,7 +12,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://aquabionbrasil.com.br"),
+  metadataBase: new URL("https://aquabion.com.br"),
   title: {
     default: "Aquabion Brasil | A Nova Engenharia da Água",
     template: "%s | Aquabion Brasil",
@@ -25,13 +25,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "pt_BR",
-    url: "https://aquabionbrasil.com.br",
+    url: "https://aquabion.com.br",
     siteName: "Aquabion Brasil",
     title: "Aquabion Brasil | A Nova Engenharia da Água",
     description: "Tecnologia alemã patenteada que elimina incrustações sem química, sem energia e sem manutenção.",
     images: [
       {
-        url: "https://aquabionbrasil.com.br/og-image.jpg",
+        url: "https://aquabion.com.br/og-image.jpg",
         width: 1200,
         height: 630,
         alt: "Aquabion Brasil - Tecnologia de Tratamento de Água",
@@ -42,8 +42,8 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Aquabion Brasil | A Nova Engenharia da Água",
     description: "Tecnologia alemã patenteada que elimina incrustações sem química, sem energia e sem manutenção.",
-    images: ["https://aquabionbrasil.com.br/og-image.jpg"],
-    creator: "@aquabionbrasil",
+    images: ["https://aquabion.com.br/og-image.jpg"],
+    creator: "@aquabion",
   },
   robots: {
     index: true,
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     google: "seu-codigo-google",
   },
   alternates: {
-    canonical: "https://aquabionbrasil.com.br",
+    canonical: "https://aquabion.com.br",
   },
 };
 
@@ -81,21 +81,21 @@ export default function RootLayout({
             __html: JSON.stringify([
               OrganizationSchema({
                 name: "Aquabion Brasil",
-                url: "https://aquabionbrasil.com.br",
+                url: "https://aquabion.com.br",
                 logo: "/logoaquabion.png",
                 description: "Tecnologia alemã patenteada que elimina incrustações sem química, sem energia e sem manutenção.",
                 sameAs: [
-                  "https://www.linkedin.com/company/aquabionbrasil",
-                  "https://www.instagram.com/aquabionbrasil",
+                  "https://www.linkedin.com/company/aquabion",
+                  "https://www.instagram.com/aquabion",
                 ],
               }),
               WebSiteSchema({
                 name: "Aquabion Brasil",
-                url: "https://aquabionbrasil.com.br",
+                url: "https://aquabion.com.br",
                 description: "Tecnologia alemã patenteada que elimina incrustações sem química, sem energia e sem manutenção.",
                 potentialAction: {
                   "@type": "SearchAction",
-                  target: "https://aquabionbrasil.com.br/?search_term_string={search_term_string}",
+                  target: "https://aquabion.com.br/?search_term_string={search_term_string}",
                   "query-input": "required name=search_term_string",
                 },
               }),

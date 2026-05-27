@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://aquabionbrasil.com.br';
+  const baseUrl = 'https://aquabion.com.br';
   const lastModified = new Date();
 
   return [

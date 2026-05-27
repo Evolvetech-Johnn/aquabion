@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/api/', '/_next/', '/admin/'],
       },
     ],
-    sitemap: 'https://aquabionbrasil.com.br/sitemap.xml',
+    sitemap: 'https://aquabion.com.br/sitemap.xml',
   };
 }

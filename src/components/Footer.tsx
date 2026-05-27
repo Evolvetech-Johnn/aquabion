@@ -50,7 +50,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-4 h-4 text-cyan-600" />
-                <span>contato@aquabionbrasil.com.br</span>
+                <span>contato@aquabion.com.br</span>
               </li>
               <li className="flex items-center gap-3">
                 <MapPin className="w-4 h-4 text-cyan-600" />

@@ -9,10 +9,10 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Sobre Nós | Aquabion Brasil',
     description: 'Conheça a história, valores e presença global da Aquabion Brasil.',
-    url: 'https://aquabionbrasil.com.br/sobre',
+    url: 'https://aquabion.com.br/sobre',
   },
   alternates: {
-    canonical: 'https://aquabionbrasil.com.br/sobre',
+    canonical: 'https://aquabion.com.br/sobre',
   },
 };
 

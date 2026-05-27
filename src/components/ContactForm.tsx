@@ -35,7 +35,7 @@ export default function ContactForm() {
     {
       icon: Mail,
       title: 'E-mail',
-      value: 'contato@aquabionbrasil.com.br',
+      value: 'contato@aquabion.com.br',
     },
     {
       icon: Phone,
