@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from './ui/button';
+import Image from 'next/image';
 import { Menu, X, ChevronRight } from 'lucide-react';
 
 export default function Navbar() {
@@ -28,7 +29,7 @@ export default function Navbar() {
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between h-20">
           <Link href="/" className="flex items-center gap-3" aria-label="Aquabion Brasil - Página Inicial">
-            <img src="/logoaquabion.png" alt="Aquabion Brasil" className="w-[54px] h-[54px] object-contain" />
+            <Image src="/logoaquabion.png" alt="Aquabion Brasil" width={54} height={54} className="w-[54px] h-[54px] object-contain" />
           </Link>
 
           <div className="hidden md:flex items-center gap-8">
