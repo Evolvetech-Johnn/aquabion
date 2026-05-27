@@ -30,6 +30,7 @@ import {
   Lock
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Image from 'next/image';
 import type { CRMLead, CRMNote } from "@/crm/types";
 import type { CloudinaryMedia } from "@/lib/cloudinaryStore";
 
@@ -506,7 +507,7 @@ export default function UnifiedAdminDashboard() {
         <div className="container mx-auto px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-4">
             <Link href="/" className="flex items-center gap-3">
-              <img src="/logoaquabion.png" alt="Aquabion" className="w-10 h-10 object-contain brightness-110" />
+              <Image src="/logoaquabion.png" alt="Aquabion" className="w-10 h-10 object-contain brightness-110" width={40} height={40} />
             </Link>
             <div className="h-6 w-[1px] bg-slate-800 hidden md:block" />
             <div>
@@ -1230,11 +1231,7 @@ export default function UnifiedAdminDashboard() {
                     >
                       {/* Visualizador de Imagem */}
                       <div className="aspect-video bg-slate-900 flex items-center justify-center overflow-hidden relative border-b border-slate-200">
-                        <img
-                          src={media.url}
-                          alt={media.name}
-                          className="w-full h-full object-contain group-hover:scale-[1.03] transition-transform duration-300"
-                        />
+                        <Image src={media.url} alt={media.name} fill className="w-full h-full object-contain group-hover:scale-[1.03] transition-transform duration-300" />
                         <span className="absolute bottom-2 right-2 text-[8px] bg-slate-950/70 border border-white/10 text-white font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">
                           {media.format}
                         </span>
