@@ -44,6 +44,28 @@ export default function TechnologyPage() {
           </p>
         </div>
 
+        {/* Vídeo Demonstrativo */}
+        <div className="mb-20 overflow-hidden rounded-[2.5rem] border border-slate-200 bg-white p-4 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.18)]">
+          <div className="aspect-video w-full overflow-hidden rounded-[2rem] relative bg-slate-950">
+            <video 
+              src="https://res.cloudinary.com/dipz2qnny/video/upload/v1779909307/aquabion_site/hdodorfdi1euyvauaivv.mp4"
+              controls
+              playsInline
+              preload="metadata"
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div className="p-6 md:p-8 text-center max-w-3xl mx-auto">
+            <p className="text-sm uppercase tracking-[0.24em] text-cyan-600 font-semibold mb-2">Demonstração Prática</p>
+            <h2 className="text-2xl md:text-3xl font-semibold text-slate-950 mb-4">
+              Veja a tecnologia Aquabion em ação
+            </h2>
+            <p className="text-slate-600 leading-relaxed">
+              Assista ao vídeo institucional e entenda como a ionização galvânica patenteada atua na prevenção e remoção de incrustações calcárias em tubulações e equipamentos industriais.
+            </p>
+          </div>
+        </div>
+
         <div className="space-y-12 mb-16">
           {steps.map((step, index) => (
             <div key={index} className="grid gap-12 lg:grid-cols-2 items-center">
