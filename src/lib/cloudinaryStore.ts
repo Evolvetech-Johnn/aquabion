@@ -15,48 +15,67 @@ export type CloudinaryMedia = {
 const DATA_DIR = path.join(process.cwd(), 'src', 'crm_data')
 const FILE_PATH = path.join(DATA_DIR, 'cloudinary_media.json')
 
-async function ensureFile() {
+let memoryCache: CloudinaryMedia[] | null = null
+
+async function getStorage(): Promise<CloudinaryMedia[]> {
+  if (memoryCache) return memoryCache
   try {
     await fs.mkdir(DATA_DIR, { recursive: true })
-    await fs.access(FILE_PATH)
-  } catch {
-    await fs.writeFile(FILE_PATH, '[]', 'utf8')
+    try {
+      const raw = await fs.readFile(FILE_PATH, 'utf8')
+      memoryCache = JSON.parse(raw || '[]')
+    } catch {
+      memoryCache = []
+      await fs.writeFile(FILE_PATH, '[]', 'utf8')
+    }
+  } catch (error) {
+    console.error('Storage access failed, using empty memory store:', error)
+    memoryCache = []
+  }
+  return memoryCache
+}
+
+async function persist(list: CloudinaryMedia[]) {
+  memoryCache = list
+  try {
+    await fs.writeFile(FILE_PATH, JSON.stringify(list, null, 2), 'utf8')
+  } catch (error) {
+    console.error('Failed to persist media to disk, updates kept in memory:', error)
   }
 }
 
 export async function listMedia(): Promise<CloudinaryMedia[]> {
-  await ensureFile()
-  const raw = await fs.readFile(FILE_PATH, 'utf8')
-  return raw ? JSON.parse(raw) : []
+  return await getStorage()
 }
 
 export async function addMedia(item: Omit<CloudinaryMedia, 'id' | 'created_at'>): Promise<CloudinaryMedia> {
-  const list = await listMedia()
-  const now = new Date().toISOString()
+  const list = await getStorage()
   const newItem: CloudinaryMedia = {
     ...item,
     id: crypto.randomUUID(),
-    created_at: now
+    created_at: new Date().toISOString()
   }
-  list.unshift(newItem)
-  await fs.writeFile(FILE_PATH, JSON.stringify(list, null, 2), 'utf8')
+  const newList = [newItem, ...list]
+  await persist(newList)
   return newItem
 }
 
 export async function removeMedia(id: string): Promise<CloudinaryMedia | undefined> {
-  const list = await listMedia()
+  const list = await getStorage()
   const idx = list.findIndex(m => m.id === id)
   if (idx === -1) return undefined
-  const [removed] = list.splice(idx, 1)
-  await fs.writeFile(FILE_PATH, JSON.stringify(list, null, 2), 'utf8')
+  const newList = [...list]
+  const [removed] = newList.splice(idx, 1)
+  await persist(newList)
   return removed
 }
 
 export async function removeMediaByPublicId(publicId: string): Promise<CloudinaryMedia | undefined> {
-  const list = await listMedia()
+  const list = await getStorage()
   const idx = list.findIndex(m => m.public_id === publicId)
   if (idx === -1) return undefined
-  const [removed] = list.splice(idx, 1)
-  await fs.writeFile(FILE_PATH, JSON.stringify(list, null, 2), 'utf8')
+  const newList = [...list]
+  const [removed] = newList.splice(idx, 1)
+  await persist(newList)
   return removed
 }
