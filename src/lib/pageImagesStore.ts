@@ -11,9 +11,65 @@ export type PageImageSlot = {
 
 export const STRATEGIC_SLOTS: PageImageSlot[] = [
   {
+    id: 'hero-main',
+    page: 'Página Inicial',
+    title: 'Imagem Hero Principal',
+    description: 'Banner principal de alta resolução exibido no topo da página de entrada.',
+    defaultImage: '/logoaquabion.png'
+  },
+  {
+    id: 'desafio-main',
+    page: 'Página Inicial',
+    title: 'O Desafio da Água Industrial',
+    description: 'Ilustração do desafio de incrustação severa ao lado do texto explicativo.',
+    defaultImage: '/logoaquabion.png'
+  },
+  {
+    id: 'benefit-1',
+    page: 'Página Inicial',
+    title: 'Card Benefício 1: Redução de custos',
+    description: 'Imagem ilustrativa no card de redução de custos operacionais.',
+    defaultImage: '/logoaquabion.png'
+  },
+  {
+    id: 'benefit-2',
+    page: 'Página Inicial',
+    title: 'Card Benefício 2: Água preservada',
+    description: 'Imagem ilustrativa no card de conservação e sustentabilidade da água.',
+    defaultImage: '/logoaquabion.png'
+  },
+  {
+    id: 'benefit-3',
+    page: 'Página Inicial',
+    title: 'Card Benefício 3: Operação sem energia',
+    description: 'Imagem ilustrativa no card de funcionamento passivo do sistema.',
+    defaultImage: '/logoaquabion.png'
+  },
+  {
+    id: 'benefit-4',
+    page: 'Página Inicial',
+    title: 'Card Benefício 4: Sustentabilidade real',
+    description: 'Imagem ilustrativa no card de impacto ambiental positivo.',
+    defaultImage: '/logoaquabion.png'
+  },
+  {
+    id: 'benefit-5',
+    page: 'Página Inicial',
+    title: 'Card Benefício 5: Proteção contínua',
+    description: 'Imagem ilustrativa no card de confiabilidade física dos encanamentos.',
+    defaultImage: '/logoaquabion.png'
+  },
+  {
+    id: 'benefit-6',
+    page: 'Página Inicial',
+    title: 'Card Benefício 6: Retorno rápido',
+    description: 'Imagem ilustrativa no card de ROI de menos de 24 meses.',
+    defaultImage: '/logoaquabion.png'
+  },
+  {
     id: 'tech_step_1',
     page: 'Tecnologia',
-    title: 'Passo 1: Célula Galvânica',
+    title: 'Passo 1: Ionização Galvânica',
     description: 'Imagem ilustrando o processo de ionização galvânica e tratamento de incrustação.',
     defaultImage: '/logoaquabion.png'
   },
@@ -42,19 +98,12 @@ export const STRATEGIC_SLOTS: PageImageSlot[] = [
     id: 'benefits_showcase',
     page: 'Benefícios',
     title: 'Eficiência e ROI Comercial',
-    description: 'Imagem ilustrando o retorno sobre investimento e economia energética comercial.',
-    defaultImage: '/logoaquabion.png'
-  },
-  {
-    id: 'home_challenge',
-    page: 'Página Inicial',
-    title: 'O Desafio da Água Industrial',
-    description: 'Banner exibindo incrustações severas em trocadores de calor vs. tubulação limpa.',
+    description: 'Imagem ilustrando o retorno sobre investimento e economia comercial no comparativo de mercado.',
     defaultImage: '/logoaquabion.png'
   }
 ]
 
-const DATA_DIR = path.join(process.cwd(), 'src', 'crm_data')
+const DATA_DIR = path.join(process.cwd(), 'crm_data')
 const FILE_PATH = path.join(DATA_DIR, 'page_images.json')
 
 async function ensureFile() {

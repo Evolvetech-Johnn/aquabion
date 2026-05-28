@@ -5,15 +5,14 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { TrendingUp, Droplets, Zap, Leaf, Shield, Clock, ArrowRight } from 'lucide-react';
 import ImageCard from '@/components/ImageCard';
-import { listMedia } from '@/lib/cloudinaryStore';
+import { getPageImages } from '@/lib/pageImagesStore';
 
 export default async function Home() {
-  const mediaList = await listMedia();
+  const pageImages = await getPageImages();
 
-  // Helper to find media URL by locationId mapping to public_id (or name)
+  // Helper to find media URL by locationId mapping to slot ID
   const getMediaUrl = (locationId: string) => {
-    const media = mediaList.find(m => m.name === locationId || m.public_id === locationId);
-    return media?.url;
+    return pageImages[locationId] || undefined;
   };
 
   const stats = [

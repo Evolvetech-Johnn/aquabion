@@ -2,7 +2,7 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import { CRMLead, CRMNote, CRMActivity } from './types'
 
-const DATA_DIR = path.join(process.cwd(), 'src', 'crm_data')
+const DATA_DIR = path.join(process.cwd(), 'crm_data')
 
 async function ensureFile(file: string, initial = '[]') {
   try {

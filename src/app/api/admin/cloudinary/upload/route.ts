@@ -6,20 +6,22 @@ import { v2 as cloudinary } from 'cloudinary'
 import { isAdminRequest } from '@/lib/adminAuth'
 import { addMedia } from '@/lib/cloudinaryStore'
 
-// Configura o Cloudinary se as variáveis existirem
+// Função auxiliar para obter e limpar variáveis de ambiente
 const getEnv = (key: string): string => (process.env[key] || '').trim()
-const CLOUD_NAME = getEnv('CLOUDINARY_CLOUD_NAME')
-const CLOUD_API_KEY = getEnv('CLOUDINARY_API_KEY')
-const CLOUD_API_SECRET = getEnv('CLOUDINARY_API_SECRET');
-const isCloudinaryConfigured = !!(CLOUD_NAME && CLOUD_API_KEY && CLOUD_API_SECRET);
-if (isCloudinaryConfigured) {
-  cloudinary.config({
-    cloud_name: CLOUD_NAME,
-    api_key: CLOUD_API_KEY,
-    api_secret: CLOUD_API_SECRET,
-  });
-} else {
-  console.warn('Cloudinary not configured: missing environment variables');
+
+function configureCloudinary() {
+  const cloudName = getEnv('CLOUDINARY_CLOUD_NAME')
+  const apiKey = getEnv('CLOUDINARY_API_KEY')
+  const apiSecret = getEnv('CLOUDINARY_API_SECRET')
+  if (cloudName && apiKey && apiSecret) {
+    cloudinary.config({
+      cloud_name: cloudName,
+      api_key: apiKey,
+      api_secret: apiSecret,
+    })
+    return true
+  }
+  return false
 }
 
 export async function POST(request: NextRequest) {
@@ -43,20 +45,28 @@ export async function POST(request: NextRequest) {
     const originalName = file.name
     const format = fileExtension.replace('.', '')
 
-interface CloudinaryUploadResult {
-  public_id: string
-  secure_url: string
-  bytes: number
-  format?: string
-}
+    interface CloudinaryUploadResult {
+      public_id: string
+      secure_url: string
+      bytes: number
+      format?: string
+    }
+
+    const isCloudinaryConfigured = configureCloudinary()
 
     if (isCloudinaryConfigured) {
       // --- UPLOAD REAL NO CLOUDINARY ---
+      // Sanitizar nome do arquivo original e adicionar sufixo único
+      const cleanFileName = path.parse(originalName).name.replace(/[^a-zA-Z0-9-_]/g, '_')
+      const uniquePublicId = `${cleanFileName}_${crypto.randomBytes(4).toString('hex')}`
+
       const uploadResult = await new Promise<CloudinaryUploadResult>((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
           {
             folder: 'aquabion',
             resource_type: 'auto',
+            public_id: uniquePublicId,
+            overwrite: false,
           },
           (error, result) => {
             if (error) reject(error)

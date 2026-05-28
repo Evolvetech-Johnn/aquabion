@@ -38,7 +38,7 @@ export default function UnifiedAdminDashboard() {
   const [isAuth, setIsAuth] = useState<boolean>(false);
   const [adminInput, setAdminInput] = useState<string>("");
   const [loginError, setLoginError] = useState<string>("");
-  const [activeTab, setActiveTab] = useState<"executive" | "crm" | "media">("executive");
+  const [activeTab, setActiveTab] = useState<"executive" | "crm" | "media" | "cards">("executive");
 
   // CRM State
   const [leads, setLeads] = useState<CRMLead[]>([]);
@@ -62,6 +62,14 @@ export default function UnifiedAdminDashboard() {
   const [uploadProgress, setUploadProgress] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Card Slots State
+  const [slotsList, setSlotsList] = useState<{ id: string; page: string; title: string; description: string; defaultImage: string; currentImage: string }[]>([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
+  const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
+  const [isLibraryModalOpen, setIsLibraryModalOpen] = useState(false);
+  const [librarySearch, setLibrarySearch] = useState("");
+  const slotFileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   // Executive Stats
   const [execStats, setExecStats] = useState({
@@ -216,22 +224,123 @@ export default function UnifiedAdminDashboard() {
     }
   }, [isAuth]);
 
+  // Fetch page image slots
+  const fetchSlotsData = useCallback(async () => {
+    if (!isAuth) return;
+    setLoadingSlots(true);
+    try {
+      const res = await fetch("/api/admin/page-images", { credentials: "same-origin" });
+      const json = await res.json();
+      if (json?.ok) {
+        setSlotsList(json.slots || []);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingSlots(false);
+    }
+  }, [isAuth]);
+
   // Initial fetches upon authentication
   useEffect(() => {
     if (isAuth) {
       fetchLeadsData();
       fetchAllLeadsForStats();
       fetchMediaData();
+      fetchSlotsData();
     }
-  }, [isAuth, fetchLeadsData, fetchAllLeadsForStats, fetchMediaData]);
+  }, [isAuth, fetchLeadsData, fetchAllLeadsForStats, fetchMediaData, fetchSlotsData]);
 
   // Refresh current data trigger
   const handleRefresh = () => {
     if (activeTab === "media") {
       fetchMediaData();
+    } else if (activeTab === "cards") {
+      fetchSlotsData();
+      fetchMediaData();
     } else {
       fetchLeadsData();
       fetchAllLeadsForStats();
+    }
+  };
+
+  // Bind slot image
+  const handleBindSlot = async (slotId: string, imageUrl: string) => {
+    try {
+      const res = await fetch("/api/admin/page-images", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ slotId, url: imageUrl }),
+        credentials: "same-origin"
+      });
+      const json = await res.json();
+      if (json?.ok) {
+        fetchSlotsData();
+      } else {
+        alert(`Erro ao vincular imagem: ${json.error || "Erro desconhecido"}`);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  // Unbind slot image
+  const handleUnbindSlot = async (slotId: string) => {
+    if (!confirm("Deseja realmente restaurar a imagem padrão para este card?")) return;
+    try {
+      const res = await fetch("/api/admin/page-images", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ slotId, url: "" }),
+        credentials: "same-origin"
+      });
+      const json = await res.json();
+      if (json?.ok) {
+        fetchSlotsData();
+      } else {
+        alert(`Erro ao restaurar padrão: ${json.error || "Erro desconhecido"}`);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  // Direct upload trigger for a card slot
+  const handleUploadForSlot = async (e: React.ChangeEvent<HTMLInputElement>, slotId: string) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadProgress(`Fazendo upload da imagem para o card...`);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/admin/cloudinary/upload", {
+        method: "POST",
+        body: formData,
+        credentials: "same-origin"
+      });
+      const json = await res.json();
+      if (json?.ok) {
+        const uploadedUrl = json.media.url;
+        await fetch("/api/admin/page-images", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ slotId, url: uploadedUrl }),
+          credentials: "same-origin"
+        });
+        setUploadProgress("Upload e vínculo concluídos!");
+        fetchSlotsData();
+        fetchMediaData();
+        setTimeout(() => setUploadProgress(null), 3000);
+      } else {
+        setUploadProgress(`Falha: ${json.error || "Erro desconhecido"}`);
+        setTimeout(() => setUploadProgress(null), 4000);
+      }
+    } catch (err) {
+      setUploadProgress("Erro ao conectar com a API de upload.");
+      console.error(err);
+      setTimeout(() => setUploadProgress(null), 4000);
     }
   };
 
@@ -588,6 +697,17 @@ export default function UnifiedAdminDashboard() {
           >
             <ImageIcon className="w-4 h-4" />
             Mídias Cloudinary
+          </button>
+          <button
+            onClick={() => { setActiveTab("cards"); setSelectedLead(null); }}
+            className={`flex items-center gap-2.5 px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
+              activeTab === "cards"
+                ? "bg-slate-900 text-white shadow-md shadow-slate-950/10 scale-[1.02]"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-300/40"
+            }`}
+          >
+            <Sliders className="w-4 h-4" />
+            Gerenciador de Cards ({slotsList.length})
           </button>
         </div>
 
@@ -1287,6 +1407,215 @@ export default function UnifiedAdminDashboard() {
                 </div>
               )}
             </div>
+          </div>
+        )}
+
+        {/* 🎴 TAB 4: GERENCIADOR DE CARDS DAS PÁGINAS */}
+        {activeTab === "cards" && (
+          <div className="space-y-8 animate-fade-in flex-grow flex flex-col justify-between">
+            {/* Top Bar / Filter */}
+            <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
+              <div>
+                <h3 className="text-xl font-bold text-slate-950 flex items-center gap-2">
+                  <Sliders className="w-5 h-5 text-cyan-600" />
+                  Gerenciador de Imagens Estratégicas
+                </h3>
+                <p className="text-xs text-slate-500 mt-1">
+                  Vincule imagens personalizadas aos cards, banners e seções de cada página do website.
+                </p>
+              </div>
+
+              {uploadProgress && (
+                <div className="text-xs font-bold text-cyan-600 bg-cyan-50 px-4 py-2 rounded-xl border border-cyan-150 animate-pulse">
+                  {uploadProgress}
+                </div>
+              )}
+            </div>
+
+            {/* Slots Grid */}
+            {loadingSlots ? (
+              <div className="flex flex-col items-center justify-center py-32 text-slate-400 text-xs gap-3">
+                <RefreshCw className="w-8 h-8 animate-spin text-cyan-600" />
+                <span>Carregando slots de imagem...</span>
+              </div>
+            ) : slotsList.length === 0 ? (
+              <div className="text-center py-24 text-slate-400 text-sm font-medium border border-dashed border-slate-200 rounded-2xl bg-white">
+                Nenhum slot estratégico mapeado no sistema.
+              </div>
+            ) : (
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {slotsList.map((slot) => {
+                  const hasCustomImage = !!slot.currentImage;
+                  const displayImage = slot.currentImage || slot.defaultImage;
+
+                  return (
+                    <div
+                      key={slot.id}
+                      className="bg-white border border-slate-200/80 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between"
+                    >
+                      {/* Badge e cabeçalho */}
+                      <div className="p-5 pb-3">
+                        <span className="inline-block text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-cyan-50 border border-cyan-100 text-cyan-700 rounded-full mb-2">
+                          {slot.page}
+                        </span>
+                        <h4 className="font-bold text-slate-900 text-sm">{slot.title}</h4>
+                        <p className="text-xs text-slate-400 mt-1 leading-normal italic line-clamp-2" title={slot.description}>
+                          {slot.description}
+                        </p>
+                      </div>
+
+                      {/* Image Preview Container */}
+                      <div className="aspect-video bg-slate-900 flex items-center justify-center overflow-hidden relative border-y border-slate-100">
+                        {displayImage ? (
+                          <img
+                            src={displayImage}
+                            alt={slot.title}
+                            className="w-full h-full object-cover transition-transform duration-300 hover:scale-[1.02]"
+                          />
+                        ) : (
+                          <div className="flex flex-col items-center justify-center text-slate-400 text-xs gap-2">
+                            <ImageIcon className="w-8 h-8 opacity-40" />
+                            <span>Sem Imagem</span>
+                          </div>
+                        )}
+
+                        <div className="absolute top-2 right-2 flex gap-1.5 z-10">
+                          {hasCustomImage ? (
+                            <span className="text-[9px] bg-emerald-500/90 border border-emerald-400/30 text-white font-bold px-2 py-0.5 rounded-md uppercase tracking-wider shadow-sm">
+                              Personalizada
+                            </span>
+                          ) : (
+                            <span className="text-[9px] bg-slate-500/90 border border-slate-400/30 text-white font-bold px-2 py-0.5 rounded-md uppercase tracking-wider shadow-sm">
+                              Padrão do Sistema
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Ações */}
+                      <div className="p-5 space-y-3">
+                        <div className="grid grid-cols-2 gap-2">
+                          <button
+                            onClick={() => slotFileInputRefs.current[slot.id]?.click()}
+                            className="h-9 rounded-xl text-[10px] font-bold bg-slate-900 text-white hover:bg-slate-800 transition-colors flex items-center justify-center gap-1.5 shadow-sm"
+                          >
+                            <UploadCloud className="w-3.5 h-3.5" />
+                            Subir Imagem
+                          </button>
+                          
+                          <button
+                            onClick={() => {
+                              setSelectedSlotId(slot.id);
+                              setIsLibraryModalOpen(true);
+                            }}
+                            className="h-9 rounded-xl text-[10px] font-bold bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors flex items-center justify-center gap-1.5 shadow-sm"
+                          >
+                            <FolderOpen className="w-3.5 h-3.5" />
+                            Escolher Galeria
+                          </button>
+                        </div>
+
+                        {hasCustomImage && (
+                          <button
+                            onClick={() => handleUnbindSlot(slot.id)}
+                            className="w-full h-9 rounded-xl text-[10px] font-bold bg-red-50 hover:bg-red-100 text-red-500 border border-red-200/20 transition-colors flex items-center justify-center gap-1.5"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            Restaurar Padrão
+                          </button>
+                        )}
+
+                        <input
+                          type="file"
+                          accept="image/*"
+                          ref={(el) => {
+                            slotFileInputRefs.current[slot.id] = el;
+                          }}
+                          onChange={(e) => handleUploadForSlot(e, slot.id)}
+                          className="hidden"
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Library Selector Modal */}
+            {isLibraryModalOpen && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm p-4 animate-fade-in">
+                <div className="w-full max-w-4xl bg-white border border-slate-200 rounded-[2rem] shadow-2xl flex flex-col h-[80vh] overflow-hidden">
+                  {/* Modal Header */}
+                  <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                    <div>
+                      <h4 className="text-lg font-bold text-slate-950">Selecione uma imagem da Biblioteca</h4>
+                      <p className="text-xs text-slate-400 mt-0.5">Escolha um arquivo já hospedado para vincular a este card.</p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setIsLibraryModalOpen(false);
+                        setSelectedSlotId(null);
+                        setLibrarySearch("");
+                      }}
+                      className="text-xs text-slate-500 hover:text-slate-700 font-bold px-4 py-2 border border-slate-250 rounded-xl hover:bg-slate-100 transition-colors"
+                    >
+                      Fechar
+                    </button>
+                  </div>
+
+                  {/* Modal Filter */}
+                  <div className="p-4 border-b border-slate-100 flex-shrink-0 bg-white">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
+                      <input
+                        value={librarySearch}
+                        onChange={(e) => setLibrarySearch(e.target.value)}
+                        placeholder="Pesquisar imagem pelo nome ou formato..."
+                        className="w-full h-10 pl-9 pr-4 rounded-xl border border-slate-200 bg-slate-50/60 text-sm focus:outline-none focus:border-cyan-500 text-slate-900"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Modal Grid content */}
+                  <div className="flex-grow overflow-y-auto p-6 bg-slate-50/50">
+                    {mediaList.filter(m => m.name.toLowerCase().includes(librarySearch.toLowerCase())).length === 0 ? (
+                      <div className="text-center py-20 text-slate-400 text-sm font-medium">
+                        Nenhuma imagem correspondente na biblioteca.
+                      </div>
+                    ) : (
+                      <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4">
+                        {mediaList
+                          .filter(m => m.name.toLowerCase().includes(librarySearch.toLowerCase()))
+                          .map((media) => (
+                            <div
+                              key={media.id}
+                              onClick={() => {
+                                if (selectedSlotId) {
+                                  handleBindSlot(selectedSlotId, media.url);
+                                  setIsLibraryModalOpen(false);
+                                  setSelectedSlotId(null);
+                                  setLibrarySearch("");
+                                }
+                              }}
+                              className="group bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md cursor-pointer hover:border-cyan-500 transition-all duration-200 flex flex-col justify-between"
+                            >
+                              <div className="aspect-video bg-slate-900 flex items-center justify-center overflow-hidden relative">
+                                <img src={media.url} alt={media.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" />
+                              </div>
+                              <div className="p-3 bg-white border-t border-slate-100">
+                                <h5 className="font-bold text-[10px] text-slate-700 truncate" title={media.name}>
+                                  {media.name}
+                                </h5>
+                                <p className="text-[8px] text-slate-400 mt-0.5">{media.format.toUpperCase()} • {formatBytes(media.bytes)}</p>
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

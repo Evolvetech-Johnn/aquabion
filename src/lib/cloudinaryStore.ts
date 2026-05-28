@@ -12,7 +12,7 @@ export type CloudinaryMedia = {
   created_at: string
 }
 
-const DATA_DIR = path.join(process.cwd(), 'src', 'crm_data')
+const DATA_DIR = path.join(process.cwd(), 'crm_data')
 const FILE_PATH = path.join(DATA_DIR, 'cloudinary_media.json')
 
 let memoryCache: CloudinaryMedia[] | null = null
@@ -24,9 +24,14 @@ async function getStorage(): Promise<CloudinaryMedia[]> {
     try {
       const raw = await fs.readFile(FILE_PATH, 'utf8')
       memoryCache = JSON.parse(raw || '[]')
-    } catch {
-      memoryCache = []
-      await fs.writeFile(FILE_PATH, '[]', 'utf8')
+    } catch (e: any) {
+      if (e.code === 'ENOENT') {
+        memoryCache = []
+        await fs.writeFile(FILE_PATH, '[]', 'utf8')
+      } else {
+        console.error('Failed to parse or read media file, keeping empty memory state:', e)
+        memoryCache = []
+      }
     }
   } catch (error) {
     console.error('Storage access failed, using empty memory store:', error)

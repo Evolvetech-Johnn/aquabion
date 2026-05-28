@@ -1,13 +1,20 @@
 import Link from 'next/link';
 import { Zap, Droplets, Leaf, Shield, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import ImageCard from '@/components/ImageCard';
+import { getPageImages } from '@/lib/pageImagesStore';
 
 export const metadata = {
   title: 'Tecnologia | Aquabion Brasil',
   description: 'Como funciona a tecnologia patenteada Aquabion - Engenharia galvânica passiva',
 };
 
-export default function TechnologyPage() {
+export default async function TechnologyPage() {
+  const pageImages = await getPageImages();
+  const getImageUrl = (slotId: string) => {
+    return pageImages[slotId] || undefined;
+  };
+
   const steps = [
     {
       number: '01',
@@ -78,9 +85,12 @@ export default function TechnologyPage() {
                 </div>
               </div>
               <div className={`${index % 2 === 1 ? 'lg:order-1' : ''}`}>
-                <div className="aspect-square rounded-[2rem] border border-slate-200 bg-slate-100 flex items-center justify-center shadow-sm">
-                  <Leaf className="w-32 h-32 text-cyan-500/50" />
-                </div>
+                <ImageCard
+                  locationId={`tech_step_${index + 1}`}
+                  imageUrl={getImageUrl(`tech_step_${index + 1}`)}
+                  aspectRatio="square"
+                  className="w-full"
+                />
               </div>
             </div>
           ))}

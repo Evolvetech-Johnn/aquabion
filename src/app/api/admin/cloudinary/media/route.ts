@@ -5,19 +5,22 @@ import { v2 as cloudinary } from 'cloudinary'
 import { isAdminRequest } from '@/lib/adminAuth'
 import { listMedia, removeMedia } from '@/lib/cloudinaryStore'
 
-// Configura o Cloudinary se as variáveis existirem
-const isCloudinaryConfigured = !!(
-  process.env.CLOUDINARY_CLOUD_NAME &&
-  process.env.CLOUDINARY_API_KEY &&
-  process.env.CLOUDINARY_API_SECRET
-)
+// Função auxiliar para obter e limpar variáveis de ambiente
+const getEnv = (key: string): string => (process.env[key] || '').trim()
 
-if (isCloudinaryConfigured) {
-  cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-  })
+function configureCloudinary() {
+  const cloudName = getEnv('CLOUDINARY_CLOUD_NAME')
+  const apiKey = getEnv('CLOUDINARY_API_KEY')
+  const apiSecret = getEnv('CLOUDINARY_API_SECRET')
+  if (cloudName && apiKey && apiSecret) {
+    cloudinary.config({
+      cloud_name: cloudName,
+      api_key: apiKey,
+      api_secret: apiSecret,
+    })
+    return true
+  }
+  return false
 }
 
 // GET: Lista todas as mídias salvas no banco de dados local
@@ -28,6 +31,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const list = await listMedia()
+    const isCloudinaryConfigured = configureCloudinary()
     return NextResponse.json({
       ok: true,
       cloudinaryConfigured: isCloudinaryConfigured,
@@ -60,6 +64,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     const { public_id, url: fileUrl } = removedItem
+    const isCloudinaryConfigured = configureCloudinary()
 
     if (public_id.startsWith('simulated_')) {
       // Exclui o arquivo simulado localmente

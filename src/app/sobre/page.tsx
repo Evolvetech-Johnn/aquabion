@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Globe, Award, Shield, TrendingUp } from 'lucide-react';
+import ImageCard from '@/components/ImageCard';
+import { getPageImages } from '@/lib/pageImagesStore';
 
 export const metadata: Metadata = {
   title: 'Sobre Nós',
@@ -16,7 +18,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const pageImages = await getPageImages();
+  const imageUrl = pageImages['about_showcase'] || undefined;
+
   const stats = [
     { number: '+50', label: 'Países atendidos' },
     { number: '25+', label: 'Anos de experiência' },
@@ -47,6 +52,17 @@ export default function AboutPage() {
                 <div className="text-slate-600">{stat.label}</div>
               </div>
             ))}
+          </div>
+
+          {/* Showcase Image */}
+          <div className="mt-16 relative">
+            <ImageCard 
+              locationId="about_showcase"
+              imageUrl={imageUrl}
+              aspectRatio="video"
+              className="w-full max-h-[450px] object-cover"
+            />
+            <div className="absolute -bottom-8 -right-8 w-64 h-64 bg-cyan-100/50 rounded-full blur-3xl -z-10 pointer-events-none" />
           </div>
         </div>
       </section>

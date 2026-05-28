@@ -1,13 +1,17 @@
 import Link from 'next/link';
 import { TrendingUp, Droplets, Zap, Shield, Leaf, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import ImageCard from '@/components/ImageCard';
+import { getPageImages } from '@/lib/pageImagesStore';
 
 export const metadata = {
   title: 'Benefícios | Aquabion Brasil',
   description: 'Todos os benefícios da tecnologia Aquabion - Economia, sustentabilidade e performance',
 };
 
-export default function BenefitsPage() {
+export default async function BenefitsPage() {
+  const pageImages = await getPageImages();
+  const imageUrl = pageImages['benefits_showcase'] || undefined;
   const benefits = [
     {
       icon: TrendingUp,
@@ -62,6 +66,17 @@ export default function BenefitsPage() {
               <p className="text-slate-600 leading-7">{benefit.description}</p>
             </div>
           ))}
+        </div>
+
+        {/* Showcase Image */}
+        <div className="mb-16 relative">
+          <ImageCard 
+            locationId="benefits_showcase"
+            imageUrl={imageUrl}
+            aspectRatio="video"
+            className="w-full max-h-[450px] object-cover"
+          />
+          <div className="absolute -bottom-8 -left-8 w-64 h-64 bg-cyan-100/50 rounded-full blur-3xl -z-10 pointer-events-none" />
         </div>
 
         <div className="rounded-[2rem] border border-slate-200 bg-white p-12 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.18)] mb-16">
