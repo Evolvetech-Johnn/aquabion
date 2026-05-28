@@ -1,4 +1,5 @@
 import { v2 as cloudinary } from 'cloudinary';
+import { getCloudinaryUrl as getCloudinaryUrlFromUrlFile } from './url';
 
 // Environment variable validation
 const getEnv = (key: string): string => {
@@ -28,32 +29,5 @@ if (cloudinaryConfig.cloudName && cloudinaryConfig.apiKey && cloudinaryConfig.ap
 
 export { cloudinary };
 
-// Helper to get Cloudinary URL from public ID
-export const getCloudinaryUrl = (
-  publicId: string,
-  options?: {
-    width?: number;
-    height?: number;
-    crop?: 'fill' | 'fit' | 'scale' | 'limit' | 'pad';
-    format?: 'webp' | 'avif' | 'jpg' | 'png';
-    quality?: number;
-  }
-): string => {
-  const {
-    width,
-    height,
-    crop = 'fill',
-    format = 'webp',
-    quality = 85,
-  } = options || {};
-
-  const transformations: string[] = [];
-  if (width) transformations.push(`w_${width}`);
-  if (height) transformations.push(`h_${height}`);
-  if (width || height) transformations.push(`c_${crop}`);
-  transformations.push(`q_${quality}`);
-  transformations.push(`f_${format}`);
-
-  const transformationString = transformations.join(',');
-  return `https://res.cloudinary.com/${cloudinaryConfig.cloudName}/image/upload/${transformationString}/${publicId}`;
-};
+// Helper to get Cloudinary URL from public ID (backward compatibility)
+export const getCloudinaryUrl = getCloudinaryUrlFromUrlFile;

@@ -1,9 +1,9 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import crypto from 'crypto';
-import { uploadToCloudinary, deleteFromCloudinary } from '@/lib/cloudinary/upload';
-import { deleteFromCloudinary as deleteCloudinary } from '@/lib/cloudinary/delete';
-import { getCloudinaryUrl } from '@/lib/cloudinary/cloudinary';
+import { uploadToCloudinary } from '@/lib/cloudinary/upload';
+import { deleteFromCloudinary } from '@/lib/cloudinary/delete';
+import { getCloudinaryUrl } from '@/lib/cloudinary/url';
 
 // Types
 export interface CloudinaryMedia {

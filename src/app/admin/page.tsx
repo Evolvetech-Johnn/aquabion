@@ -265,12 +265,12 @@ export default function UnifiedAdminDashboard() {
   };
 
   // Bind slot image
-  const handleBindSlot = async (slotId: string, imageUrl: string) => {
+  const handleBindSlot = async (slotId: string, imageUrl: string, imagePublicId?: string) => {
     try {
       const res = await fetch("/api/admin/page-images", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ slotId, url: imageUrl }),
+        body: JSON.stringify({ slotId, url: imageUrl, publicId: imagePublicId }),
         credentials: "same-origin"
       });
       const json = await res.json();
@@ -323,10 +323,11 @@ export default function UnifiedAdminDashboard() {
       const json = await res.json();
       if (json?.ok) {
         const uploadedUrl = json.media.url;
+        const uploadedPublicId = json.media.publicId;
         await fetch("/api/admin/page-images", {
           method: "POST",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ slotId, url: uploadedUrl }),
+          body: JSON.stringify({ slotId, url: uploadedUrl, publicId: uploadedPublicId }),
           credentials: "same-origin"
         });
         setUploadProgress("Upload e vínculo concluídos!");
@@ -1593,7 +1594,7 @@ export default function UnifiedAdminDashboard() {
                               key={media.id}
                               onClick={() => {
                                 if (selectedSlotId) {
-                                  handleBindSlot(selectedSlotId, media.url);
+                                  handleBindSlot(selectedSlotId, media.url, media.publicId);
                                   setIsLibraryModalOpen(false);
                                   setSelectedSlotId(null);
                                   setLibrarySearch("");

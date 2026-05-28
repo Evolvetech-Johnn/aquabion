@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { getCloudinaryUrl, cloudinaryConfig } from '@/lib/cloudinary/cloudinary';
+import { getCloudinaryUrl } from '@/lib/cloudinary/url';
 
 interface CloudinaryImageProps {
   publicId?: string;
