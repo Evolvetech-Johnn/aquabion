@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { Zap, Droplets, Leaf, Shield, ArrowRight } from 'lucide-react';
+
+import { Zap, Droplets, Shield, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ImageCard from '@/components/ImageCard';
 import { getPageImages } from '@/lib/pageImagesStore';

@@ -19,24 +19,25 @@ let memoryCache: CloudinaryMedia[] | null = null
 
 async function getStorage(): Promise<CloudinaryMedia[]> {
   if (memoryCache) return memoryCache
-  try {
-    await fs.mkdir(DATA_DIR, { recursive: true })
     try {
-      const raw = await fs.readFile(FILE_PATH, 'utf8')
-      memoryCache = JSON.parse(raw || '[]')
-    } catch (e: any) {
-      if (e.code === 'ENOENT') {
-        memoryCache = []
-        await fs.writeFile(FILE_PATH, '[]', 'utf8')
-      } else {
-        console.error('Failed to parse or read media file, keeping empty memory state:', e)
-        memoryCache = []
+      await fs.mkdir(DATA_DIR, { recursive: true })
+      try {
+        const raw = await fs.readFile(FILE_PATH, 'utf8')
+        memoryCache = JSON.parse(raw || '[]')
+      } catch (e: unknown) {
+        const err = e as { code?: string }
+        if (err.code === 'ENOENT') {
+          memoryCache = []
+          await fs.writeFile(FILE_PATH, '[]', 'utf8')
+        } else {
+          console.error('Failed to read media file, keeping empty memory state:', err)
+          memoryCache = []
+        }
       }
+    } catch (error) {
+      console.error('Storage access failed, using empty memory store:', error)
+      memoryCache = []
     }
-  } catch (error) {
-    console.error('Storage access failed, using empty memory store:', error)
-    memoryCache = []
-  }
   return memoryCache || []
 }
 

@@ -1472,6 +1472,7 @@ export default function UnifiedAdminDashboard() {
                             alt={slot.title}
                             fill
                             className="object-cover transition-transform duration-300 hover:scale-[1.02]"
+                            unoptimized
                           />
                         ) : (
                           <div className="flex flex-col items-center justify-center text-slate-400 text-xs gap-2">
@@ -1601,7 +1602,7 @@ export default function UnifiedAdminDashboard() {
                               className="group bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md cursor-pointer hover:border-cyan-500 transition-all duration-200 flex flex-col justify-between"
                             >
                               <div className="aspect-video bg-slate-900 flex items-center justify-center overflow-hidden relative">
-                                <Image src={media.url} alt={media.name} fill className="object-cover group-hover:scale-105 transition-transform duration-200" />
+                                <Image src={media.url} alt={media.name} fill className="object-cover group-hover:scale-105 transition-transform duration-200" unoptimized />
                               </div>
                               <div className="p-3 bg-white border-t border-slate-100">
                                 <h5 className="font-bold text-[10px] text-slate-700 truncate" title={media.name}>
