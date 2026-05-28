@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { isAdminRequest } from '@/lib/adminAuth'
 import { getPageImages, bindPageImage, unbindPageImage, STRATEGIC_SLOTS } from '@/lib/pageImagesStore'
 
@@ -43,6 +44,17 @@ export async function POST(request: NextRequest) {
     } else {
       await unbindPageImage(slotId)
     }
+
+    // Revalidate all public pages to reflect changes
+    revalidatePath('/')
+    revalidatePath('/tecnologia')
+    revalidatePath('/sobre')
+    revalidatePath('/beneficios')
+    revalidatePath('/aplicacoes')
+    revalidatePath('/cases')
+    revalidatePath('/blog')
+    revalidatePath('/faq')
+    revalidatePath('/contato')
 
     return NextResponse.json({
       ok: true,
