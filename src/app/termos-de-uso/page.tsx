@@ -87,8 +87,8 @@ export default function TermsOfServicePage() {
             <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6">
               <p className="font-semibold text-slate-950 mb-2">Aquabion Brasil</p>
               <p className="text-slate-600">E-mail: contato@aquabion.com.br</p>
-              <p className="text-slate-600">Telefone: (11) 99999-9999</p>
-              <p className="text-slate-600">Endereço: São Paulo, SP - Brasil</p>
+              <p className="text-slate-600">Telefone: (43) 99917-1010</p>
+              <p className="text-slate-600">Endereço: Londrina, PR | Bauneário Camboriú, SC | São Paulo - Capital, SP - Brasil</p>
             </div>
           </section>
         </div>

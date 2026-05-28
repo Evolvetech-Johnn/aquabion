@@ -47,15 +47,19 @@ export default function Footer() {
             <ul className="space-y-3 text-slate-600">
               <li className="flex items-center gap-3">
                 <Phone className="w-4 h-4 text-cyan-600" />
-                <span>(11) 99999-9999</span>
+                <span>(43) 99917-1010</span>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-4 h-4 text-cyan-600" />
                 <span>contato@aquabion.com.br</span>
               </li>
-              <li className="flex items-center gap-3">
-                <MapPin className="w-4 h-4 text-cyan-600" />
-                <span>São Paulo, SP - Brasil</span>
+              <li className="flex items-start gap-3">
+                <MapPin className="w-4 h-4 text-cyan-600 mt-1" />
+                <span className="flex flex-col gap-1">
+                  <span>Londrina, PR - Brasil</span>
+                  <span>Bauneário Camboriú, SC - Brasil</span>
+                  <span>São Paulo - Capital, SP - Brasil</span>
+                </span>
               </li>
             </ul>
           </div>

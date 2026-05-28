@@ -40,12 +40,12 @@ export default function ContactForm() {
     {
       icon: Phone,
       title: 'Telefone',
-      value: '(11) 99999-9999',
+      value: '(43) 99917-1010',
     },
     {
       icon: MapPin,
       title: 'Endereço',
-      value: 'São Paulo, SP - Brasil',
+      value: 'Londrina, PR - Brasil\nBauneário Camboriú, SC - Brasil\nSão Paulo - Capital, SP - Brasil',
     },
     {
       icon: Clock,
@@ -85,7 +85,7 @@ export default function ContactForm() {
               <item.icon className="w-6 h-6 text-cyan-600 flex-shrink-0 mt-1" />
               <div>
                 <h3 className="font-semibold text-slate-950 mb-1">{item.title}</h3>
-                <p className="text-slate-600">{item.value}</p>
+                <p className="text-slate-600 whitespace-pre-line">{item.value}</p>
               </div>
             </div>
           ))}
@@ -152,7 +152,7 @@ export default function ContactForm() {
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-950 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 transition-colors"
-                  placeholder="(11) 99999-9999"
+                  placeholder="(43) 99917-1010"
                 />
               </div>
               <div>
