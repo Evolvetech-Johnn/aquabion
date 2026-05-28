@@ -45,7 +45,7 @@ export default function TechnologyPage() {
         </div>
 
         {/* Vídeo Demonstrativo */}
-        <div className="mb-20 overflow-hidden rounded-[2.5rem] border border-slate-200 bg-white p-4 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.18)]">
+        <div className="max-w-4xl mx-auto mb-20 overflow-hidden rounded-[2.5rem] border border-slate-200 bg-white p-4 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.18)]">
           <div className="aspect-video w-full overflow-hidden rounded-[2rem] relative bg-slate-950">
             <video 
               src="https://res.cloudinary.com/dipz2qnny/video/upload/v1779909307/aquabion_site/hdodorfdi1euyvauaivv.mp4"

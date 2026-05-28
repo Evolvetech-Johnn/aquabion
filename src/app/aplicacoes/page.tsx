@@ -45,12 +45,7 @@ export default function ApplicationsPage() {
       description: 'Proteção de serpentinas e trocadores de calor em sistemas de climatização.',
       benefits: ['Eficiência energética', 'Menor desgaste', 'Menos manutenção'],
     },
-    {
-      icon: Sun,
-      title: 'Energia solar',
-      description: 'Preservação de sistemas solares térmicos e coletores fotovoltaicos.',
-      benefits: ['Maior eficiência', 'Menos limpeza', 'Mais durabilidade'],
-    },
+
     {
       icon: Droplets,
       title: 'Irrigação',
