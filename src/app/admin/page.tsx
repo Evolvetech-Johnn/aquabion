@@ -1366,7 +1366,7 @@ export default function UnifiedAdminDashboard() {
                           </h4>
                           <div className="flex justify-between text-[10px] text-slate-400 mt-1 font-semibold">
                             <span>{formatBytes(media.bytes)}</span>
-                            <span>{formatDate(media.created_at)}</span>
+                            <span>{formatDate(media.createdAt)}</span>
                           </div>
                         </div>
 
