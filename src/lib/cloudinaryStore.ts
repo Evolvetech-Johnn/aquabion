@@ -32,7 +32,7 @@ async function getStorage(): Promise<CloudinaryMedia[]> {
     console.error('Storage access failed, using empty memory store:', error)
     memoryCache = []
   }
-  return memoryCache
+  return memoryCache || []
 }
 
 async function persist(list: CloudinaryMedia[]) {
