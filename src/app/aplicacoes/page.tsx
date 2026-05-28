@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Factory, Sprout, Home, Building2, Sun, Droplets, Thermometer, Hotel } from 'lucide-react';
+import { Factory, Sprout, Home, Building2, Droplets, Thermometer, Hotel } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export const metadata = {
