@@ -1,8 +1,6 @@
 import crypto from 'crypto';
-import { uploadToCloudinary } from '@/lib/cloudinary/upload';
 import { deleteFromCloudinary } from '@/lib/cloudinary/delete';
-import { getCloudinaryUrl } from '@/lib/cloudinary/url';
-import clientPromise, { getDb } from '@/lib/mongodb';
+import { getDb } from '@/lib/mongodb';
 
 // Types
 export interface CloudinaryMedia {
