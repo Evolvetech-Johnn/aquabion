@@ -5,15 +5,10 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { TrendingUp, Droplets, Zap, Leaf, Shield, Clock, ArrowRight } from 'lucide-react';
 import ImageCard from '@/components/ImageCard';
-import { getPageImages } from '@/lib/pageImagesStore';
+import { getPageImages, getPageImageUrl } from '@/services/media.service';
 
 export default async function Home() {
   const pageImages = await getPageImages();
-
-  // Helper to find media URL by locationId mapping to slot ID
-  const getMediaUrl = (locationId: string) => {
-    return pageImages[locationId] || undefined;
-  };
 
   const stats = [
     { value: '+50', label: 'Países atendidos' },
@@ -63,7 +58,7 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-950">
-      <PremiumHero heroImageUrl={getMediaUrl('hero-main')} />
+      <PremiumHero heroImageUrl={getPageImageUrl('hero-main', pageImages)} />
 
       <AnimatedSection className="section-padding container-padding">
         <div className="container mx-auto max-w-6xl">
@@ -110,7 +105,8 @@ export default async function Home() {
             <div className="relative">
                <ImageCard 
                  locationId="desafio-main" 
-                 imageUrl={getMediaUrl('desafio-main')} 
+                 imageUrl={getPageImageUrl('desafio-main', pageImages)} 
+                 publicId={pageImages['desafio-main']?.publicId}
                  aspectRatio="portrait"
                />
                <div className="absolute -bottom-8 -left-8 w-48 h-48 bg-cyan-200/50 rounded-full blur-3xl -z-10" />
@@ -137,7 +133,8 @@ export default async function Home() {
                 <div className="p-2">
                   <ImageCard 
                     locationId={benefit.id} 
-                    imageUrl={getMediaUrl(benefit.id)} 
+                    imageUrl={getPageImageUrl(benefit.id, pageImages)} 
+                    publicId={pageImages[benefit.id]?.publicId}
                     aspectRatio="video"
                     className="rounded-xl w-full"
                   />

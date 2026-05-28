@@ -1,10 +1,11 @@
 import React from 'react';
-import Image from 'next/image';
 import { ImageIcon } from 'lucide-react';
+import CloudinaryImage from './media/CloudinaryImage';
 
 interface ImageCardProps {
   locationId: string;
   imageUrl?: string;
+  publicId?: string;
   alt?: string;
   className?: string;
   aspectRatio?: 'video' | 'square' | 'portrait' | 'auto';
@@ -13,6 +14,7 @@ interface ImageCardProps {
 export default function ImageCard({ 
   locationId, 
   imageUrl, 
+  publicId,
   alt = 'Aquabion image',
   className = '',
   aspectRatio = 'auto'
@@ -24,7 +26,7 @@ export default function ImageCard({
     'auto': 'aspect-auto'
   }[aspectRatio];
 
-  if (!imageUrl) {
+  if (!imageUrl && !publicId) {
     return (
       <div className={`relative flex flex-col items-center justify-center bg-slate-100 border-2 border-dashed border-slate-300 rounded-2xl overflow-hidden p-6 text-center ${aspectClass} ${className}`}>
         <ImageIcon className="w-10 h-10 text-slate-400 mb-3" />
@@ -37,13 +39,15 @@ export default function ImageCard({
 
   return (
     <div className={`relative overflow-hidden rounded-2xl bg-slate-100 shadow-lg ${aspectClass} ${className}`}>
-      <Image 
-        src={imageUrl}
+      <CloudinaryImage 
+        publicId={publicId}
+        url={imageUrl}
         alt={alt}
+        width={1200}
+        height={800}
         fill
-        unoptimized
         className="object-cover"
-        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        crop="fill"
       />
     </div>
   );

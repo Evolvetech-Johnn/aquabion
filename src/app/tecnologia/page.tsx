@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { Zap, Droplets, Shield, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ImageCard from '@/components/ImageCard';
-import { getPageImages } from '@/lib/pageImagesStore';
+import { getPageImages, getPageImageUrl } from '@/services/media.service';
 
 export const metadata = {
   title: 'Tecnologia | Aquabion Brasil',
@@ -12,9 +12,6 @@ export const metadata = {
 
 export default async function TechnologyPage() {
   const pageImages = await getPageImages();
-  const getImageUrl = (slotId: string) => {
-    return pageImages[slotId] || undefined;
-  };
 
   const steps = [
     {
@@ -88,7 +85,8 @@ export default async function TechnologyPage() {
               <div className={`${index % 2 === 1 ? 'lg:order-1' : ''}`}>
                 <ImageCard
                   locationId={`tech_step_${index + 1}`}
-                  imageUrl={getImageUrl(`tech_step_${index + 1}`)}
+                  imageUrl={getPageImageUrl(`tech_step_${index + 1}`, pageImages)}
+                  publicId={pageImages[`tech_step_${index + 1}`]?.publicId}
                   aspectRatio="square"
                   className="w-full"
                 />

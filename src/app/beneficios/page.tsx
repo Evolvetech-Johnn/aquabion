@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { TrendingUp, Droplets, Zap, Shield, Leaf, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ImageCard from '@/components/ImageCard';
-import { getPageImages } from '@/lib/pageImagesStore';
+import { getPageImages, getPageImageUrl } from '@/services/media.service';
 
 export const metadata = {
   title: 'Benefícios | Aquabion Brasil',
@@ -11,7 +11,6 @@ export const metadata = {
 
 export default async function BenefitsPage() {
   const pageImages = await getPageImages();
-  const imageUrl = pageImages['benefits_showcase'] || undefined;
   const benefits = [
     {
       icon: TrendingUp,
@@ -72,7 +71,8 @@ export default async function BenefitsPage() {
         <div className="mb-16 relative">
           <ImageCard 
             locationId="benefits_showcase"
-            imageUrl={imageUrl}
+            imageUrl={getPageImageUrl('benefits_showcase', pageImages)}
+            publicId={pageImages['benefits_showcase']?.publicId}
             aspectRatio="video"
             className="w-full max-h-[450px] object-cover"
           />
