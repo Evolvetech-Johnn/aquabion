@@ -4,12 +4,12 @@ import crypto from 'crypto'
 
 export type CloudinaryMedia = {
   id: string
-  public_id: string
+  publicId: string
   name: string
   url: string
   bytes: number
   format: string
-  created_at: string
+  createdAt: string
 }
 
 const DATA_DIR = path.join(process.cwd(), 'crm_data')
@@ -54,12 +54,12 @@ export async function listMedia(): Promise<CloudinaryMedia[]> {
   return await getStorage()
 }
 
-export async function addMedia(item: Omit<CloudinaryMedia, 'id' | 'created_at'>): Promise<CloudinaryMedia> {
+export async function addMedia(item: Omit<CloudinaryMedia, 'id' | 'createdAt'>): Promise<CloudinaryMedia> {
   const list = await getStorage()
   const newItem: CloudinaryMedia = {
     ...item,
     id: crypto.randomUUID(),
-    created_at: new Date().toISOString()
+    createdAt: new Date().toISOString()
   }
   const newList = [newItem, ...list]
   await persist(newList)
@@ -78,7 +78,7 @@ export async function removeMedia(id: string): Promise<CloudinaryMedia | undefin
 
 export async function removeMediaByPublicId(publicId: string): Promise<CloudinaryMedia | undefined> {
   const list = await getStorage()
-  const idx = list.findIndex(m => m.public_id === publicId)
+  const idx = list.findIndex(m => m.publicId === publicId)
   if (idx === -1) return undefined
   const newList = [...list]
   const [removed] = newList.splice(idx, 1)

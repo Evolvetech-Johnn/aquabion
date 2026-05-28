@@ -64,7 +64,7 @@ export default function UnifiedAdminDashboard() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Card Slots State
-  const [slotsList, setSlotsList] = useState<{ id: string; page: string; title: string; description: string; defaultImage: string; currentImage: string }[]>([]);
+  const [slotsList, setSlotsList] = useState<{ id: string; page: string; title: string; description: string; defaultImage: string; currentImage: string; publicId?: string }[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
   const [isLibraryModalOpen, setIsLibraryModalOpen] = useState(false);
