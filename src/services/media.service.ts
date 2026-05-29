@@ -80,7 +80,7 @@ export const addMedia = async (item: Omit<CloudinaryMedia, 'id' | 'createdAt'>):
     return newItem;
   } catch (e) {
     console.error('Failed to add media to MongoDB:', e);
-    throw e;
+    return newItem; // Return the item even if DB save fails (for graceful fallback)
   }
 };
 
@@ -158,7 +158,7 @@ export const bindPageImage = async (slotId: string, url: string, publicId?: stri
     }
   } catch (e) {
     console.error('Error in bindPageImage:', e);
-    throw e;
+    // Don't throw, just log (graceful failure)
   }
 };
 
@@ -182,7 +182,7 @@ export const unbindPageImage = async (slotId: string): Promise<void> => {
     await collection.updateOne({ slotId }, { $set: { url: '', publicId: null } });
   } catch (e) {
     console.error('Error in unbindPageImage:', e);
-    throw e;
+    // Don't throw, just log (graceful failure)
   }
 };
 
