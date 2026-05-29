@@ -7,6 +7,8 @@ import { TrendingUp, Droplets, Zap, Leaf, Shield, Clock, ArrowRight } from 'luci
 import ImageCard from '@/components/ImageCard';
 import { getPageImages, getPageImageUrl } from '@/services/media.service';
 
+export const revalidate = 60;
+
 export default async function Home() {
   const pageImages = await getPageImages();
 

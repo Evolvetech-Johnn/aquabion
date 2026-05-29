@@ -9,6 +9,8 @@ export const metadata = {
   description: 'Todos os benefícios da tecnologia Aquabion - Economia, sustentabilidade e performance',
 };
 
+export const revalidate = 60;
+
 export default async function BenefitsPage() {
   const pageImages = await getPageImages();
   const benefits = [

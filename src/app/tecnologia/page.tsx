@@ -10,6 +10,8 @@ export const metadata = {
   description: 'Como funciona a tecnologia patenteada Aquabion - Engenharia galvânica passiva',
 };
 
+export const revalidate = 60;
+
 export default async function TechnologyPage() {
   const pageImages = await getPageImages();
 
