@@ -11,6 +11,7 @@ export const revalidate = 60;
 
 export default async function Home() {
   const pageImages = await getPageImages();
+  console.log('Home page, pageImages:', pageImages);
 
   const stats = [
     { value: '+50', label: 'Países atendidos' },

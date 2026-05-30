@@ -120,9 +120,11 @@ interface PageImagesData {
 
 export const getPageImages = async (): Promise<PageImagesData> => {
   try {
+    console.log('getPageImages called');
     const db = await getDb();
     const collection = db.collection('page_images');
     const data = await collection.find({}).toArray();
+    console.log('Fetched page_images from DB:', data);
 
     // Build the PageImagesData object
     const pageImages: PageImagesData = {};
@@ -130,6 +132,7 @@ export const getPageImages = async (): Promise<PageImagesData> => {
       const found = data.find(item => item.slotId === slot.id);
       const url = found?.url || slot.defaultImage;
       pageImages[slot.id] = { url, publicId: found?.publicId };
+      console.log(`Slot ${slot.id}:`, { found, url, publicId: found?.publicId });
     });
 
     return pageImages;
