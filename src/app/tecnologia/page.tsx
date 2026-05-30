@@ -87,7 +87,7 @@ export default async function TechnologyPage() {
               <div className={`${index % 2 === 1 ? 'lg:order-1' : ''}`}>
                 <ImageCard
                   locationId={`tech_step_${index + 1}`}
-                  imageUrl={getPageImageUrl(`tech_step_${index + 1}`, pageImages)}
+                  imageUrl={pageImages[`tech_step_${index + 1}`]?.url}
                   publicId={pageImages[`tech_step_${index + 1}`]?.publicId}
                   aspectRatio="square"
                   className="w-full"

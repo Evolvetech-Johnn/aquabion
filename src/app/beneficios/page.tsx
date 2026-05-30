@@ -73,7 +73,7 @@ export default async function BenefitsPage() {
         <div className="mb-16 relative">
           <ImageCard 
             locationId="benefits_showcase"
-            imageUrl={getPageImageUrl('benefits_showcase', pageImages)}
+            imageUrl={pageImages['benefits_showcase']?.url}
             publicId={pageImages['benefits_showcase']?.publicId}
             aspectRatio="video"
             className="w-full max-h-[450px] object-cover"

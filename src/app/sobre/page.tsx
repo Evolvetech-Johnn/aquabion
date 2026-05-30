@@ -59,7 +59,7 @@ export default async function AboutPage() {
           <div className="mt-16 relative">
             <ImageCard 
               locationId="about_showcase"
-              imageUrl={getPageImageUrl('about_showcase', pageImages)}
+              imageUrl={pageImages['about_showcase']?.url}
               publicId={pageImages['about_showcase']?.publicId}
               aspectRatio="video"
               className="w-full max-h-[450px] object-cover"
