@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { ImageIcon } from 'lucide-react';
 import CloudinaryImage from './media/CloudinaryImage';
 
@@ -12,13 +12,13 @@ interface ImageCardProps {
   priority?: boolean;
 }
 
-export default function ImageCard({ 
+function ImageCard({ 
   locationId, 
   imageUrl, 
   publicId,
-  alt = 'Aquabion image',
-  className = '',
-  aspectRatio = 'auto',
+  alt = "Aquabion image",
+  className = "",
+  aspectRatio = "auto",
   priority = false
 }: ImageCardProps) {
   const aspectClass = {
@@ -59,3 +59,5 @@ export default function ImageCard({
     </div>
   );
 }
+
+export default memo(ImageCard);

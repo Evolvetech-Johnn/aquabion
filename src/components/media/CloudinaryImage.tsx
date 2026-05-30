@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import Image from 'next/image';
 import { getCloudinaryUrl } from '@/lib/cloudinary/url';
 
@@ -17,15 +17,15 @@ interface CloudinaryImageProps {
   fill?: boolean;
 }
 
-export default function CloudinaryImage({
+function CloudinaryImage({
   publicId,
   url,
   alt,
   width,
   height,
-  className = '',
+  className = "",
   priority = false,
-  crop = 'fill',
+  crop = "fill",
   quality = 85,
   fill = false,
 }: CloudinaryImageProps) {
@@ -103,3 +103,5 @@ export default function CloudinaryImage({
     </div>
   );
 }
+
+export default memo(CloudinaryImage);
