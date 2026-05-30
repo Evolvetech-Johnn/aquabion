@@ -8,9 +8,10 @@ import ImageCard from './ImageCard';
 
 interface PremiumHeroProps {
   heroImageUrl?: string;
+  heroPublicId?: string;
 }
 
-export default function PremiumHero({ heroImageUrl }: PremiumHeroProps) {
+export default function PremiumHero({ heroImageUrl, heroPublicId }: PremiumHeroProps) {
   const badges = [
     { text: 'Tecnologia Alemã' },
     { text: 'Patenteada' },
@@ -75,8 +76,10 @@ export default function PremiumHero({ heroImageUrl }: PremiumHeroProps) {
                 <ImageCard 
                   locationId="hero-main" 
                   imageUrl={heroImageUrl} 
+                  publicId={heroPublicId}
                   aspectRatio="auto"
                   className="w-full h-full rounded-none"
+                  priority={true}
                 />
               </div>
               

@@ -37,7 +37,7 @@ function getClientPromise(): Promise<MongoClient> {
 }
 
 // Only initialize clientPromise when first accessed
-export default new Proxy({} as Promise<MongoClient>, {
+const mongoClientProxy = new Proxy({} as Promise<MongoClient>, {
   get(target, prop) {
     if (!clientPromise) {
       clientPromise = getClientPromise();
@@ -45,6 +45,8 @@ export default new Proxy({} as Promise<MongoClient>, {
     return clientPromise[prop as keyof Promise<MongoClient>];
   }
 });
+
+export default mongoClientProxy;
 
 export async function getDb(): Promise<Db> {
   if (!clientPromise) {

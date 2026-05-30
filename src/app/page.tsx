@@ -60,7 +60,10 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-950">
-      <PremiumHero heroImageUrl={getPageImageUrl('hero-main', pageImages)} />
+      <PremiumHero 
+        heroImageUrl={getPageImageUrl('hero-main', pageImages)} 
+        heroPublicId={pageImages['hero-main']?.publicId}
+      />
 
       <AnimatedSection className="section-padding container-padding">
         <div className="container mx-auto max-w-6xl">

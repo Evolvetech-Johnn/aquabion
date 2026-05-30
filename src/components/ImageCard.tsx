@@ -9,6 +9,7 @@ interface ImageCardProps {
   alt?: string;
   className?: string;
   aspectRatio?: 'video' | 'square' | 'portrait' | 'auto';
+  priority?: boolean;
 }
 
 export default function ImageCard({ 
@@ -17,7 +18,8 @@ export default function ImageCard({
   publicId,
   alt = 'Aquabion image',
   className = '',
-  aspectRatio = 'auto'
+  aspectRatio = 'auto',
+  priority = false
 }: ImageCardProps) {
   const aspectClass = {
     'video': 'aspect-video',
@@ -28,8 +30,12 @@ export default function ImageCard({
 
   if (!imageUrl && !publicId) {
     return (
-      <div className={`relative flex flex-col items-center justify-center bg-slate-100 border-2 border-dashed border-slate-300 rounded-2xl overflow-hidden p-6 text-center ${aspectClass} ${className}`}>
-        <ImageIcon className="w-10 h-10 text-slate-400 mb-3" />
+      <div 
+        className={`relative flex flex-col items-center justify-center bg-slate-100 border-2 border-dashed border-slate-300 rounded-2xl overflow-hidden p-6 text-center ${aspectClass} ${className}`}
+        role="region"
+        aria-label={`Espaço para imagem: ${locationId}`}
+      >
+        <ImageIcon className="w-10 h-10 text-slate-400 mb-3" aria-hidden="true" />
         <p className="text-sm font-medium text-slate-600">Espaço para Imagem</p>
         <p className="text-xs text-slate-500 mt-1">ID: {locationId}</p>
         <p className="text-xs text-cyan-600 mt-2 font-semibold">Insira no Dashboard</p>
@@ -48,6 +54,7 @@ export default function ImageCard({
         fill
         className="object-cover"
         crop="fill"
+        priority={priority}
       />
     </div>
   );
