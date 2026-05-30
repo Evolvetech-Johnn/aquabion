@@ -128,7 +128,8 @@ export const getPageImages = async (): Promise<PageImagesData> => {
     const pageImages: PageImagesData = {};
     STRATEGIC_SLOTS.forEach(slot => {
       const found = data.find(item => item.slotId === slot.id);
-      pageImages[slot.id] = found ? { url: found.url, publicId: found.publicId } : { url: '' };
+      const url = found?.url || slot.defaultImage;
+      pageImages[slot.id] = { url, publicId: found?.publicId };
     });
 
     return pageImages;
@@ -136,7 +137,7 @@ export const getPageImages = async (): Promise<PageImagesData> => {
     console.error('Error in getPageImages:', e);
     // Fallback to default
     const initialData: PageImagesData = {};
-    STRATEGIC_SLOTS.forEach(slot => initialData[slot.id] = { url: '' });
+    STRATEGIC_SLOTS.forEach(slot => initialData[slot.id] = { url: slot.defaultImage });
     return initialData;
   }
 };

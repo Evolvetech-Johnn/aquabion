@@ -61,7 +61,7 @@ export default async function Home() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-950">
       <PremiumHero 
-        heroImageUrl={getPageImageUrl('hero-main', pageImages)} 
+        heroImageUrl={pageImages['hero-main']?.url} 
         heroPublicId={pageImages['hero-main']?.publicId}
       />
 
@@ -108,14 +108,14 @@ export default async function Home() {
             </div>
 
             <div className="relative">
-               <ImageCard 
-                 locationId="desafio-main" 
-                 imageUrl={getPageImageUrl('desafio-main', pageImages)} 
-                 publicId={pageImages['desafio-main']?.publicId}
-                 aspectRatio="portrait"
-               />
-               <div className="absolute -bottom-8 -left-8 w-48 h-48 bg-cyan-200/50 rounded-full blur-3xl -z-10" />
-            </div>
+                <ImageCard 
+                  locationId="desafio-main" 
+                  imageUrl={pageImages['desafio-main']?.url} 
+                  publicId={pageImages['desafio-main']?.publicId}
+                  aspectRatio="portrait"
+                />
+                <div className="absolute -bottom-8 -left-8 w-48 h-48 bg-cyan-200/50 rounded-full blur-3xl -z-10" />
+              </div>
           </div>
         </div>
       </AnimatedSection>
@@ -138,7 +138,7 @@ export default async function Home() {
                 <div className="p-2">
                   <ImageCard 
                     locationId={benefit.id} 
-                    imageUrl={getPageImageUrl(benefit.id, pageImages)} 
+                    imageUrl={pageImages[benefit.id]?.url} 
                     publicId={pageImages[benefit.id]?.publicId}
                     aspectRatio="video"
                     className="rounded-xl w-full"

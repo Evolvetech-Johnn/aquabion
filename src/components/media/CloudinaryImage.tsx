@@ -32,10 +32,10 @@ function CloudinaryImage({
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
-  // Use either publicId or url
+  // Use either publicId or url (prioritize url)
   let imageSrc = url;
   
-  if (publicId && !url) {
+  if (!imageSrc && publicId) {
     imageSrc = getCloudinaryUrl(publicId, {
       width,
       height,
