@@ -6,7 +6,7 @@ import { getPageImages } from '@/services/media.service';
 
 export const metadata = {
   title: 'Benefícios | Aquabion Brasil',
-  description: 'Todos os benefícios da tecnologia Aquabion - Economia, sustentabilidade e performance',
+  description: 'Todos os benefícios da tecnologia Aquabion - Economia, sustentabilidade e performance superior',
 };
 
 export const revalidate = 60;
