@@ -36,22 +36,18 @@ function getClientPromise(): Promise<MongoClient> {
   }
 }
 
-// Only initialize clientPromise when first accessed
-const mongoClientProxy = new Proxy({} as Promise<MongoClient>, {
-  get(target, prop) {
-    if (!clientPromise) {
-      clientPromise = getClientPromise();
-    }
-    return clientPromise[prop as keyof Promise<MongoClient>];
-  }
-});
-
-export default mongoClientProxy;
-
-export async function getDb(): Promise<Db> {
+// Get client promise without proxy to avoid errors
+export async function getClientPromiseSafe(): Promise<MongoClient> {
   if (!clientPromise) {
     clientPromise = getClientPromise();
   }
-  const client = await clientPromise;
+  return clientPromise;
+}
+
+// Remove the broken default export
+// export default getClientPromiseSafe();
+
+export async function getDb(): Promise<Db> {
+  const client = await getClientPromiseSafe();
   return client.db(process.env.MONGODB_DB_NAME || 'aquabion');
 }

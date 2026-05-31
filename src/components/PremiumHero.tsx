@@ -56,7 +56,7 @@ export default function PremiumHero({ heroImageUrl, heroPublicId }: PremiumHeroP
                 </Button>
               </Link>
               <Link href="/tecnologia">
-                <Button size="lg" variant="outline" className="h-16 px-8 border-white text-white hover:bg-white/10">
+                <Button size="lg" className="h-16 px-8 bg-white/20 text-white border border-white/30 hover:bg-white/30 backdrop-blur-sm shadow-lg">
                   <PlayCircle className="w-5 h-5 mr-2" />
                   Ver Como Funciona
                 </Button>
@@ -70,39 +70,16 @@ export default function PremiumHero({ heroImageUrl, heroPublicId }: PremiumHeroP
             transition={{ duration: 0.9, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
             className="relative"
           >
-            <div className="relative overflow-hidden rounded-[2.5rem] border border-white/15 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.18)]">
-              {/* ImageCard acting as the hero visual */}
-              <div className="absolute inset-0 z-0">
-                <ImageCard 
-                  locationId="hero-main" 
-                  imageUrl={heroImageUrl} 
-                  publicId={heroPublicId}
-                  aspectRatio="auto"
-                  className="w-full h-full rounded-none"
-                  priority={true}
-                />
-              </div>
-              
-              {/* Optional overlay gradient for text readability if an image is present */}
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent z-10" />
-
-              <div className="relative z-20 p-8 md:p-10 flex flex-col justify-end min-h-[500px]">
-                <div className="rounded-[2rem] bg-slate-950/80 backdrop-blur-md px-6 py-5 text-white shadow-lg mb-8 inline-block max-w-fit">
-                  <p className="text-sm uppercase tracking-[0.24em] text-cyan-300 font-semibold">Solução passiva</p>
-                  <h2 className="mt-2 text-2xl font-semibold leading-tight">Proteção sem compromissos</h2>
-                </div>
-
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="rounded-[1.75rem] border border-white/10 bg-slate-950/60 backdrop-blur-md p-5 text-white">
-                    <p className="text-3xl font-semibold text-white">0%</p>
-                    <p className="mt-1 text-sm text-cyan-200">Energia ativa</p>
-                  </div>
-                  <div className="rounded-[1.75rem] border border-white/10 bg-slate-950/60 backdrop-blur-md p-5 text-white">
-                    <p className="text-3xl font-semibold text-white">100%</p>
-                    <p className="mt-1 text-sm text-cyan-200">Livre de química</p>
-                  </div>
-                </div>
-              </div>
+            <div className="relative overflow-hidden rounded-[2.5rem] border border-white/15 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.18)] min-h-[500px] md:min-h-[600px]">
+              {/* ImageCard acting as the hero visual - no overlay text */}
+              <ImageCard 
+                locationId="hero-main" 
+                imageUrl={heroImageUrl} 
+                publicId={heroPublicId}
+                aspectRatio="video"
+                className="w-full h-full rounded-none"
+                priority={true}
+              />
             </div>
           </motion.div>
         </div>

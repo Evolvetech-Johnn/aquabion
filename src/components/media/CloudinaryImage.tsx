@@ -74,7 +74,7 @@ function CloudinaryImage({
 
   if (fill) {
     return (
-      <div className={`relative ${className}`}>
+      <div className={`relative w-full h-full ${className}`}>
         {isLoading && (
           <div className="absolute inset-0 bg-slate-200 animate-pulse rounded-2xl" />
         )}
@@ -82,7 +82,7 @@ function CloudinaryImage({
           {...commonProps}
           alt={alt}
           fill
-          className={`object-cover transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+          className={`object-cover object-center transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
         />
       </div>
     );

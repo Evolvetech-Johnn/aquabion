@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
-import clientPromise from '@/lib/mongodb';
+import { getClientPromiseSafe } from '@/lib/mongodb';
 
 export async function GET() {
   try {
     console.log('🔍 Testando conexão com MongoDB Atlas...');
-    const client = await clientPromise;
+    const client = await getClientPromiseSafe();
     console.log('✅ Conexão com MongoDB Atlas estabelecida com sucesso!');
 
     const db = client.db(process.env.MONGODB_DB_NAME || 'aquabion');

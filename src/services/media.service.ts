@@ -1,4 +1,6 @@
 import crypto from 'crypto';
+import { promises as fs } from 'fs';
+import path from 'path';
 import { deleteFromCloudinary } from '@/lib/cloudinary/delete';
 import { getDb } from '@/lib/mongodb';
 
@@ -34,13 +36,43 @@ export const STRATEGIC_SLOTS: PageImageSlot[] = [
   { id: 'benefit-5', page: 'Página Inicial', title: 'Card Benefício 5: Proteção contínua', description: 'Imagem ilustrativa no card de confiabilidade física dos encanamentos.', defaultImage: '' },
   { id: 'benefit-6', page: 'Página Inicial', title: 'Card Benefício 6: Retorno rápido', description: 'Imagem ilustrativa no card de ROI de menos de 24 meses.', defaultImage: '' },
   { id: 'tech_step_1', page: 'Tecnologia', title: 'Passo 1: Ionização Galvânica', description: 'Imagem ilustrando o processo de ionização galvânica e tratamento de incrustração.', defaultImage: '' },
-  { id: 'tech_step_2', page: 'Tecnologia', title: 'Passo 2: Aragonita Suspendida', description: 'Imagem mostrando a transformação do cálcio em cristais aragonita não-aderentes.', defaultImage: '' },
+  { id: 'tech_step_2', page: 'Tecnologia', title: 'Passo 2: Aragonita Suspendida', description: 'Imagem mostrando a transformação do cálcio em cristais aragonita não aderentes.', defaultImage: '' },
   { id: 'tech_step_3', page: 'Tecnologia', title: 'Passo 3: Tubulação Protegida', description: 'Demonstração de tubulação limpa e livre de incrustações após 12 meses.', defaultImage: '' },
   { id: 'about_showcase', page: 'Sobre Nós', title: 'Presença Industrial e Fábrica', description: 'Painel visual da engenharia alemã ou grandes instalações operando em indústrias.', defaultImage: '' },
   { id: 'benefits_showcase', page: 'Benefícios', title: 'Eficiência e ROI Comercial', description: 'Imagem ilustrando o retorno sobre investimento e economia comercial no comparativo de mercado.', defaultImage: '' },
 ];
 
-// Media storage functions (MongoDB)
+// Helper functions for JSON file fallback
+const DATA_DIR = path.join(process.cwd(), 'crm_data');
+const PAGE_IMAGES_FILE = path.join(DATA_DIR, 'page_images.json');
+const CLOUDINARY_MEDIA_FILE = path.join(DATA_DIR, 'cloudinary_media.json');
+
+async function ensureDataDir() {
+  try {
+    await fs.mkdir(DATA_DIR, { recursive: true });
+  } catch (e) {
+    // Directory already exists
+  }
+}
+
+async function readJsonFile<T>(filePath: string, defaultValue: T): Promise<T> {
+  try {
+    await ensureDataDir();
+    const raw = await fs.readFile(filePath, 'utf8');
+    return JSON.parse(raw) as T;
+  } catch (e) {
+    // File doesn't exist or is invalid, return default
+    await fs.writeFile(filePath, JSON.stringify(defaultValue, null, 2));
+    return defaultValue;
+  }
+}
+
+async function writeJsonFile(filePath: string, data: any): Promise<void> {
+  await ensureDataDir();
+  await fs.writeFile(filePath, JSON.stringify(data, null, 2));
+}
+
+// Media storage functions (MongoDB with JSON fallback)
 export const getMediaList = async (): Promise<CloudinaryMedia[]> => {
   try {
     const db = await getDb();
@@ -51,7 +83,7 @@ export const getMediaList = async (): Promise<CloudinaryMedia[]> => {
       .toArray();
 
     // Map MongoDB data to CloudinaryMedia interface
-    return data.map(item => ({
+    const media = data.map(item => ({
       id: item.id,
       publicId: item.publicId,
       name: item.name,
@@ -60,9 +92,13 @@ export const getMediaList = async (): Promise<CloudinaryMedia[]> => {
       format: item.format,
       createdAt: item.createdAt
     }));
+    // Also save to JSON as backup
+    await writeJsonFile(CLOUDINARY_MEDIA_FILE, media);
+    return media;
   } catch (e) {
-    console.error('Failed to get media list from MongoDB:', e);
-    return [];
+    console.error('Failed to get media list from MongoDB, falling back to JSON:', e);
+    // Fallback to JSON file
+    return readJsonFile<CloudinaryMedia[]>(CLOUDINARY_MEDIA_FILE, []);
   }
 };
 
@@ -77,10 +113,17 @@ export const addMedia = async (item: Omit<CloudinaryMedia, 'id' | 'createdAt'>):
     const db = await getDb();
     const collection = db.collection('cloudinary_media');
     await collection.insertOne(newItem);
+    // Also update JSON file
+    const currentMedia = await getMediaList();
+    await writeJsonFile(CLOUDINARY_MEDIA_FILE, [newItem, ...currentMedia]);
     return newItem;
   } catch (e) {
-    console.error('Failed to add media to MongoDB:', e);
-    return newItem; // Return the item even if DB save fails (for graceful fallback)
+    console.error('Failed to add media to MongoDB, falling back to JSON:', e);
+    // Fallback to JSON
+    const currentMedia = await readJsonFile<CloudinaryMedia[]>(CLOUDINARY_MEDIA_FILE, []);
+    const updatedMedia = [newItem, ...currentMedia];
+    await writeJsonFile(CLOUDINARY_MEDIA_FILE, updatedMedia);
+    return newItem;
   }
 };
 
@@ -92,24 +135,43 @@ export const removeMedia = async (id: string): Promise<CloudinaryMedia | undefin
     // First find the media item
     const mediaItem = await collection.findOne({ id }) as CloudinaryMedia | null;
 
-    if (!mediaItem) {
-      return undefined;
-    }
-
-    // Delete from Cloudinary if not simulated
-    if (!mediaItem.publicId.startsWith('simulated_')) {
-      try {
-        await deleteFromCloudinary(mediaItem.publicId);
-      } catch (e) {
-        console.error('Failed to delete from Cloudinary:', e);
+    if (mediaItem) {
+      // Delete from Cloudinary if not simulated
+      if (!mediaItem.publicId.startsWith('simulated_')) {
+        try {
+          await deleteFromCloudinary(mediaItem.publicId);
+        } catch (e) {
+          console.error('Failed to delete from Cloudinary:', e);
+        }
       }
-    }
 
-    // Delete from MongoDB
-    await collection.deleteOne({ id });
-    return mediaItem;
+      // Delete from MongoDB
+      await collection.deleteOne({ id });
+      // Also update JSON file
+      const currentMedia = await getMediaList();
+      const updatedMedia = currentMedia.filter(m => m.id !== id);
+      await writeJsonFile(CLOUDINARY_MEDIA_FILE, updatedMedia);
+      return mediaItem;
+    }
+    return undefined;
   } catch (e) {
-    console.error('Error in removeMedia:', e);
+    console.error('Error in removeMedia, trying JSON:', e);
+    // Try JSON fallback
+    const currentMedia = await readJsonFile<CloudinaryMedia[]>(CLOUDINARY_MEDIA_FILE, []);
+    const mediaItem = currentMedia.find(m => m.id === id);
+    if (mediaItem) {
+      // Delete from Cloudinary if not simulated
+      if (!mediaItem.publicId.startsWith('simulated_')) {
+        try {
+          await deleteFromCloudinary(mediaItem.publicId);
+        } catch (e) {
+          console.error('Failed to delete from Cloudinary:', e);
+        }
+      }
+      const updatedMedia = currentMedia.filter(m => m.id !== id);
+      await writeJsonFile(CLOUDINARY_MEDIA_FILE, updatedMedia);
+      return mediaItem;
+    }
     return undefined;
   }
 };
@@ -135,13 +197,27 @@ export const getPageImages = async (): Promise<PageImagesData> => {
       console.log(`Slot ${slot.id}:`, { found, url, publicId: found?.publicId });
     });
 
+    // Also save to JSON as backup
+    await writeJsonFile(PAGE_IMAGES_FILE, pageImages);
     return pageImages;
   } catch (e) {
-    console.error('Error in getPageImages:', e);
-    // Fallback to default
-    const initialData: PageImagesData = {};
-    STRATEGIC_SLOTS.forEach(slot => initialData[slot.id] = { url: slot.defaultImage });
-    return initialData;
+    console.error('Error in getPageImages, falling back to JSON:', e);
+    // Fallback to JSON file
+    const jsonData = await readJsonFile<Record<string, any>>(PAGE_IMAGES_FILE, {});
+    const pageImages: PageImagesData = {};
+    STRATEGIC_SLOTS.forEach(slot => {
+      const jsonValue = jsonData[slot.id];
+      if (typeof jsonValue === 'string') {
+        // Old format: just string URL
+        pageImages[slot.id] = { url: jsonValue, publicId: undefined };
+      } else if (jsonValue && typeof jsonValue === 'object') {
+        // New format: { url, publicId }
+        pageImages[slot.id] = { url: jsonValue.url || '', publicId: jsonValue.publicId };
+      } else {
+        pageImages[slot.id] = { url: slot.defaultImage, publicId: undefined };
+      }
+    });
+    return pageImages;
   }
 };
 
@@ -160,9 +236,16 @@ export const bindPageImage = async (slotId: string, url: string, publicId?: stri
       // Insert new
       await collection.insertOne({ slotId, url, publicId: publicId || null });
     }
+    // Also update JSON file
+    const currentPageImages = await getPageImages();
+    currentPageImages[slotId] = { url, publicId };
+    await writeJsonFile(PAGE_IMAGES_FILE, currentPageImages);
   } catch (e) {
-    console.error('Error in bindPageImage:', e);
-    // Don't throw, just log (graceful failure)
+    console.error('Error in bindPageImage, falling back to JSON:', e);
+    // Fallback to JSON
+    const currentPageImages = await getPageImages();
+    currentPageImages[slotId] = { url, publicId };
+    await writeJsonFile(PAGE_IMAGES_FILE, currentPageImages);
   }
 };
 
@@ -184,9 +267,23 @@ export const unbindPageImage = async (slotId: string): Promise<void> => {
 
     // Update to empty URL
     await collection.updateOne({ slotId }, { $set: { url: '', publicId: null } });
+    // Also update JSON file
+    const currentPageImages = await getPageImages();
+    currentPageImages[slotId] = { url: '', publicId: undefined };
+    await writeJsonFile(PAGE_IMAGES_FILE, currentPageImages);
   } catch (e) {
-    console.error('Error in unbindPageImage:', e);
-    // Don't throw, just log (graceful failure)
+    console.error('Error in unbindPageImage, falling back to JSON:', e);
+    // Fallback to JSON
+    const currentPageImages = await getPageImages();
+    if (currentPageImages[slotId]?.publicId && !currentPageImages[slotId].publicId?.startsWith('simulated_')) {
+      try {
+        await deleteFromCloudinary(currentPageImages[slotId].publicId!);
+      } catch (e) {
+        console.error('Failed to delete from Cloudinary:', e);
+      }
+    }
+    currentPageImages[slotId] = { url: '', publicId: undefined };
+    await writeJsonFile(PAGE_IMAGES_FILE, currentPageImages);
   }
 };
 

@@ -1352,7 +1352,7 @@ export default function UnifiedAdminDashboard() {
                     >
                       {/* Visualizador de Imagem */}
                       <div className="aspect-video bg-slate-900 flex items-center justify-center overflow-hidden relative border-b border-slate-200">
-                        <Image src={media.url} alt={media.name} fill className="w-full h-full object-contain group-hover:scale-[1.03] transition-transform duration-300" />
+                        <Image src={media.url} alt={media.name} fill className="w-full h-full object-cover object-center group-hover:scale-[1.03] transition-transform duration-300" />
                         <span className="absolute bottom-2 right-2 text-[8px] bg-slate-950/70 border border-white/10 text-white font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">
                           {media.format}
                         </span>
@@ -1364,7 +1364,16 @@ export default function UnifiedAdminDashboard() {
                           <h4 className="font-bold text-xs text-slate-800 truncate" title={media.name}>
                             {media.name}
                           </h4>
-                          <div className="flex justify-between text-[10px] text-slate-400 mt-1 font-semibold">
+                          <div className="mt-1">
+                            <input 
+                              type="text" 
+                              readOnly 
+                              value={media.url} 
+                              className="w-full text-[9px] bg-slate-50 border border-slate-200 px-2 py-1 rounded-lg text-slate-600 font-mono truncate"
+                              onClick={(e) => e.currentTarget.select()}
+                            />
+                          </div>
+                          <div className="flex justify-between text-[10px] text-slate-400 mt-2 font-semibold">
                             <span>{formatBytes(media.bytes)}</span>
                             <span>{formatDate(media.createdAt)}</span>
                           </div>
@@ -1603,7 +1612,7 @@ export default function UnifiedAdminDashboard() {
                               className="group bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md cursor-pointer hover:border-cyan-500 transition-all duration-200 flex flex-col justify-between"
                             >
                               <div className="aspect-video bg-slate-900 flex items-center justify-center overflow-hidden relative">
-                                <Image src={media.url} alt={media.name} fill className="object-cover group-hover:scale-105 transition-transform duration-200" unoptimized />
+                                <Image src={media.url} alt={media.name} fill className="object-cover object-center group-hover:scale-105 transition-transform duration-200" unoptimized />
                               </div>
                               <div className="p-3 bg-white border-t border-slate-100">
                                 <h5 className="font-bold text-[10px] text-slate-700 truncate" title={media.name}>
