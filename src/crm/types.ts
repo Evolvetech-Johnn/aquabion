@@ -4,6 +4,11 @@ export type CRMLead = {
   name?: string
   email?: string
   phone?: string
+  company?: string
+  segment?: string
+  message?: string
+  city?: string
+  state?: string
   source?: string
   landing_page?: string
   utm?: Record<string, string>

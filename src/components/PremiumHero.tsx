@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, PlayCircle, CheckCircle2 } from 'lucide-react';
 import ImageCard from './ImageCard';
+import WhatsAppButton from './WhatsAppButton';
 
 interface PremiumHeroProps {
   heroImageUrl?: string;
@@ -55,6 +56,12 @@ export default function PremiumHero({ heroImageUrl, heroPublicId }: PremiumHeroP
                   <ArrowRight className="w-5 h-5" />
                 </Button>
               </Link>
+              <WhatsAppButton
+                message="Olá! Gostaria de agendar um diagnóstico técnico."
+                className="h-16 px-8 rounded-full shadow-lg hover:shadow-xl transition-shadow"
+              >
+                Falar no WhatsApp
+              </WhatsAppButton>
               <Link href="/tecnologia">
                 <Button size="lg" className="h-16 px-8 bg-white/20 text-white border border-white/30 hover:bg-white/30 backdrop-blur-sm shadow-lg">
                   <PlayCircle className="w-5 h-5 mr-2" />

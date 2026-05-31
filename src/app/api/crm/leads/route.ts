@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
   if (search) {
     const q = String(search).toLowerCase()
     leads = leads.filter(l => {
-      const checks = [l.name, l.email, l.phone, l.landing_page, JSON.stringify(l.utm || {})]
+      const checks = [l.name, l.email, l.phone, l.company, l.segment, l.city, l.state, l.message, l.landing_page, JSON.stringify(l.utm || {})]
       return checks.some(v => (v || '').toString().toLowerCase().includes(q))
     })
   }
@@ -76,8 +76,13 @@ export async function POST(request: NextRequest) {
       name: body.name,
       email: body.email,
       phone: body.phone,
+      company: body.company,
+      segment: body.segment,
+      message: body.message,
+      city: body.city,
+      state: body.state,
       source: body.source || body.utm?.utm_source || 'web',
-      landing_page: body.landing_page || body.page || '/',
+      landing_page: body.landing_page || body.page || '/contato',
       utm: body.utm || null,
       ip: request.headers.get('x-forwarded-for') || '',
       user_agent: request.headers.get('user-agent') || '',

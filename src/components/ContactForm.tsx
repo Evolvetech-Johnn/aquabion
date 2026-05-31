@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Send, CheckCircle2, Mail, Phone, MapPin, Clock, MessageSquare } from 'lucide-react';
+import WhatsAppButton from './WhatsAppButton';
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
@@ -12,6 +13,8 @@ export default function ContactForm() {
     phone: '',
     company: '',
     segment: '',
+    city: '',
+    state: '',
     message: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -22,10 +25,20 @@ export default function ContactForm() {
     setIsSubmitting(true);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      setIsSubmitted(true);
+      const res = await fetch('/api/crm/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      
+      if (res.ok) {
+        setIsSubmitted(true);
+      } else {
+        throw new Error('Falha ao enviar');
+      }
     } catch (error) {
       console.error('Erro ao enviar formulário:', error);
+      alert('Ocorreu um erro ao enviar. Por favor, tente novamente.');
     } finally {
       setIsSubmitting(false);
     }
@@ -97,9 +110,12 @@ export default function ContactForm() {
           <p className="text-slate-600 mb-4">
             Nossa equipe técnica está disponível para agendar seu diagnóstico personalizado.
           </p>
-          <Button className="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950">
+          <WhatsAppButton
+            message="Olá! Vim do site da Aquabion e gostaria de mais informações."
+            className="w-full h-12 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-xl"
+          >
             Falar no WhatsApp
-          </Button>
+          </WhatsAppButton>
         </div>
       </div>
 
@@ -168,6 +184,63 @@ export default function ContactForm() {
                   className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-950 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 transition-colors"
                   placeholder="Nome da empresa"
                 />
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <label htmlFor="contact-city" className="block text-sm font-medium text-slate-700 mb-2">
+                  Cidade
+                </label>
+                <input
+                  id="contact-city"
+                  type="text"
+                  autoComplete="address-level2"
+                  value={formData.city}
+                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                  className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-950 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 transition-colors"
+                  placeholder="Sua cidade"
+                />
+              </div>
+              <div>
+                <label htmlFor="contact-state" className="block text-sm font-medium text-slate-700 mb-2">
+                  Estado
+                </label>
+                <select
+                  id="contact-state"
+                  value={formData.state}
+                  onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                  className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-950 focus:outline-none focus:border-cyan-500 transition-colors"
+                >
+                  <option value="">Selecione um estado</option>
+                  <option value="AC">Acre</option>
+                  <option value="AL">Alagoas</option>
+                  <option value="AP">Amapá</option>
+                  <option value="AM">Amazonas</option>
+                  <option value="BA">Bahia</option>
+                  <option value="CE">Ceará</option>
+                  <option value="DF">Distrito Federal</option>
+                  <option value="ES">Espírito Santo</option>
+                  <option value="GO">Goiás</option>
+                  <option value="MA">Maranhão</option>
+                  <option value="MT">Mato Grosso</option>
+                  <option value="MS">Mato Grosso do Sul</option>
+                  <option value="MG">Minas Gerais</option>
+                  <option value="PA">Pará</option>
+                  <option value="PB">Paraíba</option>
+                  <option value="PR">Paraná</option>
+                  <option value="PE">Pernambuco</option>
+                  <option value="PI">Piauí</option>
+                  <option value="RJ">Rio de Janeiro</option>
+                  <option value="RN">Rio Grande do Norte</option>
+                  <option value="RS">Rio Grande do Sul</option>
+                  <option value="RO">Rondônia</option>
+                  <option value="RR">Roraima</option>
+                  <option value="SC">Santa Catarina</option>
+                  <option value="SP">São Paulo</option>
+                  <option value="SE">Sergipe</option>
+                  <option value="TO">Tocantins</option>
+                </select>
               </div>
             </div>
 

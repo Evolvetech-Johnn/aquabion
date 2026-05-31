@@ -29,11 +29,11 @@ export async function GET(request: NextRequest) {
   if (search) {
     const q = String(search).toLowerCase()
     leads = leads.filter(l => {
-      const checks = [l.name, l.email, l.phone, l.landing_page, JSON.stringify(l.utm || {})]
+      const checks = [l.name, l.email, l.phone, l.company, l.segment, l.city, l.state, l.message, l.landing_page, JSON.stringify(l.utm || {})]
       return checks.some(v => (v || '').toString().toLowerCase().includes(q))
     })
   }
-  const headers = ['id','submission_id','name','email','phone','source','landing_page','created_at','status']
+  const headers = ['id','submission_id','name','email','phone','company','segment','city','state','message','source','landing_page','created_at','status','assignee']
   const csv = toCSV(leads, headers)
   return new NextResponse(csv, {
     status: 200,
