@@ -39,6 +39,7 @@ export default function UnifiedAdminDashboard() {
   const [adminUsername, setAdminUsername] = useState<string>("");
   const [adminPassword, setAdminPassword] = useState<string>("");
   const [loginError, setLoginError] = useState<string>("");
+  const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<"executive" | "crm" | "media" | "cards">("executive");
   const [currentUser, setCurrentUser] = useState<string>("");
 
@@ -362,6 +363,7 @@ export default function UnifiedAdminDashboard() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError("");
+    setIsLoggingIn(true);
     try {
       const res = await fetch("/api/admin/login", {
         method: "POST",
@@ -380,6 +382,8 @@ export default function UnifiedAdminDashboard() {
       }
     } catch {
       setLoginError("Ocorreu um erro no servidor ao tentar autenticar.");
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 
@@ -625,9 +629,17 @@ export default function UnifiedAdminDashboard() {
             <Button
               type="submit"
               size="lg"
-              className="w-full h-12 bg-cyan-600 text-white hover:bg-cyan-500 shadow-lg shadow-cyan-600/20 font-semibold"
+              disabled={isLoggingIn}
+              className="w-full h-12 bg-cyan-600 text-white hover:bg-cyan-500 shadow-lg shadow-cyan-600/20 font-semibold disabled:opacity-70"
             >
-              Entrar no Painel
+              {isLoggingIn ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Autenticando...
+                </div>
+              ) : (
+                "Entrar no Painel"
+              )}
             </Button>
           </form>
 
