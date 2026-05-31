@@ -27,6 +27,9 @@ export interface PageImageSlot {
 }
 
 export const STRATEGIC_SLOTS: PageImageSlot[] = [
+  { id: 'carousel-1', page: 'Página Inicial', title: 'Carrossel - Imagem 1', description: 'Primeira imagem do carrossel principal da página inicial.', defaultImage: '' },
+  { id: 'carousel-2', page: 'Página Inicial', title: 'Carrossel - Imagem 2', description: 'Segunda imagem do carrossel principal da página inicial.', defaultImage: '' },
+  { id: 'carousel-3', page: 'Página Inicial', title: 'Carrossel - Imagem 3', description: 'Terceira imagem do carrossel principal da página inicial.', defaultImage: '' },
   { id: 'hero-main', page: 'Página Inicial', title: 'Imagem Hero Principal', description: 'Banner principal de alta resolução exibido no topo da página de entrada.', defaultImage: '' },
   { id: 'desafio-main', page: 'Página Inicial', title: 'O Desafio da Água Industrial', description: 'Ilustração do desafio de incrustração severa ao lado do texto explicativo.', defaultImage: '' },
   { id: 'benefit-1', page: 'Página Inicial', title: 'Card Benefício 1: Redução de custos', description: 'Imagem ilustrativa no card de redução de custos operacionais.', defaultImage: '' },

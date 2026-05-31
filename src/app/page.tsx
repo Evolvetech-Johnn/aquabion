@@ -5,9 +5,24 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { TrendingUp, Droplets, Zap, Leaf, Shield, Clock, ArrowRight } from 'lucide-react';
 import ImageCard from '@/components/ImageCard';
+import ImageCarousel from '@/components/ImageCarousel';
 import { getPageImages } from '@/services/media.service';
 
 export const revalidate = 60;
+
+export const metadata = {
+  title: 'Aquabion Brasil | Tecnologia de Tratamento de Água Sustentável',
+  description: 'Sistema galvânico passivo de tratamento de água que reduz custos, aumenta vida útil de equipamentos e opera sem energia ativa ou produtos químicos.',
+  keywords: 'tratamento de água, tecnologia sustentável, aquabion, incrustação, galvanico, economia de energia',
+  openGraph: {
+    title: 'Aquabion Brasil | Tecnologia de Tratamento de Água Sustentável',
+    description: 'Sistema galvânico passivo de tratamento de água que reduz custos, aumenta vida útil de equipamentos e opera sem energia ativa ou produtos químicos.',
+    url: 'https://aquabion.com.br',
+    siteName: 'Aquabion Brasil',
+    locale: 'pt_BR',
+    type: 'website',
+  },
+};
 
 export default async function Home() {
   const pageImages = await getPageImages();
@@ -61,6 +76,13 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-950">
+      <ImageCarousel 
+        images={[
+          { url: pageImages['carousel-1']?.url, publicId: pageImages['carousel-1']?.publicId, alt: 'Tecnologia Aquabion em operação' },
+          { url: pageImages['carousel-2']?.url, publicId: pageImages['carousel-2']?.publicId, alt: 'Instalação industrial Aquabion' },
+          { url: pageImages['carousel-3']?.url, publicId: pageImages['carousel-3']?.publicId, alt: 'Resultados do tratamento de água Aquabion' },
+        ]}
+      />
       <PremiumHero 
         heroImageUrl={pageImages['hero-main']?.url} 
         heroPublicId={pageImages['hero-main']?.publicId}
