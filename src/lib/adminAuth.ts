@@ -86,6 +86,14 @@ export function validateCredentials(username: string, password: string): { valid
   const expectedRestrictedUsername = getRestrictedUsername();
   const expectedPassword = getSecret();
   
+  console.log('[validateCredentials] Inputs:', {
+    username: username.trim(),
+    expectedFullUsername,
+    expectedRestrictedUsername,
+    passwordProvided: password.trim() ? 'yes' : 'no',
+    passwordMatch: password.trim() === expectedPassword
+  });
+  
   if (!username || !password) return { valid: false, username: "" };
   
   const isFullAccess = username.trim().toLowerCase() === expectedFullUsername.toLowerCase();
@@ -93,6 +101,8 @@ export function validateCredentials(username: string, password: string): { valid
   const passwordOk = password.trim() === expectedPassword;
   
   const isValid = (isFullAccess || isRestricted) && passwordOk;
+  
+  console.log('[validateCredentials] Result:', { isValid, isFullAccess, isRestricted, passwordOk });
   
   return { valid: isValid, username: isValid ? username.trim() : "" };
 }
