@@ -47,7 +47,7 @@ function ImageCard({
 
   return (
     <div 
-      className={`relative overflow-hidden rounded-2xl bg-slate-100 shadow-lg ${aspectClass} ${className}`}
+      className={`relative overflow-hidden rounded-2xl bg-slate-100 shadow-lg ${disableAspectRatio ? 'w-full h-full' : aspectClass} ${className}`}
     >
       <CloudinaryImage 
         publicId={publicId}
