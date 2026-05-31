@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { Zap, Droplets, Shield, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ImageCard from '@/components/ImageCard';
-import { getPageImages, getPageImageUrl } from '@/services/media.service';
+import { getPageImages } from '@/services/media.service';
 
 export const metadata = {
   title: 'Tecnologia | Aquabion Brasil',

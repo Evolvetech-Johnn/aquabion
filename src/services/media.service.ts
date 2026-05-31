@@ -95,8 +95,8 @@ export const getMediaList = async (): Promise<CloudinaryMedia[]> => {
     // Also save to JSON as backup
     await writeJsonFile(CLOUDINARY_MEDIA_FILE, media);
     return media;
-  } catch (e) {
-    console.error('Failed to get media list from MongoDB, falling back to JSON:', e);
+  } catch {
+    console.error('Failed to get media list from MongoDB, falling back to JSON');
     // Fallback to JSON file
     return readJsonFile<CloudinaryMedia[]>(CLOUDINARY_MEDIA_FILE, []);
   }
@@ -117,8 +117,8 @@ export const addMedia = async (item: Omit<CloudinaryMedia, 'id' | 'createdAt'>):
     const currentMedia = await getMediaList();
     await writeJsonFile(CLOUDINARY_MEDIA_FILE, [newItem, ...currentMedia]);
     return newItem;
-  } catch (e) {
-    console.error('Failed to add media to MongoDB, falling back to JSON:', e);
+  } catch {
+    console.error('Failed to add media to MongoDB, falling back to JSON');
     // Fallback to JSON
     const currentMedia = await readJsonFile<CloudinaryMedia[]>(CLOUDINARY_MEDIA_FILE, []);
     const updatedMedia = [newItem, ...currentMedia];
@@ -140,8 +140,8 @@ export const removeMedia = async (id: string): Promise<CloudinaryMedia | undefin
       if (!mediaItem.publicId.startsWith('simulated_')) {
         try {
           await deleteFromCloudinary(mediaItem.publicId);
-        } catch (e) {
-          console.error('Failed to delete from Cloudinary:', e);
+        } catch {
+          console.error('Failed to delete from Cloudinary');
         }
       }
 
@@ -154,8 +154,8 @@ export const removeMedia = async (id: string): Promise<CloudinaryMedia | undefin
       return mediaItem;
     }
     return undefined;
-  } catch (e) {
-    console.error('Error in removeMedia, trying JSON:', e);
+  } catch {
+    console.error('Error in removeMedia, trying JSON');
     // Try JSON fallback
     const currentMedia = await readJsonFile<CloudinaryMedia[]>(CLOUDINARY_MEDIA_FILE, []);
     const mediaItem = currentMedia.find(m => m.id === id);
@@ -164,8 +164,8 @@ export const removeMedia = async (id: string): Promise<CloudinaryMedia | undefin
       if (!mediaItem.publicId.startsWith('simulated_')) {
         try {
           await deleteFromCloudinary(mediaItem.publicId);
-        } catch (e) {
-          console.error('Failed to delete from Cloudinary:', e);
+        } catch {
+          console.error('Failed to delete from Cloudinary');
         }
       }
       const updatedMedia = currentMedia.filter(m => m.id !== id);
@@ -180,6 +180,9 @@ interface PageImagesData {
   [slotId: string]: { url: string; publicId?: string };
 }
 
+// Define type for JSON data to avoid 'any'
+type PageImagesJson = Record<string, string | { url?: string; publicId?: string }>;
+
 export const getPageImages = async (): Promise<PageImagesData> => {
   try {
     console.log('getPageImages called');
@@ -189,8 +192,7 @@ export const getPageImages = async (): Promise<PageImagesData> => {
     console.log('Fetched page_images from DB:', data);
 
     // First, try to load from JSON as primary source, if it has data (not empty)
-    const jsonData = await readJsonFile<Record<string, any>>(PAGE_IMAGES_FILE, {});
-    const jsonHasData = Object.keys(jsonData).length > 0;
+    const jsonData = await readJsonFile<PageImagesJson>(PAGE_IMAGES_FILE, {});
 
     // Build the PageImagesData object: use JSON first, fallback to DB, then default
     const pageImages: PageImagesData = {};
@@ -220,7 +222,7 @@ export const getPageImages = async (): Promise<PageImagesData> => {
       console.log(`Slot ${slot.id}:`, { url, publicId });
     });
 
-    // Always update DB with JSON data (to make sure DB is synced
+    // Always update DB with JSON data (to make sure DB is synced)
     for (const slotId of Object.keys(pageImages)) {
       const existing = await collection.findOne({ slotId });
       if (existing) {
@@ -232,10 +234,10 @@ export const getPageImages = async (): Promise<PageImagesData> => {
     // Also save to JSON as backup
     await writeJsonFile(PAGE_IMAGES_FILE, pageImages);
     return pageImages;
-  } catch (e) {
-    console.error('Error in getPageImages, falling back to JSON:', e);
+  } catch {
+    console.error('Error in getPageImages, falling back to JSON');
     // Fallback to JSON file
-    const jsonData = await readJsonFile<Record<string, any>>(PAGE_IMAGES_FILE, {});
+    const jsonData = await readJsonFile<PageImagesJson>(PAGE_IMAGES_FILE, {});
     const pageImages: PageImagesData = {};
     STRATEGIC_SLOTS.forEach(slot => {
       const jsonValue = jsonData[slot.id];
