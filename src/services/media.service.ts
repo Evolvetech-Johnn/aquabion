@@ -190,7 +190,7 @@ type PageImagesJson = Record<string, string | { url?: string; publicId?: string 
 export const getPageImages = async (): Promise<PageImagesData> => {
   try {
     const db = await getDb();
-    const collection = db.collection('page_images');
+    const collection = db.collection('imagens_da_página');
     const data = await collection.find({}).toArray();
 
     // Build the PageImagesData object from MongoDB
@@ -229,7 +229,7 @@ export const getPageImages = async (): Promise<PageImagesData> => {
 export const bindPageImage = async (slotId: string, url: string, publicId?: string): Promise<void> => {
   try {
     const db = await getDb();
-    const collection = db.collection('page_images');
+    const collection = db.collection('imagens_da_página');
 
     // Check if slot exists
     const existing = await collection.findOne({ slotId });
@@ -258,7 +258,7 @@ export const bindPageImage = async (slotId: string, url: string, publicId?: stri
 export const unbindPageImage = async (slotId: string): Promise<void> => {
   try {
     const db = await getDb();
-    const collection = db.collection('page_images');
+    const collection = db.collection('imagens_da_página');
 
     // Get old image first
     const oldImage = await collection.findOne({ slotId });
