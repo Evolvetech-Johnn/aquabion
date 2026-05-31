@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { TrendingUp, Droplets, Zap, Leaf, Shield, Clock, ArrowRight } from 'lucide-react';
 import ImageCard from '@/components/ImageCard';
-import { getPageImages, getPageImageUrl } from '@/services/media.service';
+import { getPageImages } from '@/services/media.service';
 
 export const revalidate = 60;
 

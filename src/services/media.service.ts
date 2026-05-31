@@ -50,7 +50,7 @@ const CLOUDINARY_MEDIA_FILE = path.join(DATA_DIR, 'cloudinary_media.json');
 async function ensureDataDir() {
   try {
     await fs.mkdir(DATA_DIR, { recursive: true });
-  } catch (e) {
+  } catch {
     // Directory already exists
   }
 }
@@ -60,14 +60,14 @@ async function readJsonFile<T>(filePath: string, defaultValue: T): Promise<T> {
     await ensureDataDir();
     const raw = await fs.readFile(filePath, 'utf8');
     return JSON.parse(raw) as T;
-  } catch (e) {
+  } catch {
     // File doesn't exist or is invalid, return default
     await fs.writeFile(filePath, JSON.stringify(defaultValue, null, 2));
     return defaultValue;
   }
 }
 
-async function writeJsonFile(filePath: string, data: any): Promise<void> {
+async function writeJsonFile<T>(filePath: string, data: T): Promise<void> {
   await ensureDataDir();
   await fs.writeFile(filePath, JSON.stringify(data, null, 2));
 }
