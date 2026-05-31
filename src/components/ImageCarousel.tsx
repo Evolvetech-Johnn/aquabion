@@ -17,7 +17,7 @@ interface ImageCarouselProps {
 
 export default function ImageCarousel({ 
   images, 
-  autoPlayInterval = 5000 
+  autoPlayInterval = 4000 
 }: ImageCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -65,9 +65,11 @@ export default function ImageCarousel({
       aria-label="Imagens em destaque da Aquabion"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
+      onTouchStart={() => setIsPaused(true)}
+      onTouchEnd={() => setIsPaused(false)}
     >
       <div 
-        className="flex transition-transform duration-700 ease-out h-[400px] md:h-[500px] lg:h-[600px]"
+        className="flex transition-transform duration-1000 ease-in-out h-[400px] md:h-[500px] lg:h-[600px]"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
       >
         {validImages.map((image, index) => (

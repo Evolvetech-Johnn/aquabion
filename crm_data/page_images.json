@@ -2,6 +2,9 @@
   "carousel-1": { "url": "", "publicId": "" },
   "carousel-2": { "url": "", "publicId": "" },
   "carousel-3": { "url": "", "publicId": "" },
+  "carousel-4": { "url": "", "publicId": "" },
+  "carousel-5": { "url": "", "publicId": "" },
+  "carousel-6": { "url": "", "publicId": "" },
   "hero-main": {
     "url": "https://res.cloudinary.com/dipz2qnny/image/upload/v1780190026/aquabion/aquabion/aquabionmostra_jpeg_2d0fd5923b09dca4.jpg",
     "publicId": "aquabion/aquabion/aquabionmostra_jpeg_2d0fd5923b09dca4"

@@ -81,6 +81,9 @@ export default async function Home() {
           { url: pageImages['carousel-1']?.url, publicId: pageImages['carousel-1']?.publicId, alt: 'Tecnologia Aquabion em operação' },
           { url: pageImages['carousel-2']?.url, publicId: pageImages['carousel-2']?.publicId, alt: 'Instalação industrial Aquabion' },
           { url: pageImages['carousel-3']?.url, publicId: pageImages['carousel-3']?.publicId, alt: 'Resultados do tratamento de água Aquabion' },
+          { url: pageImages['carousel-4']?.url, publicId: pageImages['carousel-4']?.publicId, alt: 'Solução sustentável Aquabion' },
+          { url: pageImages['carousel-5']?.url, publicId: pageImages['carousel-5']?.publicId, alt: 'Tecnologia alemã Aquabion' },
+          { url: pageImages['carousel-6']?.url, publicId: pageImages['carousel-6']?.publicId, alt: 'Economia de custos com Aquabion' },
         ]}
       />
       <PremiumHero 
