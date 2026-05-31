@@ -274,8 +274,8 @@ export const bindPageImage = async (slotId: string, url: string, publicId?: stri
     const currentPageImages = await getPageImages();
     currentPageImages[slotId] = { url, publicId };
     await writeJsonFile(PAGE_IMAGES_FILE, currentPageImages);
-  } catch (e) {
-    console.error('Error in bindPageImage, falling back to JSON:', e);
+  } catch (error) {
+    console.error('Error in bindPageImage, falling back to JSON:', error);
     // Fallback to JSON
     const currentPageImages = await getPageImages();
     currentPageImages[slotId] = { url, publicId };
@@ -294,8 +294,8 @@ export const unbindPageImage = async (slotId: string): Promise<void> => {
     if (oldImage?.publicId && !oldImage.publicId.startsWith('simulated_')) {
       try {
         await deleteFromCloudinary(oldImage.publicId);
-      } catch (e) {
-        console.error('Failed to delete from Cloudinary:', e);
+      } catch (error) {
+        console.error('Failed to delete from Cloudinary:', error);
       }
     }
 
@@ -305,15 +305,15 @@ export const unbindPageImage = async (slotId: string): Promise<void> => {
     const currentPageImages = await getPageImages();
     currentPageImages[slotId] = { url: '', publicId: undefined };
     await writeJsonFile(PAGE_IMAGES_FILE, currentPageImages);
-  } catch (e) {
-    console.error('Error in unbindPageImage, falling back to JSON:', e);
+  } catch (error) {
+    console.error('Error in unbindPageImage, falling back to JSON:', error);
     // Fallback to JSON
     const currentPageImages = await getPageImages();
     if (currentPageImages[slotId]?.publicId && !currentPageImages[slotId].publicId?.startsWith('simulated_')) {
       try {
         await deleteFromCloudinary(currentPageImages[slotId].publicId!);
-      } catch (e) {
-        console.error('Failed to delete from Cloudinary:', e);
+      } catch (error) {
+        console.error('Failed to delete from Cloudinary:', error);
       }
     }
     currentPageImages[slotId] = { url: '', publicId: undefined };
@@ -321,7 +321,4 @@ export const unbindPageImage = async (slotId: string): Promise<void> => {
   }
 };
 
-export const getPageImageUrl = (slotId: string, pageImages: PageImagesData): string | undefined => {
-  const data = pageImages[slotId];
-  return data?.url ? data.url : undefined;
-};
+
