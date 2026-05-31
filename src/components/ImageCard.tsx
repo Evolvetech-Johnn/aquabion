@@ -10,6 +10,7 @@ interface ImageCardProps {
   className?: string;
   aspectRatio?: 'video' | 'square' | 'portrait' | 'auto';
   priority?: boolean;
+  disableAspectRatio?: boolean;
 }
 
 function ImageCard({ 
@@ -19,9 +20,10 @@ function ImageCard({
   alt = "Aquabion image",
   className = "",
   aspectRatio = "auto",
-  priority = false
+  priority = false,
+  disableAspectRatio = false
 }: ImageCardProps) {
-  const aspectClass = {
+  const aspectClass = disableAspectRatio ? '' : {
     'video': 'aspect-video',
     'square': 'aspect-square',
     'portrait': 'aspect-[3/4]',
