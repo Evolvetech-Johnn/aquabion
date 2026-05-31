@@ -79,7 +79,6 @@ export default function PremiumHero({ heroImageUrl, heroPublicId }: PremiumHeroP
                 aspectRatio="video"
                 className="w-full h-full rounded-none"
                 priority={true}
-                disableAspectRatio={true}
               />
             </div>
           </motion.div>

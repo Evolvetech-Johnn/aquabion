@@ -10,7 +10,6 @@ interface ImageCardProps {
   className?: string;
   aspectRatio?: 'video' | 'square' | 'portrait' | 'auto';
   priority?: boolean;
-  disableAspectRatio?: boolean;
 }
 
 function ImageCard({ 
@@ -20,10 +19,11 @@ function ImageCard({
   alt = "Aquabion image",
   className = "",
   aspectRatio = "auto",
-  priority = false,
-  disableAspectRatio = false
+  priority = false
 }: ImageCardProps) {
-  const aspectClass = disableAspectRatio ? '' : {
+  // Não aplicar aspect-ratio se o className contiver h-full ou altura explícita para permitir preencher o container pai
+  const hasExplicitHeight = className.includes('h-full') || className.includes('h-[');
+  const aspectClass = hasExplicitHeight ? '' : {
     'video': 'aspect-video',
     'square': 'aspect-square',
     'portrait': 'aspect-[3/4]',
@@ -47,7 +47,7 @@ function ImageCard({
 
   return (
     <div 
-      className={`relative overflow-hidden rounded-2xl bg-slate-100 shadow-lg ${disableAspectRatio ? 'w-full h-full' : aspectClass} ${className}`}
+      className={`relative overflow-hidden rounded-2xl bg-slate-100 shadow-lg ${aspectClass} ${className}`}
     >
       <CloudinaryImage 
         publicId={publicId}
