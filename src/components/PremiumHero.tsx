@@ -70,7 +70,7 @@ export default function PremiumHero({ heroImageUrl, heroPublicId }: PremiumHeroP
             transition={{ duration: 0.9, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
             className="relative"
           >
-            <div className="relative overflow-hidden rounded-[2.5rem] border border-white/15 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.18)] min-h-[500px] md:min-h-[600px]">
+            <div className="relative overflow-hidden rounded-[2.5rem] border border-white/15 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.18)] h-[500px] md:h-[600px]">
               {/* ImageCard acting as the hero visual - no overlay text */}
               <ImageCard 
                 locationId="hero-main" 
