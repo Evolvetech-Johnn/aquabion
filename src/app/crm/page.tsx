@@ -21,6 +21,8 @@ export default function CRMAdmin() {
   const [totalPages, setTotalPages] = useState<number>(1)
   const [sortBy, setSortBy] = useState<string>('created_at')
   const [sortDir, setSortDir] = useState<string>('desc')
+  const [loginError, setLoginError] = useState<string>('')
+  const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false)
 
   useEffect(() => {
     // check session
@@ -117,7 +119,10 @@ export default function CRMAdmin() {
   const [showPassword, setShowPassword] = useState<boolean>(false)
 
   async function doLoginWithCredentials() {
+    setLoginError('')
+    setIsLoggingIn(true)
     try {
+      console.log('[CRM Login] Attempting login with:', { username: adminUsername, password: adminPassword ? 'provided' : 'not provided' })
       const res = await fetch('/api/admin/login', { 
         method: 'POST', 
         headers: {'content-type':'application/json'}, 
@@ -125,8 +130,18 @@ export default function CRMAdmin() {
         credentials: 'same-origin' 
       })
       const j = await res.json()
-      if (j?.ok) setIsAuth(true)
-    } catch {}
+      console.log('[CRM Login] Response:', { ok: j?.ok, status: res.status })
+      if (j?.ok) {
+        setIsAuth(true)
+      } else {
+        setLoginError('Usuário ou senha incorreto.')
+      }
+    } catch (err) {
+      console.error('[CRM Login] Error:', err)
+      setLoginError('Ocorreu um erro ao tentar fazer login.')
+    } finally {
+      setIsLoggingIn(false)
+    }
   }
 
   if (!isAuth) {
@@ -177,11 +192,26 @@ export default function CRMAdmin() {
               </div>
             </div>
           </div>
+
+          {loginError && (
+            <div className="p-3 bg-red-100 border border-red-200 text-red-700 rounded-lg mb-4">
+              {loginError}
+            </div>
+          )}
+
           <button 
             onClick={doLoginWithCredentials} 
-            className="w-full px-4 py-3 bg-cyan-600 text-white rounded-lg font-semibold hover:bg-cyan-700 transition-colors mt-6"
+            disabled={isLoggingIn}
+            className="w-full px-4 py-3 bg-cyan-600 text-white rounded-lg font-semibold hover:bg-cyan-700 transition-colors mt-6 disabled:opacity-70 flex items-center justify-center gap-2"
           >
-            Entrar
+            {isLoggingIn ? (
+              <>
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                Entrando...
+              </>
+            ) : (
+              'Entrar'
+            )}
           </button>
         </div>
       </div>
