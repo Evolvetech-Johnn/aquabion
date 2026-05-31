@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { issueToken } from '@/lib/adminAuth'
+import { issueToken, validateCredentials } from '@/lib/adminAuth'
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,16 +11,32 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: false, error: 'Invalid JSON body' }, { status: 400 })
     }
 
+    // Support both old secret-only and new username/password
+    const username = String(body.username || '').trim()
+    const password = String(body.password || '').trim()
     const secret = String(body.secret || body.ADMIN_SECRET || '').trim()
-    const expected = (process.env.ADMIN_SECRET || 'dev_admin_secret_change_me').trim()
+    
+    let authenticated = false
+    let loginUsername = ''
+    const expectedSecret = (process.env.ADMIN_SECRET || 'dev_admin_secret_change_me').trim()
+    
+    if (username && password) {
+      const result = validateCredentials(username, password)
+      authenticated = result.valid
+      loginUsername = result.username
+    } else if (secret && expectedSecret && secret === expectedSecret) {
+      // For backwards compatibility
+      authenticated = true
+      loginUsername = 'admin'
+    }
 
-    if (!secret || !expected || secret !== expected) {
-      console.warn('[Admin Login] Mismatch. Secret input length:', secret.length, 'Expected secret length:', expected.length)
+    if (!authenticated) {
+      console.warn('[Admin Login] Failed authentication attempt.')
       return NextResponse.json({ ok: false }, { status: 401 })
     }
 
-    const token = issueToken()
-    const res = NextResponse.json({ ok: true })
+    const token = issueToken(loginUsername)
+    const res = NextResponse.json({ ok: true, username: loginUsername })
     // set cookie
     res.headers.set('Set-Cookie', `admin_token=${token}; HttpOnly; Path=/; Max-Age=${8*60*60}; SameSite=Lax`)
     return res

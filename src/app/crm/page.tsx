@@ -112,21 +112,54 @@ export default function CRMAdmin() {
     URL.revokeObjectURL(url)
   }
 
+  const [adminUsername, setAdminUsername] = useState<string>('')
+  const [adminPassword, setAdminPassword] = useState<string>('')
+
+  async function doLoginWithCredentials() {
+    try {
+      const res = await fetch('/api/admin/login', { 
+        method: 'POST', 
+        headers: {'content-type':'application/json'}, 
+        body: JSON.stringify({ username: adminUsername, password: adminPassword }), 
+        credentials: 'same-origin' 
+      })
+      const j = await res.json()
+      if (j?.ok) setIsAuth(true)
+    } catch {}
+  }
+
   if (!isAuth) {
     return (
       <div className="min-h-screen flex items-center justify-center p-6 bg-slate-50">
         <div className="bg-white p-8 rounded-2xl shadow-lg border border-slate-200 w-full max-w-md">
-          <h2 className="text-2xl font-bold mb-4 text-slate-900">CRM Admin — Login</h2>
-          <input 
-            value={adminInput} 
-            onChange={e=>setAdminInput(e.target.value)} 
-            placeholder="ADMIN_SECRET" 
-            className="w-full border border-slate-300 p-3 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-            type="password"
-          />
+          <h2 className="text-2xl font-bold mb-6 text-slate-900 text-center">CRM Aquabion — Login</h2>
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="username" className="block text-sm font-semibold mb-2 text-slate-700">Usuário</label>
+              <input 
+                id="username"
+                value={adminUsername} 
+                onChange={e=>setAdminUsername(e.target.value)} 
+                placeholder="Ray-aquabion" 
+                className="w-full border border-slate-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              />
+            </div>
+            <div>
+              <label htmlFor="password" className="block text-sm font-semibold mb-2 text-slate-700">Senha</label>
+              <input 
+                id="password"
+                value={adminPassword} 
+                onChange={e=>setAdminPassword(e.target.value)} 
+                placeholder="Sua senha" 
+                className="w-full border border-slate-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                type="password"
+                onKeyDown={(e) => e.key === 'Enter' && doLoginWithCredentials()}
+              />
+            </div>
+          </div>
           <button 
-            onClick={doLogin} 
-            className="w-full px-4 py-3 bg-cyan-600 text-white rounded-lg font-semibold hover:bg-cyan-700 transition-colors"
+            onClick={doLoginWithCredentials} 
+            className="w-full px-4 py-3 bg-cyan-600 text-white rounded-lg font-semibold hover:bg-cyan-700 transition-colors mt-6"
           >
             Entrar
           </button>

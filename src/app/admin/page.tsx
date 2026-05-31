@@ -36,9 +36,11 @@ import type { CloudinaryMedia } from "@/lib/cloudinaryStore";
 
 export default function UnifiedAdminDashboard() {
   const [isAuth, setIsAuth] = useState<boolean>(false);
-  const [adminInput, setAdminInput] = useState<string>("");
+  const [adminUsername, setAdminUsername] = useState<string>("");
+  const [adminPassword, setAdminPassword] = useState<string>("");
   const [loginError, setLoginError] = useState<string>("");
   const [activeTab, setActiveTab] = useState<"executive" | "crm" | "media" | "cards">("executive");
+  const [currentUser, setCurrentUser] = useState<string>("");
 
   // CRM State
   const [leads, setLeads] = useState<CRMLead[]>([]);
@@ -93,10 +95,21 @@ export default function UnifiedAdminDashboard() {
       .then((j) => {
         if (j?.ok) {
           setIsAuth(true);
+          if (j?.username) {
+            setCurrentUser(j.username);
+          }
         }
       })
       .catch(() => {});
   }, []);
+
+  // Reset active tab if user is restricted and on restricted tab
+  useEffect(() => {
+    const restrictedUsername = process.env.NEXT_PUBLIC_ADMIN_USERNAME_RESTRICTED?.toLowerCase();
+    if (currentUser.toLowerCase() === restrictedUsername && (activeTab === "media" || activeTab === "cards")) {
+      setActiveTab("executive");
+    }
+  }, [currentUser, activeTab]);
 
   // Fetch leads and update executive stats
   const fetchLeadsData = useCallback(async () => {
@@ -353,14 +366,17 @@ export default function UnifiedAdminDashboard() {
       const res = await fetch("/api/admin/login", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ secret: adminInput }),
+        body: JSON.stringify({ username: adminUsername, password: adminPassword }),
         credentials: "same-origin"
       });
       const j = await res.json();
       if (j?.ok) {
         setIsAuth(true);
+        if (j?.username) {
+          setCurrentUser(j.username);
+        }
       } else {
-        setLoginError("Chave de acesso secreta incorreta. Tente novamente.");
+        setLoginError("Usuário ou senha incorreto. Tente novamente.");
       }
     } catch {
       setLoginError("Ocorreu um erro no servidor ao tentar autenticar.");
@@ -571,17 +587,31 @@ export default function UnifiedAdminDashboard() {
 
           <form onSubmit={handleLogin} className="space-y-6">
             <div>
-              <label htmlFor="secret" className="block text-sm font-medium text-slate-300 mb-2">
-                Chave de Acesso Secreta
+              <label htmlFor="username" className="block text-sm font-medium text-slate-300 mb-2">
+                Usuário
               </label>
               <input
-                id="secret"
+                id="username"
+                type="text"
+                required
+                value={adminUsername}
+                onChange={(e) => setAdminUsername(e.target.value)}
+                placeholder="Seu usuário"
+                className="w-full h-12 px-4 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder:text-slate-600 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+              />
+            </div>
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-2">
+                Senha
+              </label>
+              <input
+                id="password"
                 type="password"
                 required
-                value={adminInput}
-                onChange={(e) => setAdminInput(e.target.value)}
-                placeholder="Insira a ADMIN_SECRET"
-                className="w-full h-12 px-4 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder:text-slate-600 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all text-center tracking-widest"
+                value={adminPassword}
+                onChange={(e) => setAdminPassword(e.target.value)}
+                placeholder="Sua senha"
+                className="w-full h-12 px-4 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder:text-slate-600 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
               />
             </div>
 
@@ -688,28 +718,32 @@ export default function UnifiedAdminDashboard() {
             <Users className="w-4 h-4" />
             CRM Lead Manager ({totalLeads})
           </button>
-          <button
-            onClick={() => { setActiveTab("media"); setSelectedLead(null); }}
-            className={`flex items-center gap-2.5 px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
-              activeTab === "media"
-                ? "bg-slate-900 text-white shadow-md shadow-slate-950/10 scale-[1.02]"
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-300/40"
-            }`}
-          >
-            <ImageIcon className="w-4 h-4" />
-            Mídias Cloudinary
-          </button>
-          <button
-            onClick={() => { setActiveTab("cards"); setSelectedLead(null); }}
-            className={`flex items-center gap-2.5 px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
-              activeTab === "cards"
-                ? "bg-slate-900 text-white shadow-md shadow-slate-950/10 scale-[1.02]"
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-300/40"
-            }`}
-          >
-            <Sliders className="w-4 h-4" />
-            Gerenciador de Cards ({slotsList.length})
-          </button>
+          {currentUser.toLowerCase() !== process.env.NEXT_PUBLIC_ADMIN_USERNAME_RESTRICTED?.toLowerCase() && (
+            <>
+              <button
+                onClick={() => { setActiveTab("media"); setSelectedLead(null); }}
+                className={`flex items-center gap-2.5 px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
+                  activeTab === "media"
+                    ? "bg-slate-900 text-white shadow-md shadow-slate-950/10 scale-[1.02]"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-300/40"
+                }`}
+              >
+                <ImageIcon className="w-4 h-4" />
+                Mídias Cloudinary
+              </button>
+              <button
+                onClick={() => { setActiveTab("cards"); setSelectedLead(null); }}
+                className={`flex items-center gap-2.5 px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
+                  activeTab === "cards"
+                    ? "bg-slate-900 text-white shadow-md shadow-slate-950/10 scale-[1.02]"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-300/40"
+                }`}
+              >
+                <Sliders className="w-4 h-4" />
+                Gerenciador de Cards ({slotsList.length})
+              </button>
+            </>
+          )}
         </div>
 
         {/* 📊 TAB 1: VISÃO EXECUTIVA (ANALYTICS) */}
@@ -1248,7 +1282,7 @@ export default function UnifiedAdminDashboard() {
         )}
 
         {/* 🖼️ TAB 3: GERENCIADOR DE MÍDIAS DO CLOUDINARY */}
-        {activeTab === "media" && (
+        {activeTab === "media" && currentUser.toLowerCase() !== process.env.NEXT_PUBLIC_ADMIN_USERNAME_RESTRICTED?.toLowerCase() && (
           <div className="space-y-8 animate-fade-in flex-grow flex flex-col justify-between">
             {/* Status do Cloudinary & File Upload */}
             <div className="grid gap-6 md:grid-cols-3">
@@ -1421,7 +1455,7 @@ export default function UnifiedAdminDashboard() {
         )}
 
         {/* 🎴 TAB 4: GERENCIADOR DE CARDS DAS PÁGINAS */}
-        {activeTab === "cards" && (
+        {activeTab === "cards" && currentUser.toLowerCase() !== process.env.NEXT_PUBLIC_ADMIN_USERNAME_RESTRICTED?.toLowerCase() && (
           <div className="space-y-8 animate-fade-in flex-grow flex flex-col justify-between">
             {/* Top Bar / Filter */}
             <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
