@@ -42,9 +42,45 @@ export const STRATEGIC_SLOTS: PageImageSlot[] = [
 ];
 
 // Helper functions for JSON file storage
-const DATA_DIR = path.join(process.cwd(), 'crm_data');
+// Use /tmp for Vercel deploy (read-only system), use local crm_data for development
+const isVercel = process.env.VERCEL === '1' || process.env.VERCEL_ENV;
+const DATA_DIR = isVercel ? '/tmp/crm_data' : path.join(process.cwd(), 'crm_data');
 const PAGE_IMAGES_FILE = path.join(DATA_DIR, 'page_images.json');
 const CLOUDINARY_MEDIA_FILE = path.join(DATA_DIR, 'cloudinary_media.json');
+
+// Copy local files to /tmp on Vercel (for initial data)
+async function initVercelData() {
+  if (!isVercel) return;
+  
+  try {
+    const localDataDir = path.join(process.cwd(), 'crm_data');
+    const localPageImages = path.join(localDataDir, 'page_images.json');
+    const localCloudinaryMedia = path.join(localDataDir, 'cloudinary_media.json');
+
+    // Ensure tmp dir exists
+    await ensureDataDir();
+
+    // Copy page_images.json if local file exists
+    try {
+      const content = await fs.readFile(localPageImages, 'utf8');
+      await fs.writeFile(PAGE_IMAGES_FILE, content);
+    } catch {
+      // If local file doesn't exist, write default
+      await writeJsonFile(PAGE_IMAGES_FILE, {});
+    }
+
+    // Copy cloudinary_media.json if local file exists
+    try {
+      const content = await fs.readFile(localCloudinaryMedia, 'utf8');
+      await fs.writeFile(CLOUDINARY_MEDIA_FILE, content);
+    } catch {
+      // If local file doesn't exist, write default
+      await writeJsonFile(CLOUDINARY_MEDIA_FILE, []);
+    }
+  } catch (e) {
+    console.error('Failed to initialize Vercel data:', e);
+  }
+}
 
 async function ensureDataDir() {
   try {
@@ -55,6 +91,9 @@ async function ensureDataDir() {
 }
 
 async function readJsonFile<T>(filePath: string, defaultValue: T): Promise<T> {
+  // Initialize data from local files on Vercel first
+  await initVercelData();
+  
   try {
     await ensureDataDir();
     const raw = await fs.readFile(filePath, 'utf8');
