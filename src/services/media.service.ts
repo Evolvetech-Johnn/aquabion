@@ -42,14 +42,17 @@ export const STRATEGIC_SLOTS: PageImageSlot[] = [
   { id: 'benefits_showcase', page: 'Benefícios', title: 'Eficiência e ROI Comercial', description: 'Imagem ilustrando o retorno sobre investimento e economia comercial no comparativo de mercado.', defaultImage: '' },
 ];
 
-// Helper functions for JSON file storage (fallback for development)
+// Helper functions for JSON file storage (fallback for LOCAL DEVELOPMENT ONLY)
+const isVercel = process.env.VERCEL === '1' || process.env.VERCEL_ENV;
 const DATA_DIR = path.join(process.cwd(), 'crm_data');
 const PAGE_IMAGES_FILE = path.join(DATA_DIR, 'page_images.json');
 const CLOUDINARY_MEDIA_FILE = path.join(DATA_DIR, 'cloudinary_media.json');
 
 async function ensureDataDir() {
   try {
-    await fs.mkdir(DATA_DIR, { recursive: true });
+    if (!isVercel) {
+      await fs.mkdir(DATA_DIR, { recursive: true });
+    }
   } catch {
     // Directory already exists
   }
@@ -57,19 +60,25 @@ async function ensureDataDir() {
 
 async function readJsonFile<T>(filePath: string, defaultValue: T): Promise<T> {
   try {
-    await ensureDataDir();
-    const raw = await fs.readFile(filePath, 'utf8');
-    return JSON.parse(raw) as T;
+    if (!isVercel) {
+      await ensureDataDir();
+      const raw = await fs.readFile(filePath, 'utf8');
+      return JSON.parse(raw) as T;
+    }
   } catch {
     // File doesn't exist or is invalid, return default
-    await fs.writeFile(filePath, JSON.stringify(defaultValue, null, 2));
-    return defaultValue;
+    if (!isVercel) {
+      await fs.writeFile(filePath, JSON.stringify(defaultValue, null, 2));
+    }
   }
+  return defaultValue;
 }
 
 async function writeJsonFile<T>(filePath: string, data: T): Promise<void> {
-  await ensureDataDir();
-  await fs.writeFile(filePath, JSON.stringify(data, null, 2));
+  if (!isVercel) {
+    await ensureDataDir();
+    await fs.writeFile(filePath, JSON.stringify(data, null, 2));
+  }
 }
 
 // Media storage functions (MongoDB with JSON fallback)
