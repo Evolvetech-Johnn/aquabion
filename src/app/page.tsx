@@ -113,7 +113,7 @@ export default async function Home() {
                   locationId="desafio-main" 
                   imageUrl={pageImages['desafio-main']?.url} 
                   publicId={pageImages['desafio-main']?.publicId}
-                  aspectRatio="portrait"
+                  aspectRatio="video"
                 />
                 <div className="absolute -bottom-8 -left-8 w-48 h-48 bg-cyan-200/50 rounded-full blur-3xl -z-10" />
               </div>
@@ -141,7 +141,7 @@ export default async function Home() {
                     locationId={benefit.id} 
                     imageUrl={pageImages[benefit.id]?.url} 
                     publicId={pageImages[benefit.id]?.publicId}
-                    aspectRatio="video"
+                    aspectRatio="square"
                     className="rounded-xl w-full"
                   />
                 </div>
