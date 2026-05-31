@@ -188,15 +188,47 @@ export const getPageImages = async (): Promise<PageImagesData> => {
     const data = await collection.find({}).toArray();
     console.log('Fetched page_images from DB:', data);
 
-    // Build the PageImagesData object
+    // First, try to load from JSON as primary source, if it has data (not empty)
+    const jsonData = await readJsonFile<Record<string, any>>(PAGE_IMAGES_FILE, {});
+    const jsonHasData = Object.keys(jsonData).length > 0;
+
+    // Build the PageImagesData object: use JSON first, fallback to DB, then default
     const pageImages: PageImagesData = {};
     STRATEGIC_SLOTS.forEach(slot => {
-      const found = data.find(item => item.slotId === slot.id);
-      const url = found?.url || slot.defaultImage;
-      pageImages[slot.id] = { url, publicId: found?.publicId };
-      console.log(`Slot ${slot.id}:`, { found, url, publicId: found?.publicId });
+      // Check JSON first
+      const jsonValue = jsonData[slot.id];
+      let url = '';
+      let publicId: string | undefined = undefined;
+
+      if (typeof jsonValue === 'string') {
+        // Old format: just string URL
+        url = jsonValue;
+      } else if (jsonValue && typeof jsonValue === 'object') {
+        // New format: { url, publicId }
+        url = jsonValue.url || '';
+        publicId = jsonValue.publicId;
+      }
+
+      // If JSON doesn't have data, check DB
+      if (!url) {
+        const found = data.find(item => item.slotId === slot.id);
+        url = found?.url || slot.defaultImage;
+        publicId = found?.publicId;
+      }
+
+      pageImages[slot.id] = { url, publicId };
+      console.log(`Slot ${slot.id}:`, { url, publicId });
     });
 
+    // Always update DB with JSON data (to make sure DB is synced
+    for (const slotId of Object.keys(pageImages)) {
+      const existing = await collection.findOne({ slotId });
+      if (existing) {
+        await collection.updateOne({ slotId }, { $set: pageImages[slotId] });
+      } else {
+        await collection.insertOne({ slotId, ...pageImages[slotId] });
+      }
+    }
     // Also save to JSON as backup
     await writeJsonFile(PAGE_IMAGES_FILE, pageImages);
     return pageImages;
