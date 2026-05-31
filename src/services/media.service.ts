@@ -2,7 +2,6 @@ import crypto from 'crypto';
 import { promises as fs } from 'fs';
 import path from 'path';
 import { deleteFromCloudinary } from '@/lib/cloudinary/delete';
-import { getDb } from '@/lib/mongodb';
 
 // Types
 export interface CloudinaryMedia {
@@ -42,7 +41,7 @@ export const STRATEGIC_SLOTS: PageImageSlot[] = [
   { id: 'benefits_showcase', page: 'Benefícios', title: 'Eficiência e ROI Comercial', description: 'Imagem ilustrando o retorno sobre investimento e economia comercial no comparativo de mercado.', defaultImage: '' },
 ];
 
-// Helper functions for JSON file fallback
+// Helper functions for JSON file storage
 const DATA_DIR = path.join(process.cwd(), 'crm_data');
 const PAGE_IMAGES_FILE = path.join(DATA_DIR, 'page_images.json');
 const CLOUDINARY_MEDIA_FILE = path.join(DATA_DIR, 'cloudinary_media.json');
@@ -72,34 +71,9 @@ async function writeJsonFile<T>(filePath: string, data: T): Promise<void> {
   await fs.writeFile(filePath, JSON.stringify(data, null, 2));
 }
 
-// Media storage functions (MongoDB with JSON fallback)
+// Media storage functions (JSON only)
 export const getMediaList = async (): Promise<CloudinaryMedia[]> => {
-  try {
-    const db = await getDb();
-    const collection = db.collection('cloudinary_media');
-    const data = await collection
-      .find({})
-      .sort({ createdAt: -1 })
-      .toArray();
-
-    // Map MongoDB data to CloudinaryMedia interface
-    const media = data.map(item => ({
-      id: item.id,
-      publicId: item.publicId,
-      name: item.name,
-      url: item.url,
-      bytes: item.bytes,
-      format: item.format,
-      createdAt: item.createdAt
-    }));
-    // Also save to JSON as backup
-    await writeJsonFile(CLOUDINARY_MEDIA_FILE, media);
-    return media;
-  } catch {
-    console.error('Failed to get media list from MongoDB, falling back to JSON');
-    // Fallback to JSON file
-    return readJsonFile<CloudinaryMedia[]>(CLOUDINARY_MEDIA_FILE, []);
-  }
+  return readJsonFile<CloudinaryMedia[]>(CLOUDINARY_MEDIA_FILE, []);
 };
 
 export const addMedia = async (item: Omit<CloudinaryMedia, 'id' | 'createdAt'>): Promise<CloudinaryMedia> => {
@@ -109,216 +83,91 @@ export const addMedia = async (item: Omit<CloudinaryMedia, 'id' | 'createdAt'>):
     createdAt: new Date().toISOString(),
   };
 
-  try {
-    const db = await getDb();
-    const collection = db.collection('cloudinary_media');
-    await collection.insertOne(newItem);
-    // Also update JSON file
-    const currentMedia = await getMediaList();
-    await writeJsonFile(CLOUDINARY_MEDIA_FILE, [newItem, ...currentMedia]);
-    return newItem;
-  } catch {
-    console.error('Failed to add media to MongoDB, falling back to JSON');
-    // Fallback to JSON
-    const currentMedia = await readJsonFile<CloudinaryMedia[]>(CLOUDINARY_MEDIA_FILE, []);
-    const updatedMedia = [newItem, ...currentMedia];
-    await writeJsonFile(CLOUDINARY_MEDIA_FILE, updatedMedia);
-    return newItem;
-  }
+  const currentMedia = await getMediaList();
+  const updatedMedia = [newItem, ...currentMedia];
+  await writeJsonFile(CLOUDINARY_MEDIA_FILE, updatedMedia);
+  return newItem;
 };
 
 export const removeMedia = async (id: string): Promise<CloudinaryMedia | undefined> => {
-  try {
-    const db = await getDb();
-    const collection = db.collection('cloudinary_media');
-    
-    // First find the media item
-    const mediaItem = await collection.findOne({ id }) as CloudinaryMedia | null;
+  const currentMedia = await getMediaList();
+  const mediaItem = currentMedia.find(m => m.id === id);
 
-    if (mediaItem) {
-      // Delete from Cloudinary if not simulated
-      if (!mediaItem.publicId.startsWith('simulated_')) {
-        try {
-          await deleteFromCloudinary(mediaItem.publicId);
-        } catch {
-          console.error('Failed to delete from Cloudinary');
-        }
+  if (mediaItem) {
+    // Delete from Cloudinary if not simulated
+    if (!mediaItem.publicId.startsWith('simulated_')) {
+      try {
+        await deleteFromCloudinary(mediaItem.publicId);
+      } catch {
+        console.error('Failed to delete from Cloudinary');
       }
+    }
 
-      // Delete from MongoDB
-      await collection.deleteOne({ id });
-      // Also update JSON file
-      const currentMedia = await getMediaList();
-      const updatedMedia = currentMedia.filter(m => m.id !== id);
-      await writeJsonFile(CLOUDINARY_MEDIA_FILE, updatedMedia);
-      return mediaItem;
-    }
-    return undefined;
-  } catch {
-    console.error('Error in removeMedia, trying JSON');
-    // Try JSON fallback
-    const currentMedia = await readJsonFile<CloudinaryMedia[]>(CLOUDINARY_MEDIA_FILE, []);
-    const mediaItem = currentMedia.find(m => m.id === id);
-    if (mediaItem) {
-      // Delete from Cloudinary if not simulated
-      if (!mediaItem.publicId.startsWith('simulated_')) {
-        try {
-          await deleteFromCloudinary(mediaItem.publicId);
-        } catch {
-          console.error('Failed to delete from Cloudinary');
-        }
-      }
-      const updatedMedia = currentMedia.filter(m => m.id !== id);
-      await writeJsonFile(CLOUDINARY_MEDIA_FILE, updatedMedia);
-      return mediaItem;
-    }
-    return undefined;
+    const updatedMedia = currentMedia.filter(m => m.id !== id);
+    await writeJsonFile(CLOUDINARY_MEDIA_FILE, updatedMedia);
+    return mediaItem;
   }
+
+  return undefined;
 };
 
 interface PageImagesData {
   [slotId: string]: { url: string; publicId?: string };
 }
 
-// Define type for JSON data to avoid 'any'
+// Define type for JSON data
 type PageImagesJson = Record<string, string | { url?: string; publicId?: string }>;
 
 export const getPageImages = async (): Promise<PageImagesData> => {
-  try {
-    console.log('getPageImages called');
-    const db = await getDb();
-    const collection = db.collection('page_images');
-    const data = await collection.find({}).toArray();
-    console.log('Fetched page_images from DB:', data);
+  const jsonData = await readJsonFile<PageImagesJson>(PAGE_IMAGES_FILE, {});
 
-    // First, try to load from JSON as primary source, if it has data (not empty)
-    const jsonData = await readJsonFile<PageImagesJson>(PAGE_IMAGES_FILE, {});
+  const pageImages: PageImagesData = {};
+  STRATEGIC_SLOTS.forEach(slot => {
+    const jsonValue = jsonData[slot.id];
+    let url = '';
+    let publicId: string | undefined = undefined;
 
-    // Build the PageImagesData object: use JSON first, fallback to DB, then default
-    const pageImages: PageImagesData = {};
-    STRATEGIC_SLOTS.forEach(slot => {
-      // Check JSON first
-      const jsonValue = jsonData[slot.id];
-      let url = '';
-      let publicId: string | undefined = undefined;
-
-      if (typeof jsonValue === 'string') {
-        // Old format: just string URL
-        url = jsonValue;
-      } else if (jsonValue && typeof jsonValue === 'object') {
-        // New format: { url, publicId }
-        url = jsonValue.url || '';
-        publicId = jsonValue.publicId;
-      }
-
-      // If JSON doesn't have data, check DB
-      if (!url) {
-        const found = data.find(item => item.slotId === slot.id);
-        url = found?.url || slot.defaultImage;
-        publicId = found?.publicId;
-      }
-
-      pageImages[slot.id] = { url, publicId };
-      console.log(`Slot ${slot.id}:`, { url, publicId });
-    });
-
-    // Always update DB with JSON data (to make sure DB is synced)
-    for (const slotId of Object.keys(pageImages)) {
-      const existing = await collection.findOne({ slotId });
-      if (existing) {
-        await collection.updateOne({ slotId }, { $set: pageImages[slotId] });
-      } else {
-        await collection.insertOne({ slotId, ...pageImages[slotId] });
-      }
+    if (typeof jsonValue === 'string') {
+      // Old format: just string URL
+      url = jsonValue;
+    } else if (jsonValue && typeof jsonValue === 'object') {
+      // New format: { url, publicId }
+      url = jsonValue.url || '';
+      publicId = jsonValue.publicId;
     }
-    // Also save to JSON as backup
-    await writeJsonFile(PAGE_IMAGES_FILE, pageImages);
-    return pageImages;
-  } catch {
-    console.error('Error in getPageImages, falling back to JSON');
-    // Fallback to JSON file
-    const jsonData = await readJsonFile<PageImagesJson>(PAGE_IMAGES_FILE, {});
-    const pageImages: PageImagesData = {};
-    STRATEGIC_SLOTS.forEach(slot => {
-      const jsonValue = jsonData[slot.id];
-      if (typeof jsonValue === 'string') {
-        // Old format: just string URL
-        pageImages[slot.id] = { url: jsonValue, publicId: undefined };
-      } else if (jsonValue && typeof jsonValue === 'object') {
-        // New format: { url, publicId }
-        pageImages[slot.id] = { url: jsonValue.url || '', publicId: jsonValue.publicId };
-      } else {
-        pageImages[slot.id] = { url: slot.defaultImage, publicId: undefined };
-      }
-    });
-    return pageImages;
-  }
+
+    // Fallback to default if no URL
+    if (!url) {
+      url = slot.defaultImage;
+    }
+
+    pageImages[slot.id] = { url, publicId };
+  });
+
+  // Save back to JSON to ensure consistency
+  await writeJsonFile(PAGE_IMAGES_FILE, pageImages);
+  return pageImages;
 };
 
 export const bindPageImage = async (slotId: string, url: string, publicId?: string): Promise<void> => {
-  try {
-    const db = await getDb();
-    const collection = db.collection('page_images');
-
-    // Check if slot exists
-    const existing = await collection.findOne({ slotId });
-
-    if (existing) {
-      // Update existing
-      await collection.updateOne({ slotId }, { $set: { url, publicId: publicId || null } });
-    } else {
-      // Insert new
-      await collection.insertOne({ slotId, url, publicId: publicId || null });
-    }
-    // Also update JSON file
-    const currentPageImages = await getPageImages();
-    currentPageImages[slotId] = { url, publicId };
-    await writeJsonFile(PAGE_IMAGES_FILE, currentPageImages);
-  } catch (error) {
-    console.error('Error in bindPageImage, falling back to JSON:', error);
-    // Fallback to JSON
-    const currentPageImages = await getPageImages();
-    currentPageImages[slotId] = { url, publicId };
-    await writeJsonFile(PAGE_IMAGES_FILE, currentPageImages);
-  }
+  const currentPageImages = await getPageImages();
+  currentPageImages[slotId] = { url, publicId };
+  await writeJsonFile(PAGE_IMAGES_FILE, currentPageImages);
 };
 
 export const unbindPageImage = async (slotId: string): Promise<void> => {
-  try {
-    const db = await getDb();
-    const collection = db.collection('page_images');
+  const currentPageImages = await getPageImages();
+  const oldPublicId = currentPageImages[slotId]?.publicId;
 
-    // Get old image first
-    const oldImage = await collection.findOne({ slotId });
-
-    if (oldImage?.publicId && !oldImage.publicId.startsWith('simulated_')) {
-      try {
-        await deleteFromCloudinary(oldImage.publicId);
-      } catch (error) {
-        console.error('Failed to delete from Cloudinary:', error);
-      }
+  // Delete from Cloudinary if not simulated
+  if (oldPublicId && !oldPublicId.startsWith('simulated_')) {
+    try {
+      await deleteFromCloudinary(oldPublicId);
+    } catch {
+      console.error('Failed to delete from Cloudinary');
     }
-
-    // Update to empty URL
-    await collection.updateOne({ slotId }, { $set: { url: '', publicId: null } });
-    // Also update JSON file
-    const currentPageImages = await getPageImages();
-    currentPageImages[slotId] = { url: '', publicId: undefined };
-    await writeJsonFile(PAGE_IMAGES_FILE, currentPageImages);
-  } catch (error) {
-    console.error('Error in unbindPageImage, falling back to JSON:', error);
-    // Fallback to JSON
-    const currentPageImages = await getPageImages();
-    if (currentPageImages[slotId]?.publicId && !currentPageImages[slotId].publicId?.startsWith('simulated_')) {
-      try {
-        await deleteFromCloudinary(currentPageImages[slotId].publicId!);
-      } catch (error) {
-        console.error('Failed to delete from Cloudinary:', error);
-      }
-    }
-    currentPageImages[slotId] = { url: '', publicId: undefined };
-    await writeJsonFile(PAGE_IMAGES_FILE, currentPageImages);
   }
+
+  currentPageImages[slotId] = { url: '', publicId: undefined };
+  await writeJsonFile(PAGE_IMAGES_FILE, currentPageImages);
 };
-
-
