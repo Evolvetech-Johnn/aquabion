@@ -228,7 +228,10 @@ export const getPageImages = async (): Promise<PageImagesData> => {
         pageImages[slot.id] = { url: jsonValue, publicId: undefined };
       } else if (jsonValue && typeof jsonValue === 'object') {
         // New format: { url, publicId }
-        pageImages[slot.id] = { url: jsonValue.url || '', publicId: jsonValue.publicId };
+        pageImages[slot.id] = { 
+          url: jsonValue.url || '', 
+          publicId: jsonValue.publicId && jsonValue.publicId !== '' ? jsonValue.publicId : undefined 
+        };
       } else {
         pageImages[slot.id] = { url: slot.defaultImage, publicId: undefined };
       }

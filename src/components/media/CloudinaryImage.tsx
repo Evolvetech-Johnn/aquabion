@@ -8,8 +8,8 @@ interface CloudinaryImageProps {
   publicId?: string;
   url?: string;
   alt: string;
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
   className?: string;
   priority?: boolean;
   crop?: 'fill' | 'fit' | 'scale' | 'limit' | 'pad';

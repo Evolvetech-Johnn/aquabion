@@ -80,6 +80,8 @@ export default function ImageCarousel({
               url={image.url}
               publicId={image.publicId}
               alt={image.alt || `Imagem ${index + 1} do carrossel`}
+              width={1920}
+              height={1080}
               fill
               crop="fill"
               className="object-cover object-center"
