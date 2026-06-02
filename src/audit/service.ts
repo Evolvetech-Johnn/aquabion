@@ -125,7 +125,15 @@ export class AuditService {
     const { browser, operatingSystem } = parseUserAgent(userAgent);
     const forwardedFor = request.headers.get("x-forwarded-for");
     const realIp = request.headers.get("x-real-ip");
-    const ipAddress = (forwardedFor ? forwardedFor.split(",")[0].trim() : realIp) as string | undefined;
+    let ipAddress: string | undefined;
+    
+    if (forwardedFor) {
+      ipAddress = forwardedFor.split(",")[0].trim();
+    } else if (realIp) {
+      ipAddress = realIp;
+    } else {
+      ipAddress = undefined;
+    }
 
     return {
       ipAddress,
