@@ -2,6 +2,7 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import { Lead } from './types'
 import { getDb } from './mongodb'
+import type { WithId, Document } from 'mongodb'
 
 const isVercel = process.env.VERCEL === '1' || process.env.VERCEL_ENV
 const DATA_DIR = path.join(process.cwd(), 'data')
@@ -18,11 +19,27 @@ async function ensureDataFile() {
   }
 }
 
+function mapMongoToLead(doc: WithId<Document>): Lead {
+  return {
+    submission_id: doc.submission_id as string,
+    name: doc.name as string | undefined,
+    email: doc.email as string | undefined,
+    phone: doc.phone as string | undefined,
+    source: doc.source as string | undefined,
+    landing_page: doc.landing_page as string | undefined,
+    utm: doc.utm as Record<string, string> | undefined,
+    ip: doc.ip as string | undefined,
+    user_agent: doc.user_agent as string | undefined,
+    created_at: doc.created_at as string | undefined,
+    status: doc.status as 'pending' | 'sent' | 'failed' | undefined,
+    crm_id: doc.crm_id as string | undefined,
+  }
+}
+
 export async function saveLead(lead: Lead): Promise<void> {
   try {
     const db = await getDb()
     await db.collection('leads').insertOne(lead)
-    // Also save to JSON as backup
     if (!isVercel) {
       await ensureDataFile()
       const raw = await fs.readFile(LEADS_FILE, 'utf8')
@@ -46,7 +63,6 @@ export async function updateLead(submission_id: string, patch: Partial<Lead>): P
   try {
     const db = await getDb()
     await db.collection('leads').updateOne({ submission_id }, { $set: patch })
-    // Also update JSON backup
     if (!isVercel) {
       await ensureDataFile()
       const raw = await fs.readFile(LEADS_FILE, 'utf8')
@@ -75,8 +91,8 @@ export async function updateLead(submission_id: string, patch: Partial<Lead>): P
 export async function getPendingLeads(): Promise<Lead[]> {
   try {
     const db = await getDb()
-    const leads = await db.collection('leads').find({ status: 'pending' }).toArray()
-    return leads as Lead[]
+    const docs = await db.collection('leads').find({ status: 'pending' }).toArray()
+    return docs.map(mapMongoToLead)
   } catch (error) {
     console.error('Failed to get pending leads from MongoDB, falling back to JSON:', error)
     if (!isVercel) {
