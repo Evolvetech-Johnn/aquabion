@@ -52,7 +52,7 @@ function mapMongoToCRMLead(doc: WithId<Document>): CRMLead {
     ip: doc.ip as string | undefined,
     user_agent: doc.user_agent as string | undefined,
     created_at: doc.created_at as string,
-    status: doc.status as 'new' | 'contacted' | 'qualified' | 'won' | 'lost',
+    status: doc.status as 'new' | 'contacted' | 'qualified' | 'meeting_scheduled' | 'won' | 'lost' | 'disqualified' | 'cold',
     assignee: doc.assignee as string | undefined,
     tags: doc.tags as string[] | undefined,
   }
