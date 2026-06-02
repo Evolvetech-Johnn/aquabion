@@ -124,7 +124,7 @@ export class AuditService {
     const userAgent = request.headers.get("user-agent") || "";
     const { browser, operatingSystem } = parseUserAgent(userAgent);
     const forwardedFor = request.headers.get("x-forwarded-for");
-    const ipAddress = forwardedFor ? forwardedFor.split(",")[0].trim() : request.headers.get("x-real-ip");
+    const ipAddress = forwardedFor ? forwardedFor.split(",")[0].trim() : request.headers.get("x-real-ip") ?? undefined;
 
     return {
       ipAddress,
