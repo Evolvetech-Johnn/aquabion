@@ -99,8 +99,11 @@ export default function UnifiedAdminDashboard() {
     new: 0,
     contacted: 0,
     qualified: 0,
+    meeting_scheduled: 0,
     won: 0,
     lost: 0,
+    disqualified: 0,
+    cold: 0,
     conversionRate: 0,
     conversionGoal: 70, // Meta de 70% de conversão
     segmentStats: {} as Record<string, number>,
@@ -144,7 +147,11 @@ export default function UnifiedAdminDashboard() {
     if (searchQuery) params.set("search", searchQuery);
 
     try {
-      const res = await fetch(`/api/crm/leads?${params.toString()}`, { credentials: "same-origin" });
+      const res = await fetch(`/api/crm/leads?${params.toString()}`, { 
+        credentials: "same-origin",
+        cache: 'no-store',
+        next: { revalidate: 0 }
+      });
       const json = await res.json();
       if (json?.ok) {
         setLeads(json.leads);
@@ -164,7 +171,11 @@ export default function UnifiedAdminDashboard() {
   const fetchAllLeadsForStats = useCallback(async () => {
     if (!isAuth) return;
     try {
-      const res = await fetch(`/api/crm/leads?page=1&per_page=1000`, { credentials: "same-origin" });
+      const res = await fetch(`/api/crm/leads?page=1&per_page=1000`, { 
+        credentials: "same-origin",
+        cache: 'no-store',
+        next: { revalidate: 0 }
+      });
       const json = await res.json();
       if (json?.ok && json.leads) {
         const allLeads = json.leads as CRMLead[];
@@ -174,8 +185,11 @@ export default function UnifiedAdminDashboard() {
           new: 0,
           contacted: 0,
           qualified: 0,
+          meeting_scheduled: 0,
           won: 0,
-          lost: 0
+          lost: 0,
+          disqualified: 0,
+          cold: 0
         };
 
         const segments: Record<string, number> = {
@@ -225,8 +239,11 @@ export default function UnifiedAdminDashboard() {
           new: counts.new,
           contacted: counts.contacted,
           qualified: counts.qualified,
+          meeting_scheduled: counts.meeting_scheduled,
           won: counts.won,
           lost: counts.lost,
+          disqualified: counts.disqualified,
+          cold: counts.cold,
           conversionRate,
           conversionGoal: 70,
           segmentStats: segments,
@@ -493,7 +510,7 @@ export default function UnifiedAdminDashboard() {
   };
 
   // Update lead status
-  const handleUpdateStatus = async (leadId: string, status: 'contacted' | 'qualified' | 'won' | 'lost' | 'new') => {
+  const handleUpdateStatus = async (leadId: string, status: 'contacted' | 'qualified' | 'meeting_scheduled' | 'won' | 'lost' | 'disqualified' | 'cold' | 'new') => {
     try {
       const res = await fetch(`/api/crm/lead/${leadId}`, {
         method: "PATCH",
@@ -1151,8 +1168,11 @@ export default function UnifiedAdminDashboard() {
                     <option value="new">Novos (New)</option>
                     <option value="contacted">Contatados</option>
                     <option value="qualified">Qualificados</option>
+                    <option value="meeting_scheduled">Reunião Marcada</option>
                     <option value="won">Ganhos (Won)</option>
                     <option value="lost">Perdidos (Lost)</option>
+                    <option value="disqualified">Desqualificados</option>
+                    <option value="cold">Leads Frios</option>
                   </select>
 
                   <select
@@ -1202,15 +1222,31 @@ export default function UnifiedAdminDashboard() {
                               isSelected
                                 ? st === "won" ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" :
                                   st === "lost" ? "bg-red-500/20 text-red-400 border border-red-500/30" :
+                                  st === "disqualified" ? "bg-red-600/20 text-red-500 border border-red-600/30" :
                                   st === "qualified" ? "bg-amber-500/20 text-amber-400 border border-amber-500/30" :
+                                  st === "meeting_scheduled" ? "bg-purple-500/20 text-purple-400 border border-purple-500/30" :
+                                  st === "cold" ? "bg-slate-500/20 text-slate-400 border border-slate-500/30" :
+                                  st === "contacted" ? "bg-sky-500/20 text-sky-400 border border-sky-500/30" :
                                   "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30"
                                 : st === "won" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" :
                                   st === "lost" ? "bg-red-50 text-red-700 border border-red-200" :
+                                  st === "disqualified" ? "bg-red-100 text-red-700 border border-red-300" :
                                   st === "qualified" ? "bg-amber-50 text-amber-700 border border-amber-200" :
+                                  st === "meeting_scheduled" ? "bg-purple-50 text-purple-700 border border-purple-200" :
+                                  st === "cold" ? "bg-slate-100 text-slate-700 border border-slate-300" :
+                                  st === "contacted" ? "bg-sky-50 text-sky-700 border border-sky-200" :
                                   "bg-cyan-50 text-cyan-700 border border-cyan-200"
                             }`}
                           >
-                            {st}
+                            {st === "new" ? "Novos" :
+                             st === "contacted" ? "Contatado" :
+                             st === "qualified" ? "Qualificado" :
+                             st === "meeting_scheduled" ? "Reunião" :
+                             st === "won" ? "Ganhou" :
+                             st === "lost" ? "Perdeu" :
+                             st === "disqualified" ? "Desqualificado" :
+                             st === "cold" ? "Lead Frio" :
+                             st}
                           </span>
                         </div>
                         <div className={`text-xs truncate ${isSelected ? "text-slate-400" : "text-slate-500"} mb-1`}>
@@ -1309,6 +1345,16 @@ export default function UnifiedAdminDashboard() {
                         Qualificar
                       </button>
                       <button
+                        onClick={() => handleUpdateStatus(selectedLead.id, "meeting_scheduled")}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                          selectedLead.status === "meeting_scheduled"
+                            ? "bg-purple-500 text-white shadow-sm"
+                            : "text-slate-600 hover:text-slate-800 hover:bg-slate-200/50"
+                        }`}
+                      >
+                        Marcar Reunião
+                      </button>
+                      <button
                         onClick={() => handleUpdateStatus(selectedLead.id, "won")}
                         className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                           selectedLead.status === "won"
@@ -1316,7 +1362,27 @@ export default function UnifiedAdminDashboard() {
                             : "text-slate-600 hover:text-slate-800 hover:bg-slate-200/50"
                         }`}
                       >
-                        Ganhar (Won)
+                        Fechar Venda
+                      </button>
+                      <button
+                        onClick={() => handleUpdateStatus(selectedLead.id, "disqualified")}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                          selectedLead.status === "disqualified"
+                            ? "bg-red-500 text-white shadow-sm"
+                            : "text-slate-600 hover:text-slate-800 hover:bg-slate-200/50"
+                        }`}
+                      >
+                        Desqualificar
+                      </button>
+                      <button
+                        onClick={() => handleUpdateStatus(selectedLead.id, "cold")}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                          selectedLead.status === "cold"
+                            ? "bg-slate-500 text-white shadow-sm"
+                            : "text-slate-600 hover:text-slate-800 hover:bg-slate-200/50"
+                        }`}
+                      >
+                        Lead Frio
                       </button>
                       <button
                         onClick={() => handleUpdateStatus(selectedLead.id, "lost")}

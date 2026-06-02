@@ -15,7 +15,7 @@ export type CRMLead = {
   ip?: string
   user_agent?: string
   created_at: string
-  status: 'new' | 'contacted' | 'qualified' | 'won' | 'lost'
+  status: 'new' | 'contacted' | 'qualified' | 'meeting_scheduled' | 'won' | 'lost' | 'disqualified' | 'cold'
   assignee?: string
   tags?: string[]
 }
