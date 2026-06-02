@@ -81,6 +81,15 @@ export function isAdminRequest(req: NextRequest) {
   return result.valid;
 }
 
+export function isFullAdminRequest(req: NextRequest): boolean {
+  const token = getTokenFromRequest(req);
+  if (!token) return false;
+  if (token.startsWith('header:')) return true;
+  const result = verifyToken(token);
+  if (!result.valid || !result.username) return false;
+  return result.username.toLowerCase() === getFullAccessUsername().toLowerCase();
+}
+
 export function validateCredentials(username: string, password: string): { valid: boolean; username: string } {
   const expectedFullUsername = getFullAccessUsername();
   const expectedRestrictedUsername = getRestrictedUsername();

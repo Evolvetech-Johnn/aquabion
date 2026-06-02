@@ -41,7 +41,24 @@ export default function UnifiedAdminDashboard() {
   const [loginError, setLoginError] = useState<string>("");
   const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState<"executive" | "crm" | "media" | "cards">("executive");
+  const [activeTab, setActiveTab] = useState<"executive" | "crm" | "media" | "cards" | "audit">("executive");
+
+  // Audit State
+  const [auditLogs, setAuditLogs] = useState<any[]>([]);
+  const [loadingAudit, setLoadingAudit] = useState(false);
+  const [auditPage, setAuditPage] = useState(1);
+  const [auditPerPage, setAuditPerPage] = useState(25);
+  const [auditTotal, setAuditTotal] = useState(0);
+  const [auditTotalPages, setAuditTotalPages] = useState(1);
+  const [auditFilters, setAuditFilters] = useState({
+    username: "",
+    action: "",
+    entityType: "",
+    status: "",
+    startDate: "",
+    endDate: "",
+    search: ""
+  });
   const [currentUser, setCurrentUser] = useState<string>("");
 
   // CRM State
@@ -256,6 +273,62 @@ export default function UnifiedAdminDashboard() {
     }
   }, [isAuth]);
 
+  // Fetch Audit Logs
+  const fetchAuditLogs = useCallback(async () => {
+    if (!isAuth) return;
+    setLoadingAudit(true);
+    const params = new URLSearchParams();
+    params.set("page", String(auditPage));
+    params.set("perPage", String(auditPerPage));
+    if (auditFilters.username) params.set("username", auditFilters.username);
+    if (auditFilters.action) params.set("action", auditFilters.action);
+    if (auditFilters.entityType) params.set("entityType", auditFilters.entityType);
+    if (auditFilters.status) params.set("status", auditFilters.status);
+    if (auditFilters.startDate) params.set("startDate", auditFilters.startDate);
+    if (auditFilters.endDate) params.set("endDate", auditFilters.endDate);
+    if (auditFilters.search) params.set("search", auditFilters.search);
+
+    try {
+      const res = await fetch(`/api/audit/logs?${params.toString()}`, { credentials: "same-origin" });
+      const json = await res.json();
+      if (json?.ok) {
+        setAuditLogs(json.logs);
+        setAuditTotal(json.total);
+        setAuditTotalPages(json.totalPages);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingAudit(false);
+    }
+  }, [isAuth, auditPage, auditPerPage, auditFilters]);
+
+  // Export Audit Logs to CSV
+  const handleExportAuditCSV = async () => {
+    const params = new URLSearchParams();
+    if (auditFilters.username) params.set("username", auditFilters.username);
+    if (auditFilters.action) params.set("action", auditFilters.action);
+    if (auditFilters.entityType) params.set("entityType", auditFilters.entityType);
+    if (auditFilters.status) params.set("status", auditFilters.status);
+    if (auditFilters.startDate) params.set("startDate", auditFilters.startDate);
+    if (auditFilters.endDate) params.set("endDate", auditFilters.endDate);
+    if (auditFilters.search) params.set("search", auditFilters.search);
+
+    try {
+      const res = await fetch(`/api/audit/export?${params.toString()}`, { credentials: "same-origin" });
+      if (!res.ok) return;
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `audit_logs_aquabion_${new Date().toISOString().split("T")[0]}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   // Initial fetches upon authentication
   useEffect(() => {
     if (isAuth) {
@@ -266,6 +339,13 @@ export default function UnifiedAdminDashboard() {
     }
   }, [isAuth, fetchLeadsData, fetchAllLeadsForStats, fetchMediaData, fetchSlotsData]);
 
+  // Fetch audit logs when active tab is audit
+  useEffect(() => {
+    if (isAuth && activeTab === "audit") {
+      fetchAuditLogs();
+    }
+  }, [isAuth, activeTab, fetchAuditLogs]);
+
   // Refresh current data trigger
   const handleRefresh = () => {
     if (activeTab === "media") {
@@ -273,6 +353,8 @@ export default function UnifiedAdminDashboard() {
     } else if (activeTab === "cards") {
       fetchSlotsData();
       fetchMediaData();
+    } else if (activeTab === "audit") {
+      fetchAuditLogs();
     } else {
       fetchLeadsData();
       fetchAllLeadsForStats();
@@ -686,10 +768,12 @@ export default function UnifiedAdminDashboard() {
               <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
                 Painel Administrativo & Executivo
                 <span className="text-xs bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 rounded-full px-2 py-0.5 font-medium">
-                  Controle Total
+                  {currentUser === process.env.NEXT_PUBLIC_ADMIN_USERNAME_RESTRICTED ? "Acesso Restrito" : "Controle Total"}
                 </span>
               </h1>
-              <p className="text-xs text-slate-400 hidden md:block">Gestão de leads, métricas de negócio e mídias Cloudinary</p>
+              <p className="text-xs text-slate-400 hidden md:block">
+                Logado como: <span className="text-cyan-400 font-semibold">{currentUser}</span> | Gestão de leads, métricas de negócio e mídias Cloudinary
+              </p>
             </div>
           </div>
 
@@ -710,6 +794,15 @@ export default function UnifiedAdminDashboard() {
               >
                 <Download className="w-4 h-4" />
                 <span className="hidden sm:inline">Exportar CSV</span>
+              </button>
+            )}
+            {activeTab === "audit" && (
+              <button
+                onClick={handleExportAuditCSV}
+                className="p-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl transition-colors flex items-center gap-2 text-sm px-4"
+              >
+                <Download className="w-4 h-4" />
+                <span className="hidden sm:inline">Exportar Logs</span>
               </button>
             )}
 
@@ -773,6 +866,17 @@ export default function UnifiedAdminDashboard() {
               >
                 <Sliders className="w-4 h-4" />
                 Gerenciador de Cards ({slotsList.length})
+              </button>
+              <button
+                onClick={() => { setActiveTab("audit"); setSelectedLead(null); }}
+                className={`flex items-center gap-2.5 px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
+                  activeTab === "audit"
+                    ? "bg-slate-900 text-white shadow-md shadow-slate-950/10 scale-[1.02]"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-300/40"
+                }`}
+              >
+                <AlertTriangle className="w-4 h-4" />
+                Auditoria & Logs
               </button>
             </>
           )}
@@ -1694,6 +1798,183 @@ export default function UnifiedAdminDashboard() {
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* 📝 TAB 5: AUDITORIA & LOGS */}
+        {activeTab === "audit" && currentUser.toLowerCase() !== process.env.NEXT_PUBLIC_ADMIN_USERNAME_RESTRICTED?.toLowerCase() && (
+          <div className="space-y-8 animate-fade-in flex-grow flex flex-col">
+            {/* Filters Bar */}
+            <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm">
+              <h3 className="text-xl font-bold text-slate-950 mb-6 flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 text-cyan-600" />
+                Filtros de Auditoria
+              </h3>
+              
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <div>
+                  <label className="text-xs font-semibold text-slate-600 mb-2 block">Usuário</label>
+                  <input
+                    type="text"
+                    value={auditFilters.username}
+                    onChange={(e) => setAuditFilters(f => ({ ...f, username: e.target.value }))}
+                    placeholder="Filtrar por usuário"
+                    className="w-full h-10 px-3 rounded-lg border border-slate-200 bg-slate-50 text-sm text-slate-900 focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-slate-600 mb-2 block">Ação</label>
+                  <select
+                    value={auditFilters.action}
+                    onChange={(e) => setAuditFilters(f => ({ ...f, action: e.target.value }))}
+                    className="w-full h-10 px-3 rounded-lg border border-slate-200 bg-slate-50 text-sm text-slate-900 focus:outline-none focus:border-cyan-500"
+                  >
+                    <option value="">Todas as ações</option>
+                    <option value="LOGIN_SUCCESS">Login Bem-sucedido</option>
+                    <option value="LOGIN_FAILED">Login Falho</option>
+                    <option value="LOGOUT">Logout</option>
+                    <option value="LEAD_CREATED">Lead Criado</option>
+                    <option value="LEAD_UPDATED">Lead Atualizado</option>
+                    <option value="LEAD_DELETED">Lead Arquivado</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-slate-600 mb-2 block">Status</label>
+                  <select
+                    value={auditFilters.status}
+                    onChange={(e) => setAuditFilters(f => ({ ...f, status: e.target.value }))}
+                    className="w-full h-10 px-3 rounded-lg border border-slate-200 bg-slate-50 text-sm text-slate-900 focus:outline-none focus:border-cyan-500"
+                  >
+                    <option value="">Todos os status</option>
+                    <option value="SUCCESS">Sucesso</option>
+                    <option value="FAILED">Falha</option>
+                    <option value="WARNING">Aviso</option>
+                    <option value="INFO">Informação</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-slate-600 mb-2 block">Busca</label>
+                  <input
+                    type="text"
+                    value={auditFilters.search}
+                    onChange={(e) => setAuditFilters(f => ({ ...f, search: e.target.value }))}
+                    placeholder="Buscar por ID, usuário..."
+                    className="w-full h-10 px-3 rounded-lg border border-slate-200 bg-slate-50 text-sm text-slate-900 focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2 mt-4">
+                <div>
+                  <label className="text-xs font-semibold text-slate-600 mb-2 block">Data Inicial</label>
+                  <input
+                    type="date"
+                    value={auditFilters.startDate}
+                    onChange={(e) => setAuditFilters(f => ({ ...f, startDate: e.target.value }))}
+                    className="w-full h-10 px-3 rounded-lg border border-slate-200 bg-slate-50 text-sm text-slate-900 focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-slate-600 mb-2 block">Data Final</label>
+                  <input
+                    type="date"
+                    value={auditFilters.endDate}
+                    onChange={(e) => setAuditFilters(f => ({ ...f, endDate: e.target.value }))}
+                    className="w-full h-10 px-3 rounded-lg border border-slate-200 bg-slate-50 text-sm text-slate-900 focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+              </div>
+
+              <div className="mt-6 flex justify-end">
+                <button
+                  onClick={() => { setAuditPage(1); fetchAuditLogs(); }}
+                  className="h-10 px-6 bg-cyan-600 text-white rounded-xl hover:bg-cyan-500 text-sm font-semibold transition-colors"
+                >
+                  Aplicar Filtros
+                </button>
+              </div>
+            </div>
+
+            {/* Logs Table */}
+            <div className="bg-white border border-slate-200/80 rounded-[2rem] p-8 shadow-sm flex-grow">
+              <h3 className="text-xl font-bold text-slate-950 mb-6">Logs de Auditoria ({auditTotal})</h3>
+
+              {loadingAudit ? (
+                <div className="flex flex-col items-center justify-center py-24 text-slate-400 text-xs gap-3">
+                  <RefreshCw className="w-8 h-8 animate-spin text-cyan-600" />
+                  <span>Carregando logs...</span>
+                </div>
+              ) : auditLogs.length === 0 ? (
+                <div className="text-center py-24 text-slate-400 text-sm font-medium">
+                  Nenhum log encontrado.
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-slate-200">
+                        <th className="text-left text-xs font-semibold text-slate-600 pb-3">Data & Hora</th>
+                        <th className="text-left text-xs font-semibold text-slate-600 pb-3">Usuário</th>
+                        <th className="text-left text-xs font-semibold text-slate-600 pb-3">Ação</th>
+                        <th className="text-left text-xs font-semibold text-slate-600 pb-3">Entidade</th>
+                        <th className="text-left text-xs font-semibold text-slate-600 pb-3">Status</th>
+                        <th className="text-left text-xs font-semibold text-slate-600 pb-3">IP</th>
+                        <th className="text-left text-xs font-semibold text-slate-600 pb-3">Browser</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {auditLogs.map((log: any) => (
+                        <tr key={log.id} className="hover:bg-slate-50">
+                          <td className="py-3 text-xs text-slate-600">{formatDate(log.createdAt)}</td>
+                          <td className="py-3 text-xs font-semibold text-slate-900">{log.username || "Sistema"}</td>
+                          <td className="py-3 text-xs text-slate-700">{log.action}</td>
+                          <td className="py-3 text-xs text-slate-600">{log.entityType || "-"}</td>
+                          <td className="py-3">
+                            <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${
+                              log.status === "SUCCESS" ? "bg-emerald-100 text-emerald-700" :
+                              log.status === "FAILED" ? "bg-red-100 text-red-700" :
+                              log.status === "WARNING" ? "bg-amber-100 text-amber-700" :
+                              "bg-slate-100 text-slate-700"
+                            }`}>
+                              {log.status}
+                            </span>
+                          </td>
+                          <td className="py-3 text-xs text-slate-500 font-mono">{log.ipAddress || "-"}</td>
+                          <td className="py-3 text-xs text-slate-600">{log.browser || "-"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {/* Pagination */}
+              {!loadingAudit && auditTotalPages > 1 && (
+                <div className="mt-6 flex justify-between items-center border-t border-slate-200 pt-4">
+                  <span className="text-xs text-slate-500">Página {auditPage} de {auditTotalPages}</span>
+                  <div className="flex gap-2">
+                    <button
+                      disabled={auditPage <= 1}
+                      onClick={() => setAuditPage(p => p - 1)}
+                      className="px-4 py-2 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-40 transition-colors"
+                    >
+                      Anterior
+                    </button>
+                    <button
+                      disabled={auditPage >= auditTotalPages}
+                      onClick={() => setAuditPage(p => p + 1)}
+                      className="px-4 py-2 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-40 transition-colors"
+                    >
+                      Próximo
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>

@@ -3,6 +3,7 @@ import crypto from 'crypto'
 import { listLeads, createLead } from '@/crm/store'
 import { CRMLead } from '@/crm/types'
 import { isAdminRequest } from '@/lib/adminAuth'
+import { AuditService } from '@/audit/service'
 
 type SortableKey = 'created_at' | 'name' | 'email'
 
@@ -92,6 +93,14 @@ export async function POST(request: NextRequest) {
     }
 
     await createLead(lead)
+    
+    // Audit logging is non-blocking - don't fail the request if it fails
+    try {
+      await AuditService.logLeadCreated(lead, request)
+    } catch (auditError) {
+      console.error('Failed to log audit entry:', auditError)
+    }
+    
     return NextResponse.json({ ok: true, lead }, { status: 201 })
   } catch (err) {
     return NextResponse.json({ ok: false, error: String(err) }, { status: 500 })

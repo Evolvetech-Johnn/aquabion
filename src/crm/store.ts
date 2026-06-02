@@ -2,9 +2,12 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import { CRMLead, CRMNote, CRMActivity } from './types'
 
+const isVercel = process.env.VERCEL === '1' || process.env.VERCEL_ENV
 const DATA_DIR = path.join(process.cwd(), 'crm_data')
 
 async function ensureFile(file: string, initial = '[]') {
+  if (isVercel) return
+  
   try {
     await fs.mkdir(DATA_DIR, { recursive: true })
     await fs.access(file)
@@ -14,6 +17,8 @@ async function ensureFile(file: string, initial = '[]') {
 }
 
 async function readFile<T>(name: string): Promise<T[]> {
+  if (isVercel) return []
+  
   const file = path.join(DATA_DIR, name)
   await ensureFile(file)
   const raw = await fs.readFile(file, 'utf8')
@@ -21,6 +26,8 @@ async function readFile<T>(name: string): Promise<T[]> {
 }
 
 async function writeFile<T>(name: string, data: T[]) {
+  if (isVercel) return
+  
   const file = path.join(DATA_DIR, name)
   await fs.writeFile(file, JSON.stringify(data, null, 2), 'utf8')
 }

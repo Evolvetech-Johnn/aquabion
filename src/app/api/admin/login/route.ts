@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { issueToken, validateCredentials } from '@/lib/adminAuth'
+import { AuditService } from '@/audit/service'
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,9 +29,11 @@ export async function POST(request: NextRequest) {
     }
 
     if (!authenticated) {
+      await AuditService.logLogin(false, username, request)
       return NextResponse.json({ ok: false }, { status: 401 })
     }
 
+    await AuditService.logLogin(true, loginUsername, request)
     const token = issueToken(loginUsername)
     const res = NextResponse.json({ ok: true, username: loginUsername })
     res.headers.set('Set-Cookie', `admin_token=${token}; HttpOnly; Path=/; Max-Age=${8*60*60}; SameSite=Lax`)
