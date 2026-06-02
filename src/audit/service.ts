@@ -1,8 +1,9 @@
 import { NextRequest } from "next/server";
 import { createAuditLog } from "./store";
-import { AuditAction, AuditEntityType, AuditStatus, CreateAuditLogInput } from "./types";
+import { AuditAction, CreateAuditLogInput } from "./types";
 import { maskSensitiveData, parseUserAgent } from "./utils";
 import { getUsernameFromRequest } from "@/lib/adminAuth";
+import type { CRMLead } from "@/crm/types";
 
 export class AuditService {
   static async log(
@@ -71,47 +72,47 @@ export class AuditService {
   }
 
   static async logLeadCreated(
-    lead: any,
+    lead: CRMLead,
     request?: NextRequest
   ): Promise<void> {
     const common = this.extractRequestInfo(request);
-    const username = request ? await getUsernameFromRequest(request) : undefined;
+    const username = request ? getUsernameFromRequest(request) : undefined;
     await this.logSuccess("LEAD_CREATED", {
       entityType: "LEAD",
       entityId: lead.id,
-      newData: lead,
+      newData: lead as unknown as Record<string, unknown>,
       username,
       ...common,
     });
   }
 
   static async logLeadUpdated(
-    oldLead: any,
-    newLead: any,
+    oldLead: CRMLead,
+    newLead: CRMLead,
     request?: NextRequest
   ): Promise<void> {
     const common = this.extractRequestInfo(request);
-    const username = request ? await getUsernameFromRequest(request) : undefined;
+    const username = request ? getUsernameFromRequest(request) : undefined;
     await this.logSuccess("LEAD_UPDATED", {
       entityType: "LEAD",
       entityId: newLead.id,
-      oldData: oldLead,
-      newData: newLead,
+      oldData: oldLead as unknown as Record<string, unknown>,
+      newData: newLead as unknown as Record<string, unknown>,
       username,
       ...common,
     });
   }
 
   static async logLeadDeleted(
-    lead: any,
+    lead: CRMLead,
     request?: NextRequest
   ): Promise<void> {
     const common = this.extractRequestInfo(request);
-    const username = request ? await getUsernameFromRequest(request) : undefined;
+    const username = request ? getUsernameFromRequest(request) : undefined;
     await this.logSuccess("LEAD_DELETED", {
       entityType: "LEAD",
       entityId: lead.id,
-      oldData: lead,
+      oldData: lead as unknown as Record<string, unknown>,
       username,
       ...common,
     });

@@ -1,5 +1,37 @@
 [
   {
+    "id": "bd9fbcb5-04af-4a2f-97a4-ba075560135b",
+    "action": "LEAD_CREATED",
+    "entityType": "LEAD",
+    "entityId": "b35a7092-50b0-421e-b404-a7e2e38a6ce3",
+    "oldData": null,
+    "newData": {
+      "id": "b35a7092-50b0-421e-b404-a7e2e38a6ce3",
+      "name": "Jo�o Pereira",
+      "email": "joao@exemplo.com",
+      "phone": "(31) 97777-7777",
+      "company": "Nova Empresa",
+      "segment": "agro",
+      "message": "Interessado nos produtos!",
+      "city": "Belo Horizonte",
+      "state": "MG",
+      "source": "web",
+      "landing_page": "/contato",
+      "utm": null,
+      "ip": "::1",
+      "user_agent": "Mozilla/5.0 (Windows NT; Windows NT 10.0; pt-BR) WindowsPowerShell/5.1.26100.8521",
+      "created_at": "2026-06-02T01:24:39.902Z",
+      "status": "new"
+    },
+    "status": "SUCCESS",
+    "ipAddress": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT; Windows NT 10.0; pt-BR) WindowsPowerShell/5.1.26100.8521",
+    "operatingSystem": "Windows",
+    "requestMethod": "POST",
+    "requestUrl": "http://localhost:3000/api/crm/leads",
+    "createdAt": "2026-06-02T01:24:39.907Z"
+  },
+  {
     "id": "f7c2546a-ab7c-4f55-bee1-16fdf28be210",
     "action": "LEAD_CREATED",
     "entityType": "LEAD",

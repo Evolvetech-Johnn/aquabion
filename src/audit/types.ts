@@ -58,8 +58,8 @@ export interface AuditLog {
   action: AuditAction;
   entityType?: AuditEntityType;
   entityId?: string;
-  oldData?: Record<string, any> | null;
-  newData?: Record<string, any> | null;
+  oldData?: Record<string, unknown> | null;
+  newData?: Record<string, unknown> | null;
   status: AuditStatus;
   ipAddress?: string;
   userAgent?: string;
@@ -78,8 +78,8 @@ export interface CreateAuditLogInput {
   action: AuditAction;
   entityType?: AuditEntityType;
   entityId?: string;
-  oldData?: Record<string, any> | null;
-  newData?: Record<string, any> | null;
+  oldData?: Record<string, unknown> | null;
+  newData?: Record<string, unknown> | null;
   status?: AuditStatus;
   ipAddress?: string;
   userAgent?: string;

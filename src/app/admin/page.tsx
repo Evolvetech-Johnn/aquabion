@@ -33,6 +33,7 @@ import { Button } from "@/components/ui/button";
 import Image from 'next/image';
 import type { CRMLead, CRMNote } from "@/crm/types";
 import type { CloudinaryMedia } from "@/lib/cloudinaryStore";
+import type { AuditLog } from "@/audit/types";
 
 export default function UnifiedAdminDashboard() {
   const [isAuth, setIsAuth] = useState<boolean>(false);
@@ -44,7 +45,7 @@ export default function UnifiedAdminDashboard() {
   const [activeTab, setActiveTab] = useState<"executive" | "crm" | "media" | "cards" | "audit">("executive");
 
   // Audit State
-  const [auditLogs, setAuditLogs] = useState<any[]>([]);
+  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [loadingAudit, setLoadingAudit] = useState(false);
   const [auditPage, setAuditPage] = useState(1);
   const [auditPerPage, setAuditPerPage] = useState(25);
@@ -1927,7 +1928,7 @@ export default function UnifiedAdminDashboard() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                      {auditLogs.map((log: any) => (
+                      {auditLogs.map((log: AuditLog) => (
                         <tr key={log.id} className="hover:bg-slate-50">
                           <td className="py-3 text-xs text-slate-600">{formatDate(log.createdAt)}</td>
                           <td className="py-3 text-xs font-semibold text-slate-900">{log.username || "Sistema"}</td>

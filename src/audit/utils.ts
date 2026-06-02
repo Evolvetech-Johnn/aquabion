@@ -27,7 +27,7 @@ export function parseUserAgent(userAgent?: string): UserAgentInfo {
   return { browser, operatingSystem: os };
 }
 
-export function maskSensitiveData(data: Record<string, any> | null): Record<string, any> | null {
+export function maskSensitiveData(data: Record<string, unknown> | null): Record<string, unknown> | null {
   if (!data) return null;
   const masked = { ...data };
   const sensitiveFields = [
