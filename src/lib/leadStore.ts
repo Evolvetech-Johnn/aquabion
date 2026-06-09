@@ -39,51 +39,38 @@ function mapMongoToLead(doc: WithId<Document>): Lead {
 export async function saveLead(lead: Lead): Promise<void> {
   try {
     const db = await getDb()
-    await db.collection('leads').insertOne(lead)
-    if (!isVercel) {
-      await ensureDataFile()
-      const raw = await fs.readFile(LEADS_FILE, 'utf8')
-      const arr: Lead[] = raw ? JSON.parse(raw) : []
-      arr.push(lead)
-      await fs.writeFile(LEADS_FILE, JSON.stringify(arr, null, 2), 'utf8')
+    if (db) {
+      await db.collection('leads').insertOne(lead)
     }
   } catch (error) {
     console.error('Failed to save lead in MongoDB, falling back to JSON:', error)
-    if (!isVercel) {
-      await ensureDataFile()
-      const raw = await fs.readFile(LEADS_FILE, 'utf8')
-      const arr: Lead[] = raw ? JSON.parse(raw) : []
-      arr.push(lead)
-      await fs.writeFile(LEADS_FILE, JSON.stringify(arr, null, 2), 'utf8')
-    }
+  }
+  if (!isVercel) {
+    await ensureDataFile()
+    const raw = await fs.readFile(LEADS_FILE, 'utf8')
+    const arr: Lead[] = raw ? JSON.parse(raw) : []
+    arr.push(lead)
+    await fs.writeFile(LEADS_FILE, JSON.stringify(arr, null, 2), 'utf8')
   }
 }
 
 export async function updateLead(submission_id: string, patch: Partial<Lead>): Promise<void> {
   try {
     const db = await getDb()
-    await db.collection('leads').updateOne({ submission_id }, { $set: patch })
-    if (!isVercel) {
-      await ensureDataFile()
-      const raw = await fs.readFile(LEADS_FILE, 'utf8')
-      const arr: Lead[] = raw ? JSON.parse(raw) : []
-      const idx = arr.findIndex(l => l.submission_id === submission_id)
-      if (idx !== -1) {
-        arr[idx] = { ...arr[idx], ...patch }
-        await fs.writeFile(LEADS_FILE, JSON.stringify(arr, null, 2), 'utf8')
-      }
+    if (db) {
+      await db.collection('leads').updateOne({ submission_id }, { $set: patch })
     }
   } catch (error) {
     console.error('Failed to update lead in MongoDB, falling back to JSON:', error)
-    if (!isVercel) {
-      await ensureDataFile()
-      const raw = await fs.readFile(LEADS_FILE, 'utf8')
-      const arr: Lead[] = raw ? JSON.parse(raw) : []
-      const idx = arr.findIndex(l => l.submission_id === submission_id)
-      if (idx !== -1) {
-        arr[idx] = { ...arr[idx], ...patch }
-        await fs.writeFile(LEADS_FILE, JSON.stringify(arr, null, 2), 'utf8')
-      }
+  }
+  if (!isVercel) {
+    await ensureDataFile()
+    const raw = await fs.readFile(LEADS_FILE, 'utf8')
+    const arr: Lead[] = raw ? JSON.parse(raw) : []
+    const idx = arr.findIndex(l => l.submission_id === submission_id)
+    if (idx !== -1) {
+      arr[idx] = { ...arr[idx], ...patch }
+      await fs.writeFile(LEADS_FILE, JSON.stringify(arr, null, 2), 'utf8')
     }
   }
 }
@@ -91,16 +78,18 @@ export async function updateLead(submission_id: string, patch: Partial<Lead>): P
 export async function getPendingLeads(): Promise<Lead[]> {
   try {
     const db = await getDb()
-    const docs = await db.collection('leads').find({ status: 'pending' }).toArray()
-    return docs.map(mapMongoToLead)
+    if (db) {
+      const docs = await db.collection('leads').find({ status: 'pending' }).toArray()
+      return docs.map(mapMongoToLead)
+    }
   } catch (error) {
     console.error('Failed to get pending leads from MongoDB, falling back to JSON:', error)
-    if (!isVercel) {
-      await ensureDataFile()
-      const raw = await fs.readFile(LEADS_FILE, 'utf8')
-      const arr: Lead[] = raw ? JSON.parse(raw) : []
-      return arr.filter(l => l.status === 'pending')
-    }
-    return []
   }
+  if (!isVercel) {
+    await ensureDataFile()
+    const raw = await fs.readFile(LEADS_FILE, 'utf8')
+    const arr: Lead[] = raw ? JSON.parse(raw) : []
+    return arr.filter(l => l.status === 'pending')
+  }
+  return []
 }

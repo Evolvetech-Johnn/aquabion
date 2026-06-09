@@ -82,31 +82,35 @@ function mapMongoToCRMActivity(doc: WithId<Document>): CRMActivity {
 export async function listLeads(): Promise<CRMLead[]> {
   try {
     const db = await getDb()
-    const docs = await db.collection('crm_leads').find({}).sort({ created_at: -1 }).toArray()
-    const leads = docs.map(mapMongoToCRMLead)
-    await writeFile('leads.json', leads)
-    return leads
+    if (db) {
+      const docs = await db.collection('crm_leads').find({}).sort({ created_at: -1 }).toArray()
+      const leads = docs.map(mapMongoToCRMLead)
+      await writeFile('leads.json', leads)
+      return leads
+    }
   } catch (error) {
     console.error('Failed to list leads from MongoDB, falling back to JSON:', error)
-    return readFile<CRMLead>('leads.json')
   }
+  return readFile<CRMLead>('leads.json')
 }
 
 export async function getLead(id: string): Promise<CRMLead | undefined> {
   try {
     const db = await getDb()
-    let doc: WithId<Document> | null = null
-    
-    // Try finding by id field first
-    doc = await db.collection('crm_leads').findOne({ id })
-    
-    // If not found, try by _id
-    if (!doc && ObjectId.isValid(id)) {
-      doc = await db.collection('crm_leads').findOne({ _id: new ObjectId(id) })
-    }
-    
-    if (doc) {
-      return mapMongoToCRMLead(doc)
+    if (db) {
+      let doc: WithId<Document> | null = null
+      
+      // Try finding by id field first
+      doc = await db.collection('crm_leads').findOne({ id })
+      
+      // If not found, try by _id
+      if (!doc && ObjectId.isValid(id)) {
+        doc = await db.collection('crm_leads').findOne({ _id: new ObjectId(id) })
+      }
+      
+      if (doc) {
+        return mapMongoToCRMLead(doc)
+      }
     }
   } catch (error) {
     console.error('Failed to get lead from MongoDB, falling back to JSON:', error)
@@ -118,98 +122,106 @@ export async function getLead(id: string): Promise<CRMLead | undefined> {
 export async function createLead(lead: CRMLead): Promise<void> {
   try {
     const db = await getDb()
-    await db.collection('crm_leads').insertOne(lead)
-    const leads = await listLeads()
-    await writeFile('leads.json', [lead, ...leads])
+    if (db) {
+      await db.collection('crm_leads').insertOne(lead)
+    }
   } catch (error) {
     console.error('Failed to create lead in MongoDB, falling back to JSON:', error)
-    const leads = await listLeads()
-    leads.unshift(lead)
-    await writeFile('leads.json', leads)
   }
+  const leads = await listLeads()
+  leads.unshift(lead)
+  await writeFile('leads.json', leads)
 }
 
 export async function updateLead(id: string, patch: Partial<CRMLead>): Promise<void> {
   try {
-    const db = await getDb()
-    
-    // Try updating by id first
-    const updateResult = await db.collection('crm_leads').updateOne({ id }, { $set: patch })
-    
-    // If no document matched, try updating by _id
-    if (updateResult.matchedCount === 0 && ObjectId.isValid(id)) {
-      await db.collection('crm_leads').updateOne({ _id: new ObjectId(id) }, { $set: patch })
+    // Try updating in MongoDB first
+    try {
+      const db = await getDb()
+      if (db) {
+        // Try updating by id first
+        const updateResult = await db.collection('crm_leads').updateOne({ id }, { $set: patch })
+        
+        // If no document matched, try updating by _id
+        if (updateResult.matchedCount === 0 && ObjectId.isValid(id)) {
+          await db.collection('crm_leads').updateOne({ _id: new ObjectId(id) }, { $set: patch })
+        }
+      }
+    } catch (mongoError) {
+      console.error('MongoDB update failed, proceeding with JSON:', mongoError)
     }
     
-    const leads = await listLeads()
+    // Always update the JSON file as fallback/sync
+    const leads = await readFile<CRMLead>('leads.json')
     const idx = leads.findIndex(l => l.id === id)
     if (idx !== -1) {
       leads[idx] = { ...leads[idx], ...patch }
       await writeFile('leads.json', leads)
+    } else {
+      console.warn('Lead not found in JSON file:', id)
     }
   } catch (error) {
-    console.error('Failed to update lead in MongoDB, falling back to JSON:', error)
-    const leads = await listLeads()
-    const idx = leads.findIndex(l => l.id === id)
-    if (idx !== -1) {
-      leads[idx] = { ...leads[idx], ...patch }
-      await writeFile('leads.json', leads)
-    }
+    console.error('Failed to update lead:', error)
+    throw error
   }
 }
 
 export async function listNotes(): Promise<CRMNote[]> {
   try {
     const db = await getDb()
-    const docs = await db.collection('crm_notes').find({}).sort({ created_at: -1 }).toArray()
-    const notes = docs.map(mapMongoToCRMNote)
-    await writeFile('notes.json', notes)
-    return notes
+    if (db) {
+      const docs = await db.collection('crm_notes').find({}).sort({ created_at: -1 }).toArray()
+      const notes = docs.map(mapMongoToCRMNote)
+      await writeFile('notes.json', notes)
+      return notes
+    }
   } catch (error) {
     console.error('Failed to list notes from MongoDB, falling back to JSON:', error)
-    return readFile<CRMNote>('notes.json')
   }
+  return readFile<CRMNote>('notes.json')
 }
 
 export async function createNote(note: CRMNote): Promise<void> {
   try {
     const db = await getDb()
-    await db.collection('crm_notes').insertOne(note)
-    const notes = await listNotes()
-    await writeFile('notes.json', [note, ...notes])
+    if (db) {
+      await db.collection('crm_notes').insertOne(note)
+    }
   } catch (error) {
     console.error('Failed to create note in MongoDB, falling back to JSON:', error)
-    const notes = await listNotes()
-    notes.unshift(note)
-    await writeFile('notes.json', notes)
   }
+  const notes = await listNotes()
+  notes.unshift(note)
+  await writeFile('notes.json', notes)
 }
 
 export async function listActivities(): Promise<CRMActivity[]> {
   try {
     const db = await getDb()
-    const docs = await db.collection('crm_activities').find({}).sort({ created_at: -1 }).toArray()
-    const activities = docs.map(mapMongoToCRMActivity)
-    await writeFile('activities.json', activities)
-    return activities
+    if (db) {
+      const docs = await db.collection('crm_activities').find({}).sort({ created_at: -1 }).toArray()
+      const activities = docs.map(mapMongoToCRMActivity)
+      await writeFile('activities.json', activities)
+      return activities
+    }
   } catch (error) {
     console.error('Failed to list activities from MongoDB, falling back to JSON:', error)
-    return readFile<CRMActivity>('activities.json')
   }
+  return readFile<CRMActivity>('activities.json')
 }
 
 export async function createActivity(activity: CRMActivity): Promise<void> {
   try {
     const db = await getDb()
-    await db.collection('crm_activities').insertOne(activity)
-    const acts = await listActivities()
-    await writeFile('activities.json', [activity, ...acts])
+    if (db) {
+      await db.collection('crm_activities').insertOne(activity)
+    }
   } catch (error) {
     console.error('Failed to create activity in MongoDB, falling back to JSON:', error)
-    const acts = await listActivities()
-    acts.unshift(activity)
-    await writeFile('activities.json', acts)
   }
+  const acts = await listActivities()
+  acts.unshift(activity)
+  await writeFile('activities.json', acts)
 }
 
 /**
@@ -223,6 +235,9 @@ export async function syncJsonToMongoDB(): Promise<{ success: boolean; syncedLea
   
   try {
     const db = await getDb()
+    if (!db) {
+      return { success: false, syncedLeads: 0, syncedNotes: 0, syncedActivities: 0, error: 'MongoDB not configured' }
+    }
     
     // Sync Leads
     const jsonLeads = await readFile<CRMLead>('leads.json')

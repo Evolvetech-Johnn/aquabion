@@ -15,10 +15,10 @@ const options = {
 let client: MongoClient;
 let clientPromise: Promise<MongoClient>;
 
-function getClientPromise(): Promise<MongoClient> {
+function getClientPromise(): Promise<MongoClient> | null {
   const uri = process.env.MONGODB_URI || '';
   if (!uri) {
-    throw new Error('Please add your MONGODB_URI to .env.local');
+    return null;
   }
 
   if (process.env.NODE_ENV === 'development') {
@@ -37,9 +37,12 @@ function getClientPromise(): Promise<MongoClient> {
 }
 
 // Get client promise without proxy to avoid errors
-export async function getClientPromiseSafe(): Promise<MongoClient> {
+export async function getClientPromiseSafe(): Promise<MongoClient> | null {
+  const promise = getClientPromise();
+  if (!promise) return null;
+  
   if (!clientPromise) {
-    clientPromise = getClientPromise();
+    clientPromise = promise;
   }
   return clientPromise;
 }
@@ -47,7 +50,8 @@ export async function getClientPromiseSafe(): Promise<MongoClient> {
 // Remove the broken default export
 // export default getClientPromiseSafe();
 
-export async function getDb(): Promise<Db> {
+export async function getDb(): Promise<Db> | null {
   const client = await getClientPromiseSafe();
+  if (!client) return null;
   return client.db(process.env.MONGODB_DB_NAME || 'aquabion');
 }
