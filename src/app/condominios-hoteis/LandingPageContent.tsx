@@ -6,23 +6,26 @@ import {
   TrendingUp, Droplets, Zap, Leaf, Shield, Clock, ArrowRight, 
   CheckCircle2, Building2, Hotel, 
   ShieldAlert, ShieldCheck,
-  ChevronDown, ChevronUp
+  ChevronDown, ChevronUp,
+  Send
 } from 'lucide-react';
 import AnimatedSection from '@/components/AnimatedSection';
 
 export default function LandingPageContent() {
   const [formData, setFormData] = useState({
-    nome: '',
-    empresa: '',
-    cargo: '',
-    telefone: '',
+    name: '',
+    company: '',
+    phone: '',
     email: '',
-    cidade: '',
-    estado: '',
-    tipoEmpreendimento: '',
-    numeroUnidades: '',
-    comentarios: '',
+    city: '',
+    state: '',
+    segment: '',
+    message: '',
+    landing_page: '/condominios-hoteis'
   });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
@@ -55,9 +58,28 @@ export default function LandingPageContent() {
 
   const economia = calculateEconomy();
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Obrigado! Entraremos em contato em breve.');
+    setIsSubmitting(true);
+
+    try {
+      const res = await fetch('/api/crm/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      
+      if (res.ok) {
+        setIsSubmitted(true);
+      } else {
+        throw new Error('Falha ao enviar');
+      }
+    } catch (error) {
+      console.error('Erro ao enviar formulário:', error);
+      alert('Ocorreu um erro ao enviar. Por favor, tente novamente.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const faqItems = [
@@ -78,57 +100,81 @@ export default function LandingPageContent() {
     { question: 'Tem atendimento em todo o Brasil?', answer: 'Sim, temos representantes em todo o território nacional.' },
   ];
 
+  if (isSubmitted) {
+    return (
+      <div className="min-h-screen bg-slate-50 text-slate-950 flex items-center justify-center py-24">
+        <div className="container mx-auto px-6 max-w-4xl rounded-[2rem] bg-white border border-slate-200 p-12 shadow-xl text-center">
+          <CheckCircle2 className="w-24 h-24 text-emerald-500 mx-auto mb-8" />
+          <h2 className="text-4xl md:text-5xl font-semibold mb-6 text-slate-950">Obrigado pelo contato!</h2>
+          <p className="text-xl text-slate-600 mb-10 max-w-2xl mx-auto">
+            Nossa equipe entrará em contato em breve para agendar seu diagnóstico técnico gratuito.
+          </p>
+          <Link href="/">
+            <Button size="lg" className="h-16 bg-cyan-600 text-white hover:bg-cyan-500 shadow-xl">
+              Voltar para a página inicial
+              <ArrowRight className="w-5 h-5" />
+            </Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-950">
       {/* HERO SECTION */}
-      <section className="relative bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white pt-24 pb-20">
-        <div className="container mx-auto px-6 max-w-7xl">
+      <section className="relative overflow-hidden bg-gradient-to-br from-cyan-500 via-sky-500 to-slate-950 text-white pt-24 pb-20">
+        <div className="absolute inset-x-0 top-0 h-80 bg-gradient-to-b from-cyan-400/40 via-transparent to-transparent pointer-events-none" />
+        <div className="absolute right-0 top-16 h-72 w-72 rounded-full bg-cyan-200/40 blur-3xl" />
+        <div className="absolute left-0 top-28 h-56 w-56 rounded-full bg-slate-100/20 blur-3xl" />
+        <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent pointer-events-none" />
+        <div className="container mx-auto px-6 max-w-7xl relative">
           <AnimatedSection>
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div className="space-y-8">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-500/10 border border-cyan-400/30 rounded-full text-cyan-300 text-sm">
-                  <CheckCircle2 className="w-4 h-4" />
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/15 px-4 py-2 text-sm font-semibold text-white shadow-sm backdrop-blur-sm">
+                  <CheckCircle2 className="w-4 h-4 text-cyan-100" />
                   <span>Tecnologia Alemã com Resultados Comprovados</span>
               </div>
-              <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-tight">
+              <h1 className="text-5xl md:text-6xl font-semibold tracking-tight leading-tight">
                 Reduza Custos de Manutenção e Proteja Seu Patrimônio Contra os Danos do Calcário
               </h1>
-              <p className="text-xl text-slate-300 leading-relaxed">
+              <p className="max-w-2xl text-lg text-cyan-100 leading-8">
                 A tecnologia alemã Aquabion protege tubulações, boilers, aquecedores e sistemas hidráulicos sem utilizar energia elétrica, sal ou produtos químicos.
               </p>
               <div className="flex flex-wrap gap-4">
                 <Link href="/contato">
-                  <Button size="lg" className="h-16 px-8 bg-cyan-600 hover:bg-cyan-500 shadow-xl shadow-cyan-500/40 text-white">
+                  <Button size="lg" className="h-16 px-8 bg-white text-slate-950 shadow-xl hover:bg-slate-100">
                     Solicitar Diagnóstico Gratuito
                     <ArrowRight className="w-5 h-5" />
                   </Button>
                 </Link>
-                <Button size="lg" variant="outline" className="h-16 px-8 border-slate-600 text-white hover:bg-slate-800">
+                <Button size="lg" className="h-16 px-8 bg-white/20 text-white border border-white/30 hover:bg-white/30 backdrop-blur-sm shadow-lg">
                   Falar com Especialista
                 </Button>
               </div>
-              <div className="grid grid-cols-3 gap-6 pt-8 border-t border-slate-800">
+              <div className="grid grid-cols-3 gap-6 pt-8 border-t border-white/20">
                 <div className="space-y-1">
-                  <p className="text-3xl font-bold text-cyan-400">+50</p>
-                  <p className="text-sm text-slate-400">Países atendidos</p>
+                  <p className="text-3xl font-bold text-white">+50</p>
+                  <p className="text-sm text-cyan-100">Países atendidos</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-3xl font-bold text-cyan-400">25+</p>
-                  <p className="text-sm text-slate-400">Anos de experiência</p>
+                  <p className="text-3xl font-bold text-white">25+</p>
+                  <p className="text-sm text-cyan-100">Anos de experiência</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-3xl font-bold text-cyan-400">100k+</p>
-                  <p className="text-sm text-slate-400">Instalações</p>
+                  <p className="text-3xl font-bold text-white">100k+</p>
+                  <p className="text-sm text-cyan-100">Instalações</p>
                 </div>
               </div>
             </div>
             <div className="relative">
-              <div className="relative rounded-[2rem] overflow-hidden border border-slate-700 shadow-[0_20px_80px_rgba(0,0,0,0.5)] bg-gradient-to-br from-slate-800 to-slate-900 p-8">
-                <div className="aspect-video bg-slate-900 rounded-2xl flex items-center justify-center border border-slate-700">
-                  <Building2 className="w-32 h-32 text-cyan-500 opacity-50" />
+              <div className="relative overflow-hidden rounded-[2.5rem] border border-white/15 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.18)] p-8 bg-white/10 backdrop-blur-sm">
+                <div className="aspect-video bg-white/10 rounded-2xl flex items-center justify-center border border-white/20">
+                  <Building2 className="w-32 h-32 text-cyan-100" />
                 </div>
-                <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-cyan-500/20 rounded-full blur-3xl" />
-                <div className="absolute -top-4 -right-4 w-32 h-32 bg-slate-600/20 rounded-full blur-3xl" />
+                <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-cyan-200/30 rounded-full blur-3xl" />
+                <div className="absolute -top-4 -right-4 w-32 h-32 bg-white/20 rounded-full blur-3xl" />
               </div>
             </div>
             </div>
@@ -495,11 +541,12 @@ export default function LandingPageContent() {
           <form onSubmit={handleFormSubmit} className="bg-slate-50 rounded-[2rem] border border-slate-200 p-8 md:p-12">
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <label className="text-sm font-semibold text-slate-700 mb-2">Nome</label>
+                <label htmlFor="name" className="text-sm font-semibold text-slate-700 mb-2">Nome</label>
                 <input
+                  id="name"
                   type="text"
-                  name="nome"
-                  value={formData.nome}
+                  name="name"
+                  value={formData.name}
                   onChange={handleFormChange}
                   required
                   className="w-full h-14 px-6 rounded-xl border border-slate-300 bg-white text-slate-950"
@@ -507,42 +554,9 @@ export default function LandingPageContent() {
                 />
               </div>
               <div>
-                <label className="text-sm font-semibold text-slate-700 mb-2">Empresa</label>
+                <label htmlFor="email" className="text-sm font-semibold text-slate-700 mb-2">E-mail</label>
                 <input
-                  type="text"
-                  name="empresa"
-                  value={formData.empresa}
-                  onChange={handleFormChange}
-                  className="w-full h-14 px-6 rounded-xl border border-slate-300 bg-white text-slate-950"
-                  placeholder="Nome da empresa"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-semibold text-slate-700 mb-2">Cargo</label>
-                <input
-                  type="text"
-                  name="cargo"
-                  value={formData.cargo}
-                  onChange={handleFormChange}
-                  className="w-full h-14 px-6 rounded-xl border border-slate-300 bg-white text-slate-950"
-                  placeholder="Seu cargo"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-semibold text-slate-700 mb-2">Telefone</label>
-                <input
-                  type="tel"
-                  name="telefone"
-                  value={formData.telefone}
-                  onChange={handleFormChange}
-                  required
-                  className="w-full h-14 px-6 rounded-xl border border-slate-300 bg-white text-slate-950"
-                  placeholder="(00) 00000-0000"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-semibold text-slate-700 mb-2">E-mail</label>
-                <input
+                  id="email"
                   type="email"
                   name="email"
                   value={formData.email}
@@ -553,21 +567,48 @@ export default function LandingPageContent() {
                 />
               </div>
               <div>
-                <label className="text-sm font-semibold text-slate-700 mb-2">Cidade</label>
+                <label htmlFor="phone" className="text-sm font-semibold text-slate-700 mb-2">Telefone</label>
                 <input
+                  id="phone"
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleFormChange}
+                  required
+                  className="w-full h-14 px-6 rounded-xl border border-slate-300 bg-white text-slate-950"
+                  placeholder="(00) 00000-0000"
+                />
+              </div>
+              <div>
+                <label htmlFor="company" className="text-sm font-semibold text-slate-700 mb-2">Empresa</label>
+                <input
+                  id="company"
                   type="text"
-                  name="cidade"
-                  value={formData.cidade}
+                  name="company"
+                  value={formData.company}
+                  onChange={handleFormChange}
+                  className="w-full h-14 px-6 rounded-xl border border-slate-300 bg-white text-slate-950"
+                  placeholder="Nome da empresa"
+                />
+              </div>
+              <div>
+                <label htmlFor="city" className="text-sm font-semibold text-slate-700 mb-2">Cidade</label>
+                <input
+                  id="city"
+                  type="text"
+                  name="city"
+                  value={formData.city}
                   onChange={handleFormChange}
                   className="w-full h-14 px-6 rounded-xl border border-slate-300 bg-white text-slate-950"
                   placeholder="Sua cidade"
                 />
               </div>
               <div>
-                <label className="text-sm font-semibold text-slate-700 mb-2">Estado</label>
+                <label htmlFor="state" className="text-sm font-semibold text-slate-700 mb-2">Estado</label>
                 <select
-                  name="estado"
-                  value={formData.estado}
+                  id="state"
+                  name="state"
+                  value={formData.state}
                   onChange={handleFormChange}
                   className="w-full h-14 px-6 rounded-xl border border-slate-300 bg-white text-slate-950"
                 >
@@ -602,34 +643,25 @@ export default function LandingPageContent() {
                 </select>
               </div>
               <div>
-                <label className="text-sm font-semibold text-slate-700 mb-2">Tipo de empreendimento</label>
+                <label htmlFor="segment" className="text-sm font-semibold text-slate-700 mb-2">Tipo de empreendimento</label>
                 <select
-                  name="tipoEmpreendimento"
-                  value={formData.tipoEmpreendimento}
+                  id="segment"
+                  name="segment"
+                  value={formData.segment}
                   onChange={handleFormChange}
                   className="w-full h-14 px-6 rounded-xl border border-slate-300 bg-white text-slate-950"
                 >
                   <option value="">Selecione</option>
-                  <option value="condominio">Condomínio</option>
-                  <option value="hotel">Hotel</option>
+                  <option value="condominios">Condomínio</option>
+                  <option value="hotelaria">Hotel</option>
                 </select>
               </div>
-              <div>
-                <label className="text-sm font-semibold text-slate-700 mb-2">Número de unidades</label>
-                <input
-                  type="number"
-                  name="numeroUnidades"
-                  value={formData.numeroUnidades}
-                  onChange={handleFormChange}
-                  className="w-full h-14 px-6 rounded-xl border border-slate-300 bg-white text-slate-950"
-                  placeholder="Ex: 100"
-                />
-              </div>
               <div className="md:col-span-2">
-                <label className="text-sm font-semibold text-slate-700 mb-2">Comentários</label>
+                <label htmlFor="message" className="text-sm font-semibold text-slate-700 mb-2">Mensagem</label>
                 <textarea
-                  name="comentarios"
-                  value={formData.comentarios}
+                  id="message"
+                  name="message"
+                  value={formData.message}
                   onChange={handleFormChange}
                   rows={4}
                   className="w-full px-6 py-4 rounded-xl border border-slate-300 bg-white text-slate-950"
@@ -637,9 +669,13 @@ export default function LandingPageContent() {
                 />
               </div>
               <div className="md:col-span-2">
-                <Button type="submit" size="lg" className="w-full h-16 bg-cyan-600 hover:bg-cyan-500">
-                  Enviar Solicitação
-                  <ArrowRight className="w-5 h-5" />
+                <Button type="submit" disabled={isSubmitting} size="lg" className="w-full h-16 bg-cyan-600 hover:bg-cyan-500">
+                  {isSubmitting ? 'Enviando...' : (
+                    <>
+                      Enviar Solicitação
+                      <Send className="w-5 h-5" />
+                    </>
+                  )}
                 </Button>
               </div>
             </div>
@@ -682,26 +718,28 @@ export default function LandingPageContent() {
       </AnimatedSection>
 
       {/* CTA FINAL */}
-      <section className="py-24 bg-gradient-to-br from-cyan-600 to-cyan-700 text-white">
-        <div className="container mx-auto px-6 max-w-4xl text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+      <AnimatedSection className="section-padding container-padding bg-gradient-to-r from-cyan-100 via-cyan-200 to-slate-950/90 text-slate-950">
+        <div className="container mx-auto max-w-5xl text-center">
+          <p className="text-sm uppercase tracking-[0.3em] text-cyan-700">Solução para suas operações</p>
+          <h2 className="mt-4 text-4xl md:text-5xl font-semibold tracking-tight text-slate-950">
             Pronto para Proteger Seu Empreendimento?
           </h2>
-          <p className="text-xl text-cyan-100 mb-10">
-            Solicite seu diagnóstico técnico gratuito hoje mesmo!
+          <p className="mt-6 text-lg leading-8 text-slate-700">
+            Solicite seu diagnóstico técnico gratuito hoje mesmo e descubra como reduzir custos com a tecnologia Aquabion!
           </p>
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
             <Link href="/contato">
-              <Button size="lg" className="h-16 bg-white text-cyan-700 hover:bg-cyan-50">
+              <Button size="lg" className="h-16 bg-cyan-600 text-white shadow-xl shadow-cyan-200/40 hover:bg-cyan-500">
                 Agendar Reunião
+                <ArrowRight className="w-5 h-5" />
               </Button>
             </Link>
-            <Button size="lg" variant="outline" className="h-16 border-white text-white hover:bg-cyan-800">
+            <Button size="lg" variant="outline" className="h-16 border-cyan-600 text-cyan-700 hover:bg-cyan-50 bg-transparent">
               Baixar Catálogo
             </Button>
           </div>
-          </div>
-      </section>
+        </div>
+      </AnimatedSection>
     </div>
   );
 }
