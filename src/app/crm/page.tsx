@@ -7,7 +7,6 @@ type Note = CRMNote
 
 export default function CRMAdmin() {
   const [isAuth, setIsAuth] = useState<boolean>(false)
-  const [adminInput, setAdminInput] = useState<string>('')
   const [leads, setLeads] = useState<Lead[]>([])
   const [loading, setLoading] = useState(false)
   const [query, setQuery] = useState('')
@@ -58,15 +57,6 @@ export default function CRMAdmin() {
   useEffect(() => {
     fetchLeads()
   }, [fetchLeads])
-
-  async function doLogin() {
-    try {
-      const res = await fetch('/api/admin/login', { method: 'POST', headers: {'content-type':'application/json'}, body: JSON.stringify({ secret: adminInput }), credentials: 'same-origin' })
-      const j = await res.json()
-      if (j?.ok) setIsAuth(true)
-    } catch {
-    }
-  }
 
   async function selectLead(lead: Lead) {
     setSelected(lead)

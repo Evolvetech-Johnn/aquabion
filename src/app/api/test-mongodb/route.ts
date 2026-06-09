@@ -5,8 +5,19 @@ export async function GET() {
   try {
     console.log('🔍 Testando conexão com MongoDB Atlas...');
     const client = await getClientPromiseSafe();
-    console.log('✅ Conexão com MongoDB Atlas estabelecida com sucesso!');
+    
+    if (!client) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'MONGODB_URI não configurada ou não pôde conectar',
+          message: 'MongoDB não está configurado corretamente no arquivo .env.local.'
+        },
+        { status: 500 }
+      );
+    }
 
+    console.log('✅ Conexão com MongoDB Atlas estabelecida com sucesso!');
     const db = client.db(process.env.MONGODB_DB_NAME || 'aquabion');
     console.log(`✅ Banco de dados "${db.databaseName}" acessível!`);
 
