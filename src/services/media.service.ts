@@ -91,23 +91,27 @@ async function writeJsonFile<T>(filePath: string, data: T): Promise<void> {
 export const getMediaList = async (): Promise<CloudinaryMedia[]> => {
   try {
     const db = await getDb();
-    const collection = db.collection('cloudinary_media');
-    const data = await collection.find({}).sort({ createdAt: -1 }).toArray();
+    if (db) {
+      const collection = db.collection('cloudinary_media');
+      const data = await collection.find({}).sort({ createdAt: -1 }).toArray();
 
-    // Map MongoDB data to CloudinaryMedia interface
-    const media = data.map(item => ({
-      id: item.id,
-      publicId: item.publicId,
-      name: item.name,
-      url: item.url,
-      bytes: item.bytes,
-      format: item.format,
-      createdAt: item.createdAt
-    }));
+      // Map MongoDB data to CloudinaryMedia interface
+      const media = data.map(item => ({
+        id: item.id,
+        publicId: item.publicId,
+        name: item.name,
+        url: item.url,
+        bytes: item.bytes,
+        format: item.format,
+        createdAt: item.createdAt
+      }));
 
-    // Also save to JSON as backup (for local development)
-    await writeJsonFile(CLOUDINARY_MEDIA_FILE, media);
-    return media;
+      // Also save to JSON as backup (for local development)
+      await writeJsonFile(CLOUDINARY_MEDIA_FILE, media);
+      return media;
+    } else {
+      throw new Error('MongoDB not available');
+    }
   } catch (error) {
     console.error('Failed to get media list from MongoDB, falling back to JSON:', error);
     // Fallback to JSON file
@@ -124,13 +128,17 @@ export const addMedia = async (item: Omit<CloudinaryMedia, 'id' | 'createdAt'>):
 
   try {
     const db = await getDb();
-    const collection = db.collection('cloudinary_media');
-    await collection.insertOne(newItem);
+    if (db) {
+      const collection = db.collection('cloudinary_media');
+      await collection.insertOne(newItem);
 
-    // Also update JSON file (backup)
-    const currentMedia = await getMediaList();
-    await writeJsonFile(CLOUDINARY_MEDIA_FILE, [newItem, ...currentMedia]);
-    return newItem;
+      // Also update JSON file (backup)
+      const currentMedia = await getMediaList();
+      await writeJsonFile(CLOUDINARY_MEDIA_FILE, [newItem, ...currentMedia]);
+      return newItem;
+    } else {
+      throw new Error('MongoDB not available');
+    }
   } catch (error) {
     console.error('Failed to add media to MongoDB, falling back to JSON:', error);
     // Fallback to JSON
@@ -144,29 +152,33 @@ export const addMedia = async (item: Omit<CloudinaryMedia, 'id' | 'createdAt'>):
 export const removeMedia = async (id: string): Promise<CloudinaryMedia | undefined> => {
   try {
     const db = await getDb();
-    const collection = db.collection('cloudinary_media');
+    if (db) {
+      const collection = db.collection('cloudinary_media');
 
-    // First find the media item
-    const mediaItem = await collection.findOne({ id }) as CloudinaryMedia | null;
+      // First find the media item
+      const mediaItem = await collection.findOne({ id }) as CloudinaryMedia | null;
 
-    if (mediaItem) {
-      // Delete from Cloudinary if not simulated
-      if (!mediaItem.publicId.startsWith('simulated_')) {
-        try {
-          await deleteFromCloudinary(mediaItem.publicId);
-        } catch (error) {
-          console.error('Failed to delete from Cloudinary:', error);
+      if (mediaItem) {
+        // Delete from Cloudinary if not simulated
+        if (!mediaItem.publicId.startsWith('simulated_')) {
+          try {
+            await deleteFromCloudinary(mediaItem.publicId);
+          } catch (error) {
+            console.error('Failed to delete from Cloudinary:', error);
+          }
         }
+
+        // Delete from MongoDB
+        await collection.deleteOne({ id });
+
+        // Also update JSON file
+        const currentMedia = await getMediaList();
+        const updatedMedia = currentMedia.filter(m => m.id !== id);
+        await writeJsonFile(CLOUDINARY_MEDIA_FILE, updatedMedia);
+        return mediaItem;
       }
-
-      // Delete from MongoDB
-      await collection.deleteOne({ id });
-
-      // Also update JSON file
-      const currentMedia = await getMediaList();
-      const updatedMedia = currentMedia.filter(m => m.id !== id);
-      await writeJsonFile(CLOUDINARY_MEDIA_FILE, updatedMedia);
-      return mediaItem;
+    } else {
+      throw new Error('MongoDB not available');
     }
 
     return undefined;
@@ -205,20 +217,24 @@ type PageImagesJson = Record<string, string | { url?: string; publicId?: string 
 export const getPageImages = async (): Promise<PageImagesData> => {
   try {
     const db = await getDb();
-    const collection = db.collection('imagens_da_página');
-    const data = await collection.find({}).toArray();
+    if (db) {
+      const collection = db.collection('imagens_da_página');
+      const data = await collection.find({}).toArray();
 
-    // Build the PageImagesData object from MongoDB
-    const pageImages: PageImagesData = {};
-    STRATEGIC_SLOTS.forEach(slot => {
-      const found = data.find(item => item.slotId === slot.id);
-      const url = found?.url || slot.defaultImage;
-      pageImages[slot.id] = { url, publicId: found?.publicId };
-    });
+      // Build the PageImagesData object from MongoDB
+      const pageImages: PageImagesData = {};
+      STRATEGIC_SLOTS.forEach(slot => {
+        const found = data.find(item => item.slotId === slot.id);
+        const url = found?.url || slot.defaultImage;
+        pageImages[slot.id] = { url, publicId: found?.publicId };
+      });
 
-    // Also save to JSON as backup
-    await writeJsonFile(PAGE_IMAGES_FILE, pageImages);
-    return pageImages;
+      // Also save to JSON as backup
+      await writeJsonFile(PAGE_IMAGES_FILE, pageImages);
+      return pageImages;
+    } else {
+      throw new Error('MongoDB not available');
+    }
   } catch (error) {
     console.error('Error in getPageImages, falling back to JSON:', error);
     // Fallback to JSON file
@@ -247,23 +263,27 @@ export const getPageImages = async (): Promise<PageImagesData> => {
 export const bindPageImage = async (slotId: string, url: string, publicId?: string): Promise<void> => {
   try {
     const db = await getDb();
-    const collection = db.collection('imagens_da_página');
+    if (db) {
+      const collection = db.collection('imagens_da_página');
 
-    // Check if slot exists
-    const existing = await collection.findOne({ slotId });
+      // Check if slot exists
+      const existing = await collection.findOne({ slotId });
 
-    if (existing) {
-      // Update existing
-      await collection.updateOne({ slotId }, { $set: { url, publicId: publicId || null } });
+      if (existing) {
+        // Update existing
+        await collection.updateOne({ slotId }, { $set: { url, publicId: publicId || null } });
+      } else {
+        // Insert new
+        await collection.insertOne({ slotId, url, publicId: publicId || null });
+      }
+
+      // Also update JSON file (backup)
+      const currentPageImages = await getPageImages();
+      currentPageImages[slotId] = { url, publicId };
+      await writeJsonFile(PAGE_IMAGES_FILE, currentPageImages);
     } else {
-      // Insert new
-      await collection.insertOne({ slotId, url, publicId: publicId || null });
+      throw new Error('MongoDB not available');
     }
-
-    // Also update JSON file (backup)
-    const currentPageImages = await getPageImages();
-    currentPageImages[slotId] = { url, publicId };
-    await writeJsonFile(PAGE_IMAGES_FILE, currentPageImages);
   } catch (error) {
     console.error('Error in bindPageImage, falling back to JSON:', error);
     // Fallback to JSON (development)
@@ -276,26 +296,30 @@ export const bindPageImage = async (slotId: string, url: string, publicId?: stri
 export const unbindPageImage = async (slotId: string): Promise<void> => {
   try {
     const db = await getDb();
-    const collection = db.collection('imagens_da_página');
+    if (db) {
+      const collection = db.collection('imagens_da_página');
 
-    // Get old image first
-    const oldImage = await collection.findOne({ slotId });
+      // Get old image first
+      const oldImage = await collection.findOne({ slotId });
 
-    if (oldImage?.publicId && !oldImage.publicId.startsWith('simulated_')) {
-      try {
-        await deleteFromCloudinary(oldImage.publicId);
-      } catch (error) {
-        console.error('Failed to delete from Cloudinary:', error);
+      if (oldImage?.publicId && !oldImage.publicId.startsWith('simulated_')) {
+        try {
+          await deleteFromCloudinary(oldImage.publicId);
+        } catch (error) {
+          console.error('Failed to delete from Cloudinary:', error);
+        }
       }
+
+      // Update to empty URL
+      await collection.updateOne({ slotId }, { $set: { url: '', publicId: null } });
+
+      // Also update JSON file (backup)
+      const currentPageImages = await getPageImages();
+      currentPageImages[slotId] = { url: '', publicId: undefined };
+      await writeJsonFile(PAGE_IMAGES_FILE, currentPageImages);
+    } else {
+      throw new Error('MongoDB not available');
     }
-
-    // Update to empty URL
-    await collection.updateOne({ slotId }, { $set: { url: '', publicId: null } });
-
-    // Also update JSON file (backup)
-    const currentPageImages = await getPageImages();
-    currentPageImages[slotId] = { url: '', publicId: undefined };
-    await writeJsonFile(PAGE_IMAGES_FILE, currentPageImages);
   } catch (error) {
     console.error('Error in unbindPageImage, falling back to JSON:', error);
     // Fallback to JSON (development)

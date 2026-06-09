@@ -127,7 +127,4 @@ export async function listAuditLogs(
   return { logs: items, total, totalPages };
 }
 
-export async function getAuditLog(id: string): Promise<AuditLog | undefined> {
-  const logs = await readAuditLogs();
-  return logs.find((log) => log.id === id);
-}
+

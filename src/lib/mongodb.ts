@@ -13,7 +13,7 @@ const options = {
 };
 
 let client: MongoClient;
-let clientPromise: Promise<MongoClient>;
+let clientPromise: Promise<MongoClient> | null = null;
 
 function getClientPromise(): Promise<MongoClient> | null {
   const uri = process.env.MONGODB_URI || '';
@@ -37,7 +37,7 @@ function getClientPromise(): Promise<MongoClient> | null {
 }
 
 // Get client promise without proxy to avoid errors
-export async function getClientPromiseSafe(): Promise<MongoClient> | null {
+export async function getClientPromiseSafe(): Promise<MongoClient | null> {
   const promise = getClientPromise();
   if (!promise) return null;
   
@@ -50,7 +50,7 @@ export async function getClientPromiseSafe(): Promise<MongoClient> | null {
 // Remove the broken default export
 // export default getClientPromiseSafe();
 
-export async function getDb(): Promise<Db> | null {
+export async function getDb(): Promise<Db | null> {
   const client = await getClientPromiseSafe();
   if (!client) return null;
   return client.db(process.env.MONGODB_DB_NAME || 'aquabion');

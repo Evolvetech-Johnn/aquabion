@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { listAuditLogs, getAuditLog } from "@/audit/store";
-import { isFullAdminRequest, getUsernameFromRequest } from "@/lib/adminAuth";
+import { listAuditLogs } from "@/audit/store";
+import { isFullAdminRequest } from "@/lib/adminAuth";
 
 export async function GET(request: NextRequest) {
   if (!isFullAdminRequest(request)) {

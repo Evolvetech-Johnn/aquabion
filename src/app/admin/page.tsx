@@ -48,7 +48,7 @@ export default function UnifiedAdminDashboard() {
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [loadingAudit, setLoadingAudit] = useState(false);
   const [auditPage, setAuditPage] = useState(1);
-  const [auditPerPage, setAuditPerPage] = useState(25);
+  const auditPerPage = 25;
   const [auditTotal, setAuditTotal] = useState(0);
   const [auditTotalPages, setAuditTotalPages] = useState(1);
   const [auditFilters, setAuditFilters] = useState({

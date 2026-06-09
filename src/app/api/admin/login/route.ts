@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
     let body: Record<string, unknown> = {}
     try {
       body = await request.json()
-    } catch (parseErr) {
+    } catch {
       return NextResponse.json({ ok: false, error: 'Invalid JSON body' }, { status: 400 })
     }
 
