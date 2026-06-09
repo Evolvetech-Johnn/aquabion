@@ -1,5 +1,6 @@
 import { promises as fs } from 'fs'
 import path from 'path'
+import { ObjectId } from 'mongodb'
 import { CRMLead, CRMNote, CRMActivity } from './types'
 import { getDb } from '@/lib/mongodb'
 import type { WithId, Document } from 'mongodb'
@@ -94,7 +95,16 @@ export async function listLeads(): Promise<CRMLead[]> {
 export async function getLead(id: string): Promise<CRMLead | undefined> {
   try {
     const db = await getDb()
-    const doc = await db.collection('crm_leads').findOne({ id })
+    let doc: WithId<Document> | null = null
+    
+    // Try finding by id field first
+    doc = await db.collection('crm_leads').findOne({ id })
+    
+    // If not found, try by _id
+    if (!doc && ObjectId.isValid(id)) {
+      doc = await db.collection('crm_leads').findOne({ _id: new ObjectId(id) })
+    }
+    
     if (doc) {
       return mapMongoToCRMLead(doc)
     }
@@ -122,7 +132,15 @@ export async function createLead(lead: CRMLead): Promise<void> {
 export async function updateLead(id: string, patch: Partial<CRMLead>): Promise<void> {
   try {
     const db = await getDb()
-    await db.collection('crm_leads').updateOne({ id }, { $set: patch })
+    
+    // Try updating by id first
+    const updateResult = await db.collection('crm_leads').updateOne({ id }, { $set: patch })
+    
+    // If no document matched, try updating by _id
+    if (updateResult.matchedCount === 0 && ObjectId.isValid(id)) {
+      await db.collection('crm_leads').updateOne({ _id: new ObjectId(id) }, { $set: patch })
+    }
+    
     const leads = await listLeads()
     const idx = leads.findIndex(l => l.id === id)
     if (idx !== -1) {
@@ -191,5 +209,62 @@ export async function createActivity(activity: CRMActivity): Promise<void> {
     const acts = await listActivities()
     acts.unshift(activity)
     await writeFile('activities.json', acts)
+  }
+}
+
+/**
+ * Syncs JSON files to MongoDB (for local development when switching to MongoDB)
+ * This will only run if MONGODB_URI is available and in development mode
+ */
+export async function syncJsonToMongoDB(): Promise<{ success: boolean; syncedLeads: number; syncedNotes: number; syncedActivities: number; error?: string }> {
+  if (isVercel) {
+    return { success: false, syncedLeads: 0, syncedNotes: 0, syncedActivities: 0, error: 'Sync not available in Vercel' }
+  }
+  
+  try {
+    const db = await getDb()
+    
+    // Sync Leads
+    const jsonLeads = await readFile<CRMLead>('leads.json')
+    let syncedLeads = 0
+    for (const lead of jsonLeads) {
+      const existing = await db.collection('crm_leads').findOne({ id: lead.id })
+      if (!existing) {
+        await db.collection('crm_leads').insertOne(lead)
+        syncedLeads++
+      }
+    }
+    
+    // Sync Notes
+    const jsonNotes = await readFile<CRMNote>('notes.json')
+    let syncedNotes = 0
+    for (const note of jsonNotes) {
+      const existing = await db.collection('crm_notes').findOne({ id: note.id })
+      if (!existing) {
+        await db.collection('crm_notes').insertOne(note)
+        syncedNotes++
+      }
+    }
+    
+    // Sync Activities
+    const jsonActivities = await readFile<CRMActivity>('activities.json')
+    let syncedActivities = 0
+    for (const activity of jsonActivities) {
+      const existing = await db.collection('crm_activities').findOne({ id: activity.id })
+      if (!existing) {
+        await db.collection('crm_activities').insertOne(activity)
+        syncedActivities++
+      }
+    }
+    
+    // Update local files from DB
+    await listLeads()
+    await listNotes()
+    await listActivities()
+    
+    return { success: true, syncedLeads, syncedNotes, syncedActivities }
+  } catch (error) {
+    console.error('Failed to sync JSON to MongoDB:', error)
+    return { success: false, syncedLeads: 0, syncedNotes: 0, syncedActivities: 0, error: String(error) }
   }
 }

@@ -364,6 +364,33 @@ export default function UnifiedAdminDashboard() {
     }
   }, [isAuth, activeTab, fetchAuditLogs]);
 
+  // Sync JSON ↔ MongoDB
+  const [syncing, setSyncing] = useState(false);
+  const handleSync = async () => {
+    setSyncing(true);
+    try {
+      const res = await fetch("/api/crm/sync", {
+        method: "POST",
+        credentials: "same-origin"
+      });
+      const json = await res.json();
+      if (json.ok) {
+        alert(`Sincronização concluída!
+Leads sincronizados: ${json.syncedLeads}
+Notas sincronizadas: ${json.syncedNotes}
+Atividades sincronizadas: ${json.syncedActivities}`);
+        handleRefresh();
+      } else {
+        alert(`Erro na sincronização: ${json.error || 'Erro desconhecido'}`);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Erro ao sincronizar');
+    } finally {
+      setSyncing(false);
+    }
+  };
+
   // Refresh current data trigger
   const handleRefresh = () => {
     if (activeTab === "media") {
@@ -803,6 +830,14 @@ export default function UnifiedAdminDashboard() {
             >
               <RefreshCw className={`w-4 h-4 ${loadingLeads || loadingMedia ? "animate-spin" : ""}`} />
               <span className="hidden sm:inline">Atualizar</span>
+            </button>
+            <button
+              onClick={handleSync}
+              className="p-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl border border-blue-500 transition-colors flex items-center gap-2 text-sm"
+              title="Sincronizar JSON ↔ MongoDB"
+            >
+              <RefreshCw className={`w-4 h-4 ${syncing ? "animate-spin" : ""}`} />
+              <span className="hidden sm:inline">Sincronizar</span>
             </button>
 
             {activeTab === "crm" && (
