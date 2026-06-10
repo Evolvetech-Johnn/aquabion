@@ -5,8 +5,14 @@ import { getDb } from '@/lib/mongodb';
 import * as fs from 'fs';
 import * as path from 'path';
 
-const isVercel = process.env.VERCEL === '1' || process.env.VERCEL_ENV;
 const ROOT_DIR = process.cwd();
+
+interface WipeResults {
+  jsonFilesWiped: boolean;
+  mongoDBWiped: boolean;
+  collectionsWiped?: string[];
+  mongoDBError?: string;
+}
 
 async function wipeJSONFiles() {
   const filesToWipe = [
@@ -47,7 +53,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
   }
 
-  const results: any = {
+  const results: WipeResults = {
     jsonFilesWiped: false,
     mongoDBWiped: false,
   };
