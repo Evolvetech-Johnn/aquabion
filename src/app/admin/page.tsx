@@ -126,13 +126,13 @@ export default function UnifiedAdminDashboard() {
       .catch(() => {});
   }, []);
 
-  // Reset active tab if user is restricted and on restricted tab
-  useEffect(() => {
-    const restrictedUsername = process.env.NEXT_PUBLIC_ADMIN_USERNAME_RESTRICTED?.toLowerCase();
-    if (currentUser.toLowerCase() === restrictedUsername && (activeTab === "media" || activeTab === "cards")) {
-      setActiveTab("executive");
-    }
-  }, [currentUser, activeTab]);
+  // No longer restrict tabs for any admin user
+  // useEffect(() => {
+  //   const restrictedUsername = process.env.NEXT_PUBLIC_ADMIN_USERNAME_RESTRICTED?.toLowerCase();
+  //   if (currentUser.toLowerCase() === restrictedUsername && (activeTab === "media" || activeTab === "cards")) {
+  //     setActiveTab("executive");
+  //   }
+  // }, [currentUser, activeTab]);
 
   // Fetch leads and update executive stats
   const fetchLeadsData = useCallback(async () => {
@@ -813,7 +813,7 @@ Atividades sincronizadas: ${json.syncedActivities}`);
               <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
                 Painel Administrativo & Executivo
                 <span className="text-xs bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 rounded-full px-2 py-0.5 font-medium">
-                  {currentUser === process.env.NEXT_PUBLIC_ADMIN_USERNAME_RESTRICTED ? "Acesso Restrito" : "Controle Total"}
+                  Controle Total
                 </span>
               </h1>
               <p className="text-xs text-slate-400 hidden md:block">
@@ -896,43 +896,39 @@ Atividades sincronizadas: ${json.syncedActivities}`);
             <Users className="w-4 h-4" />
             CRM Lead Manager ({totalLeads})
           </button>
-          {currentUser.toLowerCase() !== process.env.NEXT_PUBLIC_ADMIN_USERNAME_RESTRICTED?.toLowerCase() && (
-            <>
-              <button
-                onClick={() => { setActiveTab("media"); setSelectedLead(null); }}
-                className={`flex items-center gap-2.5 px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
-                  activeTab === "media"
-                    ? "bg-slate-900 text-white shadow-md shadow-slate-950/10 scale-[1.02]"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-300/40"
-                }`}
-              >
-                <ImageIcon className="w-4 h-4" />
-                Mídias Cloudinary
-              </button>
-              <button
-                onClick={() => { setActiveTab("cards"); setSelectedLead(null); }}
-                className={`flex items-center gap-2.5 px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
-                  activeTab === "cards"
-                    ? "bg-slate-900 text-white shadow-md shadow-slate-950/10 scale-[1.02]"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-300/40"
-                }`}
-              >
-                <Sliders className="w-4 h-4" />
-                Gerenciador de Cards ({slotsList.length})
-              </button>
-              <button
-                onClick={() => { setActiveTab("audit"); setSelectedLead(null); }}
-                className={`flex items-center gap-2.5 px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
-                  activeTab === "audit"
-                    ? "bg-slate-900 text-white shadow-md shadow-slate-950/10 scale-[1.02]"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-300/40"
-                }`}
-              >
-                <AlertTriangle className="w-4 h-4" />
-                Auditoria & Logs
-              </button>
-            </>
-          )}
+          <button
+            onClick={() => { setActiveTab("media"); setSelectedLead(null); }}
+            className={`flex items-center gap-2.5 px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
+              activeTab === "media"
+                ? "bg-slate-900 text-white shadow-md shadow-slate-950/10 scale-[1.02]"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-300/40"
+            }`}
+          >
+            <ImageIcon className="w-4 h-4" />
+            Mídias Cloudinary
+          </button>
+          <button
+            onClick={() => { setActiveTab("cards"); setSelectedLead(null); }}
+            className={`flex items-center gap-2.5 px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
+              activeTab === "cards"
+                ? "bg-slate-900 text-white shadow-md shadow-slate-950/10 scale-[1.02]"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-300/40"
+            }`}
+          >
+            <Sliders className="w-4 h-4" />
+            Gerenciador de Cards ({slotsList.length})
+          </button>
+          <button
+            onClick={() => { setActiveTab("audit"); setSelectedLead(null); }}
+            className={`flex items-center gap-2.5 px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
+              activeTab === "audit"
+                ? "bg-slate-900 text-white shadow-md shadow-slate-950/10 scale-[1.02]"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-300/40"
+            }`}
+          >
+            <AlertTriangle className="w-4 h-4" />
+            Auditoria & Logs
+          </button>
         </div>
 
         {/* 📊 TAB 1: VISÃO EXECUTIVA (ANALYTICS) */}
