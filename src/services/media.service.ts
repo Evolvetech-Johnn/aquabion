@@ -27,25 +27,25 @@ export interface PageImageSlot {
 }
 
 export const STRATEGIC_SLOTS: PageImageSlot[] = [
-  { id: 'carousel-1', page: 'Página Inicial', title: 'Carrossel - Imagem 1', description: 'Primeira imagem do carrossel principal da página inicial.', defaultImage: '' },
-  { id: 'carousel-2', page: 'Página Inicial', title: 'Carrossel - Imagem 2', description: 'Segunda imagem do carrossel principal da página inicial.', defaultImage: '' },
-  { id: 'carousel-3', page: 'Página Inicial', title: 'Carrossel - Imagem 3', description: 'Terceira imagem do carrossel principal da página inicial.', defaultImage: '' },
-  { id: 'carousel-4', page: 'Página Inicial', title: 'Carrossel - Imagem 4', description: 'Quarta imagem do carrossel principal da página inicial.', defaultImage: '' },
-  { id: 'carousel-5', page: 'Página Inicial', title: 'Carrossel - Imagem 5', description: 'Quinta imagem do carrossel principal da página inicial.', defaultImage: '' },
-  { id: 'carousel-6', page: 'Página Inicial', title: 'Carrossel - Imagem 6', description: 'Sexta imagem do carrossel principal da página inicial.', defaultImage: '' },
-  { id: 'hero-main', page: 'Página Inicial', title: 'Imagem Hero Principal', description: 'Banner principal de alta resolução exibido no topo da página de entrada.', defaultImage: '' },
-  { id: 'desafio-main', page: 'Página Inicial', title: 'O Desafio da Água Industrial', description: 'Ilustração do desafio de incrustração severa ao lado do texto explicativo.', defaultImage: '' },
-  { id: 'benefit-1', page: 'Página Inicial', title: 'Card Benefício 1: Redução de custos', description: 'Imagem ilustrativa no card de redução de custos operacionais.', defaultImage: '' },
-  { id: 'benefit-2', page: 'Página Inicial', title: 'Card Benefício 2: Água preservada', description: 'Imagem ilustrativa no card de conservação e sustentabilidade da água.', defaultImage: '' },
-  { id: 'benefit-3', page: 'Página Inicial', title: 'Card Benefício 3: Operação sem energia', description: 'Imagem ilustrativa no card de funcionamento passivo do sistema.', defaultImage: '' },
-  { id: 'benefit-4', page: 'Página Inicial', title: 'Card Benefício 4: Sustentabilidade real', description: 'Imagem ilustrativa no card de impacto ambiental positivo contínuo.', defaultImage: '' },
-  { id: 'benefit-5', page: 'Página Inicial', title: 'Card Benefício 5: Proteção contínua', description: 'Imagem ilustrativa no card de confiabilidade física dos encanamentos.', defaultImage: '' },
-  { id: 'benefit-6', page: 'Página Inicial', title: 'Card Benefício 6: Retorno rápido', description: 'Imagem ilustrativa no card de ROI de menos de 24 meses.', defaultImage: '' },
-  { id: 'tech_step_1', page: 'Tecnologia', title: 'Passo 1: Ionização Galvânica', description: 'Imagem ilustrando o processo de ionização galvânica e tratamento de incrustração.', defaultImage: '' },
-  { id: 'tech_step_2', page: 'Tecnologia', title: 'Passo 2: Aragonita Suspendida', description: 'Imagem mostrando a transformação do cálcio em cristais aragonita não aderentes.', defaultImage: '' },
-  { id: 'tech_step_3', page: 'Tecnologia', title: 'Passo 3: Tubulação Protegida', description: 'Demonstração de tubulação limpa e livre de incrustações após 12 meses.', defaultImage: '' },
-  { id: 'about_showcase', page: 'Sobre Nós', title: 'Presença Industrial e Fábrica', description: 'Painel visual da engenharia alemã ou grandes instalações operando em indústrias.', defaultImage: '' },
-  { id: 'benefits_showcase', page: 'Benefícios', title: 'Eficiência e ROI Comercial', description: 'Imagem ilustrando o retorno sobre investimento e economia comercial no comparativo de mercado.', defaultImage: '' },
+  { id: 'carousel-1', page: 'Página Inicial', title: 'Carrossel - Imagem 1', description: 'Primeira imagem do carrossel principal da página inicial.', defaultImage: '/logoaquabion.png' },
+  { id: 'carousel-2', page: 'Página Inicial', title: 'Carrossel - Imagem 2', description: 'Segunda imagem do carrossel principal da página inicial.', defaultImage: '/logoaquabion.png' },
+  { id: 'carousel-3', page: 'Página Inicial', title: 'Carrossel - Imagem 3', description: 'Terceira imagem do carrossel principal da página inicial.', defaultImage: '/logoaquabion.png' },
+  { id: 'carousel-4', page: 'Página Inicial', title: 'Carrossel - Imagem 4', description: 'Quarta imagem do carrossel principal da página inicial.', defaultImage: '/logoaquabion.png' },
+  { id: 'carousel-5', page: 'Página Inicial', title: 'Carrossel - Imagem 5', description: 'Quinta imagem do carrossel principal da página inicial.', defaultImage: '/logoaquabion.png' },
+  { id: 'carousel-6', page: 'Página Inicial', title: 'Carrossel - Imagem 6', description: 'Sexta imagem do carrossel principal da página inicial.', defaultImage: '/logoaquabion.png' },
+  { id: 'hero-main', page: 'Página Inicial', title: 'Imagem Hero Principal', description: 'Banner principal de alta resolução exibido no topo da página de entrada.', defaultImage: '/logoaquabion.png' },
+  { id: 'desafio-main', page: 'Página Inicial', title: 'O Desafio da Água Industrial', description: 'Ilustração do desafio de incrustração severa ao lado do texto explicativo.', defaultImage: '/logoaquabion.png' },
+  { id: 'benefit-1', page: 'Página Inicial', title: 'Card Benefício 1: Redução de custos', description: 'Imagem ilustrativa no card de redução de custos operacionais.', defaultImage: '/logoaquabion.png' },
+  { id: 'benefit-2', page: 'Página Inicial', title: 'Card Benefício 2: Água preservada', description: 'Imagem ilustrativa no card de conservação e sustentabilidade da água.', defaultImage: '/logoaquabion.png' },
+  { id: 'benefit-3', page: 'Página Inicial', title: 'Card Benefício 3: Operação sem energia', description: 'Imagem ilustrativa no card de funcionamento passivo do sistema.', defaultImage: '/logoaquabion.png' },
+  { id: 'benefit-4', page: 'Página Inicial', title: 'Card Benefício 4: Sustentabilidade real', description: 'Imagem ilustrativa no card de impacto ambiental positivo contínuo.', defaultImage: '/logoaquabion.png' },
+  { id: 'benefit-5', page: 'Página Inicial', title: 'Card Benefício 5: Proteção contínua', description: 'Imagem ilustrativa no card de confiabilidade física dos encanamentos.', defaultImage: '/logoaquabion.png' },
+  { id: 'benefit-6', page: 'Página Inicial', title: 'Card Benefício 6: Retorno rápido', description: 'Imagem ilustrativa no card de ROI de menos de 24 meses.', defaultImage: '/logoaquabion.png' },
+  { id: 'tech_step_1', page: 'Tecnologia', title: 'Passo 1: Ionização Galvânica', description: 'Imagem ilustrando o processo de ionização galvânica e tratamento de incrustração.', defaultImage: '/logoaquabion.png' },
+  { id: 'tech_step_2', page: 'Tecnologia', title: 'Passo 2: Aragonita Suspendida', description: 'Imagem mostrando a transformação do cálcio em cristais aragonita não aderentes.', defaultImage: '/logoaquabion.png' },
+  { id: 'tech_step_3', page: 'Tecnologia', title: 'Passo 3: Tubulação Protegida', description: 'Demonstração de tubulação limpa e livre de incrustações após 12 meses.', defaultImage: '/logoaquabion.png' },
+  { id: 'about_showcase', page: 'Sobre Nós', title: 'Presença Industrial e Fábrica', description: 'Painel visual da engenharia alemã ou grandes instalações operando em indústrias.', defaultImage: '/logoaquabion.png' },
+  { id: 'benefits_showcase', page: 'Benefícios', title: 'Eficiência e ROI Comercial', description: 'Imagem ilustrando o retorno sobre investimento e economia comercial no comparativo de mercado.', defaultImage: '/logoaquabion.png' },
 ];
 
 // Helper functions for JSON file storage (fallback for LOCAL DEVELOPMENT ONLY)
@@ -215,6 +215,17 @@ interface PageImagesData {
 type PageImagesJson = Record<string, string | { url?: string; publicId?: string }>;
 
 export const getPageImages = async (): Promise<PageImagesData> => {
+  // Build‑time safe: return defaults immediately if we're in a build environment
+  const isBuildTime = process.env.NEXT_PHASE === 'phase-production-build';
+  
+  if (isBuildTime) {
+    const pageImages: PageImagesData = {};
+    STRATEGIC_SLOTS.forEach(slot => {
+      pageImages[slot.id] = { url: slot.defaultImage, publicId: undefined };
+    });
+    return pageImages;
+  }
+
   try {
     const db = await getDb();
     if (db) {
