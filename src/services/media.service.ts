@@ -89,6 +89,13 @@ async function writeJsonFile<T>(filePath: string, data: T): Promise<void> {
 
 // Media storage functions (MongoDB with JSON fallback)
 export const getMediaList = async (): Promise<CloudinaryMedia[]> => {
+  // Build-time safe: return empty array immediately if we're in build environment
+  const isBuildTime = process.env.NEXT_PHASE === 'phase-production-build';
+  
+  if (isBuildTime) {
+    return [];
+  }
+  
   try {
     const db = await getDb();
     if (db) {
