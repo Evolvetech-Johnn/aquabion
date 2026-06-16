@@ -89,13 +89,7 @@ async function writeJsonFile<T>(filePath: string, data: T): Promise<void> {
 
 // Media storage functions (MongoDB with JSON fallback)
 export const getMediaList = async (): Promise<CloudinaryMedia[]> => {
-  // Build-time safe: return empty array immediately if we're in build environment
-  const isBuildTime = process.env.NEXT_PHASE === 'phase-production-build';
-  
-  if (isBuildTime) {
-    return [];
-  }
-  
+  // Try to fetch from DB first
   try {
     const db = await getDb();
     if (db) {
@@ -222,17 +216,7 @@ interface PageImagesData {
 type PageImagesJson = Record<string, string | { url?: string; publicId?: string }>;
 
 export const getPageImages = async (): Promise<PageImagesData> => {
-  // Build‑time safe: return defaults immediately if we're in a build environment
-  const isBuildTime = process.env.NEXT_PHASE === 'phase-production-build';
-  
-  if (isBuildTime) {
-    const pageImages: PageImagesData = {};
-    STRATEGIC_SLOTS.forEach(slot => {
-      pageImages[slot.id] = { url: slot.defaultImage, publicId: undefined };
-    });
-    return pageImages;
-  }
-
+  // Try to fetch from DB first
   try {
     const db = await getDb();
     if (db) {
