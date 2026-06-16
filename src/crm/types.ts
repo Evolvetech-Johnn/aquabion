@@ -6,6 +6,7 @@ export type CRMLead = {
   phone?: string
   company?: string
   segment?: string
+  budget_type?: 'residencial' | 'comercial' | 'industrial'
   message?: string
   city?: string
   state?: string

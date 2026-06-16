@@ -13,6 +13,7 @@ export async function POST(request: NextRequest) {
     const phone = body.phone
     const landing_page = body.landing_page || body.landingPage || body.page
     const utm = body.utm || body.utm_params || null
+    const budget_type = body.budget_type || null
 
     if (!submission_id) {
       return NextResponse.json({ ok: false, error: 'submission_id required' }, { status: 400 })
@@ -31,6 +32,7 @@ export async function POST(request: NextRequest) {
       email,
       phone,
       landing_page,
+      budget_type,
       utm,
       ip,
       user_agent,

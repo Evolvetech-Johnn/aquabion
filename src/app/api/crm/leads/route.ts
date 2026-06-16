@@ -79,6 +79,7 @@ export async function POST(request: NextRequest) {
       phone: body.phone,
       company: body.company,
       segment: body.segment,
+      budget_type: body.budget_type,
       message: body.message,
       city: body.city,
       state: body.state,

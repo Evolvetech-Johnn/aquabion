@@ -4,6 +4,7 @@ export type Lead = {
   email?: string
   phone?: string
   source?: string
+  budget_type?: string
   landing_page?: string
   utm?: Record<string, string>
   ip?: string

@@ -404,8 +404,13 @@ export default function CRMAdmin() {
                   <div className="text-slate-600 mt-1">
                     {selected.email} {selected.phone ? ` • ${selected.phone}` : ''}
                   </div>
-                  <div className="text-sm text-slate-500 mt-2">
-                    Criado em: {new Date(selected.created_at).toLocaleString('pt-BR')}
+                  <div className="text-sm text-slate-500 mt-2 flex items-center gap-2">
+                    <span>Criado em: {new Date(selected.created_at).toLocaleString('pt-BR')}</span>
+                    {selected.budget_type && (
+                      <span className="px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold capitalize border border-blue-200">
+                        Orçamento: {selected.budget_type}
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -479,7 +484,7 @@ export default function CRMAdmin() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {selected.company && (
                   <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                    <div className="text-sm font-semibold text-slate-700">Empresa</div>
+                    <div className="text-sm font-semibold text-slate-700">Empresa / Condomínio</div>
                     <div className="text-slate-900">{selected.company}</div>
                   </div>
                 )}

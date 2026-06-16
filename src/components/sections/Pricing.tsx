@@ -6,23 +6,27 @@ import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
 import Reveal from '../ui/Reveal';
 import AnimatedButton from '../ui/AnimatedButton';
+import Link from 'next/link';
 
 const plans = [
   {
     name: 'Residencial',
     price: 'Sob Consulta',
     features: ['Para apartamentos e casas', 'Instalação em até 1 hora', 'Proteção contra incrustações', 'Suporte técnico'],
+    type: 'residencial',
   },
   {
     name: 'Comercial',
     price: 'Sob Consulta',
     features: ['Para hotéis e comércios', 'Projetos personalizados', 'Relatórios técnicos', 'Garantia de 2 anos'],
     popular: true,
+    type: 'comercial',
   },
   {
     name: 'Industrial',
     price: 'Sob Consulta',
     features: ['Para fábricas e usinas', 'Dimensionamento completo', 'ROI em até 24 meses', 'Garantia estendida'],
+    type: 'industrial',
   },
 ];
 
@@ -75,12 +79,14 @@ export default function Pricing() {
                     </li>
                   ))}
                 </ul>
-                <AnimatedButton
-                  variant={plan.popular ? 'primary' : 'outline'}
-                  className="w-full"
-                >
-                  Solicitar Orçamento
-                </AnimatedButton>
+                <Link href={`/orcamento/${plan.type}`} className="block w-full">
+                  <AnimatedButton
+                    variant={plan.popular ? 'primary' : 'outline'}
+                    className="w-full"
+                  >
+                    Solicitar Orçamento
+                  </AnimatedButton>
+                </Link>
               </motion.div>
             </Reveal>
           ))}
