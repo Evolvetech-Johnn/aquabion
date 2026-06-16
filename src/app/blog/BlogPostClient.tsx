@@ -1,6 +1,5 @@
 'use client';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import Reveal from '@/components/ui/Reveal';
 import AnimatedButton from '@/components/ui/AnimatedButton';
 

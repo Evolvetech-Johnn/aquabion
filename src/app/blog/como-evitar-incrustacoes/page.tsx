@@ -26,7 +26,7 @@ export default function IncrustacoesPage() {
           <ul className="list-disc ml-6 space-y-2">
             <li>Tratamento químico com anti-incrustantes e dispersantes;</li>
             <li>Amaciadores de água baseados em troca iônica com resinas, que exigem sal e regeneração frequente;</li>
-            <li>Limpeza física periódica, muitas vezes com ácidos ou jatos d'água de alta pressão.</li>
+            <li>Limpeza física periódica, muitas vezes com ácidos ou jatos d&apos;água de alta pressão.</li>
           </ul>
           <p>
             Todas essas opções funcionam, mas têm custos recorrentes, riscos ambientais ou dependência de fornecedores.
