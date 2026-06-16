@@ -1,21 +1,21 @@
+/* src/app/beneficios/BenefitsContent.tsx */
+'use client';
 
 import Link from 'next/link';
 import { TrendingUp, Droplets, Zap, Shield, Leaf, Clock, ChevronLeft } from 'lucide-react';
 import ImageCard from '@/components/ImageCard';
 import Reveal from '@/components/ui/Reveal';
-import AnimatedCTA from '@/components/AnimatedCTA';
+import AnimatedButton from '@/components/ui/AnimatedButton';
 import AnimatedCard from '@/components/ui/AnimatedCard';
-import { getPageImages } from '@/services/media.service';
-const pageImages = await getPageImages();
 
-export default async function BenefitsPage() {
+// Define a minimal type for page images passed from server
+export type PageImagesData = Record<string, { url: string; publicId?: string }>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
+interface BenefitsContentProps {
+  pageImages: PageImagesData;
+}
 
-
-
-
-
-
+export default function BenefitsContent({ pageImages }: BenefitsContentProps) {
   const benefits = [
     {
       icon: TrendingUp,
@@ -45,7 +45,7 @@ export default async function BenefitsPage() {
     {
       icon: Clock,
       title: 'ROI claro',
-      description: 'Retorno do investimento em menos de 22 meses com resultados imediatos.',
+      description: 'Retorno do investimento em menos de 24 meses com resultados imediatos.',
     },
   ];
 
@@ -82,8 +82,12 @@ export default async function BenefitsPage() {
               <Reveal key={index} delay={index * 0.1}>
                 <AnimatedCard>
                   <benefit.icon className="w-14 h-14 text-cyan-600 mb-6" />
-                  <h3 className="text-2xl font-bold text-slate-950 mb-4">{benefit.title}</h3>
-                  <p className="text-slate-600 leading-relaxed">{benefit.description}</p>
+                  <h3 className="text-2xl font-bold text-slate-950 mb-4">
+                    {benefit.title}
+                  </h3>
+                  <p className="text-slate-600 leading-relaxed">
+                    {benefit.description}
+                  </p>
                 </AnimatedCard>
               </Reveal>
             ))}
@@ -109,60 +113,37 @@ export default async function BenefitsPage() {
         </div>
       </section>
 
-      {/* Comparativo */}
-      <section className="py-12 md:py-24">
-        <div className="max-w-7xl mx-auto px-6 md:px-12">
-          <Reveal>
-            <div className="premium-card">
-              <div className="grid gap-12 lg:grid-cols-2 items-center">
-                <div>
-                  <h2 className="text-3xl md:text-4xl font-bold text-slate-950 mb-6">Comparativo de mercado</h2>
-                  <p className="text-lg text-slate-600 mb-8 leading-relaxed">
-                    Veja como a solução Aquabion entrega desempenho superior sem custos adicionais ou riscos ambientais.
-                  </p>
-                  <ul className="space-y-4 text-slate-600">
-                    {[
-                      'CAPEX médio, OPEX reduzido',
-                      'Zero consumo de água extra',
-                      'Sem manutenção frequente',
-                      'Impacto ambiental positivo',
-                    ].map((item, i) => (
-                      <li key={i} className="flex items-center gap-3 text-lg">
-                        <div className="w-3 h-3 rounded-full bg-cyan-600" />
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="premium-card bg-slate-50 p-6 md:p-8">
-                  <table className="w-full text-left">
-                    <thead>
-                      <tr className="border-b border-slate-200">
-                        <th className="py-4 px-2 text-cyan-600 font-bold text-lg">Critério</th>
-                        <th className="py-4 px-2 text-slate-950 font-bold text-center text-lg">Aquabion</th>
-                      </tr>
-                    </thead>
-                    <tbody className="text-slate-600">
-                      {['OPEX', 'Consumo de água', 'Manutenção', 'Impacto ambiental'].map((row, i) => (
-                        <tr key={i} className="border-b border-slate-200">
-                          <td className="py-4 px-2 text-lg">{row}</td>
-                          <td className="py-4 px-2 text-center font-bold text-slate-950 text-lg">Zero</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
       {/* CTA Final */}
       <section className="py-12 md:py-24">
         <div className="max-w-4xl mx-auto px-6 md:px-12 text-center">
           <Reveal>
-              <AnimatedCTA />
+            <div className="premium-card">
+              <h2 className="text-3xl md:text-4xl font-bold text-slate-950 mb-6">
+                Sistema passivo, resultados ativos
+              </h2>
+              <p className="text-lg text-slate-600 mb-10 max-w-3xl mx-auto">
+                Sem energia, sem manutenção e sem produtos químicos. Apenas previsibilidade operacional e proteção contínua.
+              </p>
+              <div className="grid gap-6 md:grid-cols-3 mb-10">
+                {[
+                  { title: 'Zero energia', desc: 'Operação sem consumo elétrico' },
+                  { title: 'Zero manutenção', desc: 'Nenhuma intervenção regular necessária' },
+                  { title: 'Zero química', desc: '100% sustentável e segura' },
+                ].map((item, i) => (
+                  <div key={i} className="p-8 bg-slate-50 rounded-2xl border border-slate-200">
+                    <h3 className="text-xl font-bold text-slate-950 mb-2">
+                      {item.title}
+                    </h3>
+                    <p className="text-slate-600">{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+              <Link href="/contato">
+                <AnimatedButton size="lg" showArrow>
+                  Agendar Diagnóstico Técnico
+                </AnimatedButton>
+              </Link>
+            </div>
           </Reveal>
         </div>
       </section>

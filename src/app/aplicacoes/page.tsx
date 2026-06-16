@@ -1,14 +1,12 @@
 
+'use client';
 import Link from 'next/link';
 import { Factory, Sprout, Home, Building2, Droplets, Thermometer, Hotel, ChevronLeft } from 'lucide-react';
 import Reveal from '@/components/ui/Reveal';
 import AnimatedButton from '@/components/ui/AnimatedButton';
 import AnimatedCard from '@/components/ui/AnimatedCard';
 
-export const metadata = {
-  title: 'Aplicações | Aquabion Brasil',
-  description: 'Todas as aplicações da tecnologia Aquabion - Indústria, agronegócio, hospitais, hotéis e mais',
-};
+
 
 export default function ApplicationsPage() {
   const applications = [

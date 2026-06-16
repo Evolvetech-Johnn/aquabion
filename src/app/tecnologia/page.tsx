@@ -3,15 +3,12 @@ import Link from 'next/link';
 import { Zap, Droplets, Shield, ChevronLeft } from 'lucide-react';
 import ImageCard from '@/components/ImageCard';
 import Reveal from '@/components/ui/Reveal';
-import AnimatedButton from '@/components/ui/AnimatedButton';
+import AnimatedCTA from '@/components/AnimatedCTA';
 import { getPageImages } from '@/services/media.service';
 
-export const metadata = {
-  title: 'Tecnologia | Aquabion Brasil',
-  description: 'Como funciona a tecnologia patenteada Aquabion - Engenharia galvânica passiva',
-};
 
-export const revalidate = 60;
+
+
 
 export default async function TechnologyPage() {
   const pageImages = await getPageImages();
@@ -146,11 +143,7 @@ export default async function TechnologyPage() {
                   </div>
                 ))}
               </div>
-              <Link href="/contato">
-                <AnimatedButton size="lg" showArrow>
-                  Agendar Diagnóstico Técnico
-                </AnimatedButton>
-              </Link>
+              <AnimatedCTA />
             </div>
           </Reveal>
         </div>

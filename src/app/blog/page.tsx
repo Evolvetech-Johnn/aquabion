@@ -1,9 +1,8 @@
+
+'use client';
 import Link from 'next/link';
 
-export const metadata = {
-  title: 'Blog | Aquabion Brasil',
-  description: 'Insights e conteúdos sobre tratamento de água, sustentabilidade e tecnologia Aquabion.',
-};
+
 
 const posts = [
   {
