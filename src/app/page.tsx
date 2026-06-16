@@ -6,6 +6,7 @@ import Features from '@/components/sections/Features';
 import SocialProof from '@/components/sections/SocialProof';
 import Pricing from '@/components/sections/Pricing';
 import FAQ from '@/components/sections/FAQ';
+import DesafioSection from '@/components/sections/DesafioSection';
 import { getPageImages } from '@/services/media.service';
 
 export const metadata: Metadata = {
@@ -35,7 +36,11 @@ export default async function Home() {
         heroImageUrl={pageImages['hero-main']?.url} 
         heroPublicId={pageImages['hero-main']?.publicId} 
       />
-      <Features />
+      <DesafioSection 
+        imageUrl={pageImages['desafio-main']?.url}
+        publicId={pageImages['desafio-main']?.publicId}
+      />
+      <Features pageImages={pageImages} />
       <SocialProof />
       <Pricing />
       <FAQ />

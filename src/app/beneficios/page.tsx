@@ -21,31 +21,49 @@ export default async function BenefitsPage() {
       icon: TrendingUp,
       title: 'Redução de custos',
       description: 'Economia de até 50% no consumo energético e eliminação de custos com produtos químicos e manutenção.',
+      slotId: 'benefit-1',
+      bg: 'bg-cyan-50',
+      color: 'text-cyan-500'
     },
     {
       icon: Droplets,
       title: 'Zero desperdício hídrico',
       description: 'Nenhuma água é desperdiçada no processo, diferente de outras tecnologias como osmose reversa.',
+      slotId: 'benefit-2',
+      bg: 'bg-blue-50',
+      color: 'text-blue-500'
     },
     {
       icon: Zap,
       title: 'Aumento de vida útil',
       description: 'Equipamentos duram mais, protegidos contra incrustações e corrosão.',
+      slotId: 'benefit-3',
+      bg: 'bg-emerald-50',
+      color: 'text-emerald-500'
     },
     {
       icon: Shield,
       title: 'Manutenção reduzida',
       description: 'Sistema passivo sem necessidade de intervenções frequentes.',
+      slotId: 'benefit-4',
+      bg: 'bg-purple-50',
+      color: 'text-purple-500'
     },
     {
       icon: Leaf,
       title: '100% sustentável',
       description: 'Nenhum produto químico, zero energia ativa e impacto ambiental positivo.',
+      slotId: 'benefit-5',
+      bg: 'bg-green-50',
+      color: 'text-green-500'
     },
     {
       icon: Clock,
       title: 'ROI claro',
       description: 'Retorno do investimento em menos de 22 meses com resultados imediatos.',
+      slotId: 'benefit-6',
+      bg: 'bg-yellow-50',
+      color: 'text-yellow-500'
     },
   ];
 
@@ -80,10 +98,21 @@ export default async function BenefitsPage() {
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {benefits.map((benefit, index) => (
               <Reveal key={index} delay={index * 0.1}>
-                <AnimatedCard>
-                  <benefit.icon className="w-14 h-14 text-cyan-600 mb-6" />
-                  <h3 className="text-2xl font-bold text-slate-950 mb-4">{benefit.title}</h3>
-                  <p className="text-slate-600 leading-relaxed">{benefit.description}</p>
+                <AnimatedCard className="h-full flex flex-col group">
+                  <div className="mb-6 relative">
+                    <ImageCard
+                      locationId={benefit.slotId}
+                      imageUrl={pageImages[benefit.slotId]?.url}
+                      publicId={pageImages[benefit.slotId]?.publicId}
+                      aspectRatio="video"
+                      className="w-full rounded-2xl overflow-hidden"
+                    />
+                    <div className={`absolute -bottom-4 -right-2 w-14 h-14 rounded-2xl ${benefit.bg} ${benefit.color} flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg border-4 border-white`}>
+                      <benefit.icon className="w-7 h-7" />
+                    </div>
+                  </div>
+                  <h3 className="text-2xl font-bold text-slate-950 mb-4 mt-4">{benefit.title}</h3>
+                  <p className="text-slate-600 leading-relaxed flex-grow">{benefit.description}</p>
                 </AnimatedCard>
               </Reveal>
             ))}
