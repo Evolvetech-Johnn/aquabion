@@ -1,9 +1,9 @@
+
 'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Send, CheckCircle2, Mail, Phone, MapPin, Clock, MessageSquare } from 'lucide-react';
+import { Send, CheckCircle2, MessageSquare, Loader2 } from 'lucide-react';
 import WhatsAppButton from './WhatsAppButton';
 
 export default function ContactForm() {
@@ -19,9 +19,29 @@ export default function ContactForm() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+    if (!formData.name.trim()) {
+      newErrors.name = 'Nome completo é obrigatório';
+    }
+    if (!formData.email.trim()) {
+      newErrors.email = 'E-mail é obrigatório';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'E-mail inválido';
+    }
+    if (!formData.message.trim()) {
+      newErrors.message = 'Mensagem é obrigatória';
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateForm()) return;
+
     setIsSubmitting(true);
 
     try {
@@ -44,271 +64,258 @@ export default function ContactForm() {
     }
   };
 
-  const contactInfo = [
-    {
-      icon: Mail,
-      title: 'E-mail',
-      value: 'contato@aquabion.com.br',
-    },
-    {
-      icon: Phone,
-      title: 'Telefone',
-      value: '(43) 99917-1010',
-    },
-    {
-      icon: MapPin,
-      title: 'Endereço',
-      value: 'Londrina, PR - Brasil\nBauneário Camboriú, SC - Brasil\nSão Paulo - Capital, SP - Brasil',
-    },
-    {
-      icon: Clock,
-      title: 'Horário de Atendimento',
-      value: 'Seg-Sex: 08h às 18h',
-    },
-  ];
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    const fieldName = id.replace('contact-', '');
+    setFormData(prev => ({ ...prev, [fieldName]: value }));
+    if (errors[fieldName]) {
+      setErrors(prev => ({ ...prev, [fieldName]: '' }));
+    }
+  };
 
   if (isSubmitted) {
     return (
-      <div className="lg:col-span-2">
-        <div className="p-8 rounded-3xl bg-white border border-slate-200 shadow-sm">
-          <div className="text-center py-12">
-            <CheckCircle2 className="w-20 h-20 text-emerald-500 mx-auto mb-6" />
-            <h3 className="text-3xl font-semibold mb-4 text-slate-950">Obrigado pelo contato!</h3>
-            <p className="text-lg text-slate-600 mb-8">
-              Nossa equipe entrará em contato em breve para agendar seu diagnóstico técnico.
-            </p>
-            <Link href="/">
-              <Button size="lg" className="bg-cyan-500 hover:bg-cyan-400 text-slate-950">
-                Voltar para a página inicial
-              </Button>
-            </Link>
-          </div>
+      <div className="space-y-8">
+        <div className="text-center py-10">
+          <CheckCircle2 className="w-20 h-20 text-emerald-500 mx-auto mb-6" />
+          <h3 className="text-2xl md:text-3xl font-bold mb-4 text-slate-950">Obrigado pelo contato!</h3>
+          <p className="text-base md:text-lg text-slate-600 mb-8">
+            Nossa equipe entrará em contato em breve para agendar seu diagnóstico técnico.
+          </p>
+          <Link href="/">
+            <button className="inline-flex items-center justify-center gap-2 h-12 px-8 bg-slate-950 text-white hover:bg-slate-800 rounded-full font-semibold transition-all shadow-lg hover:shadow-xl">
+              Voltar para a página inicial
+            </button>
+          </Link>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="grid lg:grid-cols-3 gap-12">
-      <div className="lg:col-span-1 space-y-8">
-        <div className="space-y-6">
-          <h2 className="text-2xl font-semibold text-slate-950">Informações de Contato</h2>
-          {contactInfo.map((item, index) => (
-            <div key={index} className="flex items-start gap-4 p-5 rounded-3xl bg-white border border-slate-200 shadow-sm">
-              <item.icon className="w-6 h-6 text-cyan-600 flex-shrink-0 mt-1" />
-              <div>
-                <h3 className="font-semibold text-slate-950 mb-1">{item.title}</h3>
-                <p className="text-slate-600 whitespace-pre-line">{item.value}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 shadow-sm">
-          <MessageSquare className="w-10 h-10 text-cyan-600 mb-4" />
-          <h3 className="text-xl font-semibold mb-2 text-slate-950">Atendimento rápido</h3>
-          <p className="text-slate-600 mb-4">
-            Nossa equipe técnica está disponível para agendar seu diagnóstico personalizado.
-          </p>
-          <WhatsAppButton
-            message="Olá! Vim do site da Aquabion e gostaria de mais informações."
-            className="w-full h-12 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-xl"
-          >
-            Falar no WhatsApp
-          </WhatsAppButton>
-        </div>
+    <div className="space-y-8">
+      <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 shadow-sm">
+        <MessageSquare className="w-10 h-10 text-cyan-600 mb-4" />
+        <h3 className="text-xl font-bold mb-2 text-slate-950">Atendimento rápido</h3>
+        <p className="text-slate-600 mb-5">
+          Nossa equipe técnica está disponível para agendar seu diagnóstico personalizado.
+        </p>
+        <WhatsAppButton
+          message="Olá! Vim do site da Aquabion e gostaria de mais informações."
+          className="w-full h-12 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-full transition-all shadow-md hover:shadow-lg"
+        >
+          Falar no WhatsApp
+        </WhatsAppButton>
       </div>
 
-      <div className="lg:col-span-2">
-        <div className="p-8 rounded-3xl bg-white border border-slate-200 shadow-sm">
-          <h2 className="text-2xl font-semibold text-slate-950 mb-8">Envie sua mensagem</h2>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="contact-name" className="block text-sm font-medium text-slate-700 mb-2">
-                  Nome completo *
-                </label>
-                <input
-                  id="contact-name"
-                  type="text"
-                  autoComplete="name"
-                  required
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-950 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 transition-colors"
-                  placeholder="Seu nome"
-                />
-              </div>
-              <div>
-                <label htmlFor="contact-email" className="block text-sm font-medium text-slate-700 mb-2">
-                  E-mail *
-                </label>
-                <input
-                  id="contact-email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-950 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 transition-colors"
-                  placeholder="email@empresa.com"
-                />
-              </div>
-            </div>
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="grid gap-5 sm:grid-cols-2">
+          <div className="space-y-2">
+            <label htmlFor="contact-name" className="block text-sm font-semibold text-slate-800">
+              Nome completo <span className="text-rose-500">*</span>
+            </label>
+            <input
+              id="contact-name"
+              type="text"
+              autoComplete="name"
+              required
+              value={formData.name}
+              onChange={handleInputChange}
+              aria-describedby={errors.name ? 'name-error' : undefined}
+              aria-invalid={!!errors.name}
+              className={`w-full h-12 px-4 rounded-2xl bg-white border transition-all duration-200 ${errors.name ? 'border-rose-300 focus:border-rose-500 focus:ring-2 focus:ring-rose-100' : 'border-slate-200 text-slate-950 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100'}`}
+              placeholder="Seu nome completo"
+            />
+            {errors.name && (
+              <p id="name-error" className="text-xs text-rose-600 font-semibold">
+                {errors.name}
+              </p>
+            )}
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="contact-email" className="block text-sm font-semibold text-slate-800">
+              E-mail <span className="text-rose-500">*</span>
+            </label>
+            <input
+              id="contact-email"
+              type="email"
+              autoComplete="email"
+              required
+              value={formData.email}
+              onChange={handleInputChange}
+              aria-describedby={errors.email ? 'email-error' : undefined}
+              aria-invalid={!!errors.email}
+              className={`w-full h-12 px-4 rounded-2xl bg-white border transition-all duration-200 ${errors.email ? 'border-rose-300 focus:border-rose-500 focus:ring-2 focus:ring-rose-100' : 'border-slate-200 text-slate-950 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100'}`}
+              placeholder="email@empresa.com"
+            />
+            {errors.email && (
+              <p id="email-error" className="text-xs text-rose-600 font-semibold">
+                {errors.email}
+              </p>
+            )}
+          </div>
+        </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="contact-phone" className="block text-sm font-medium text-slate-700 mb-2">
-                  Telefone
-                </label>
-                <input
-                  id="contact-phone"
-                  type="tel"
-                  autoComplete="tel"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-950 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 transition-colors"
-                  placeholder="(43) 99917-1010"
-                />
-              </div>
-              <div>
-                <label htmlFor="contact-company" className="block text-sm font-medium text-slate-700 mb-2">
-                  Empresa
-                </label>
-                <input
-                  id="contact-company"
-                  type="text"
-                  autoComplete="organization"
-                  value={formData.company}
-                  onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                  className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-950 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 transition-colors"
-                  placeholder="Nome da empresa"
-                />
-              </div>
-            </div>
+        <div className="grid gap-5 sm:grid-cols-2">
+          <div className="space-y-2">
+            <label htmlFor="contact-phone" className="block text-sm font-semibold text-slate-800">
+              Telefone
+            </label>
+            <input
+              id="contact-phone"
+              type="tel"
+              autoComplete="tel"
+              value={formData.phone}
+              onChange={handleInputChange}
+              className="w-full h-12 px-4 rounded-2xl bg-white border border-slate-200 text-slate-950 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100 transition-all duration-200"
+              placeholder="(43) 99917-1010"
+            />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="contact-company" className="block text-sm font-semibold text-slate-800">
+              Empresa
+            </label>
+            <input
+              id="contact-company"
+              type="text"
+              autoComplete="organization"
+              value={formData.company}
+              onChange={handleInputChange}
+              className="w-full h-12 px-4 rounded-2xl bg-white border border-slate-200 text-slate-950 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100 transition-all duration-200"
+              placeholder="Nome da empresa"
+            />
+          </div>
+        </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="contact-city" className="block text-sm font-medium text-slate-700 mb-2">
-                  Cidade
-                </label>
-                <input
-                  id="contact-city"
-                  type="text"
-                  autoComplete="address-level2"
-                  value={formData.city}
-                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                  className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-950 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 transition-colors"
-                  placeholder="Sua cidade"
-                />
-              </div>
-              <div>
-                <label htmlFor="contact-state" className="block text-sm font-medium text-slate-700 mb-2">
-                  Estado
-                </label>
-                <select
-                  id="contact-state"
-                  value={formData.state}
-                  onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                  className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-950 focus:outline-none focus:border-cyan-500 transition-colors"
-                >
-                  <option value="">Selecione um estado</option>
-                  <option value="AC">Acre</option>
-                  <option value="AL">Alagoas</option>
-                  <option value="AP">Amapá</option>
-                  <option value="AM">Amazonas</option>
-                  <option value="BA">Bahia</option>
-                  <option value="CE">Ceará</option>
-                  <option value="DF">Distrito Federal</option>
-                  <option value="ES">Espírito Santo</option>
-                  <option value="GO">Goiás</option>
-                  <option value="MA">Maranhão</option>
-                  <option value="MT">Mato Grosso</option>
-                  <option value="MS">Mato Grosso do Sul</option>
-                  <option value="MG">Minas Gerais</option>
-                  <option value="PA">Pará</option>
-                  <option value="PB">Paraíba</option>
-                  <option value="PR">Paraná</option>
-                  <option value="PE">Pernambuco</option>
-                  <option value="PI">Piauí</option>
-                  <option value="RJ">Rio de Janeiro</option>
-                  <option value="RN">Rio Grande do Norte</option>
-                  <option value="RS">Rio Grande do Sul</option>
-                  <option value="RO">Rondônia</option>
-                  <option value="RR">Roraima</option>
-                  <option value="SC">Santa Catarina</option>
-                  <option value="SP">São Paulo</option>
-                  <option value="SE">Sergipe</option>
-                  <option value="TO">Tocantins</option>
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="contact-segment" className="block text-sm font-medium text-slate-700 mb-2">
-                Segmento
-              </label>
-              <select
-                id="contact-segment"
-                value={formData.segment}
-                onChange={(e) => setFormData({ ...formData, segment: e.target.value })}
-                className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-950 focus:outline-none focus:border-cyan-500 transition-colors"
-              >
-                <option value="">Selecione um segmento</option>
-                <option value="industria">Indústria</option>
-                <option value="agro">Agronegócio</option>
-                <option value="hospitalar">Hospitalar</option>
-                <option value="hotelaria">Hotelaria</option>
-                <option value="condominios">Condomínios</option>
-                <option value="outro">Outro</option>
-              </select>
-            </div>
-
-            <div>
-              <label htmlFor="contact-message" className="block text-sm font-medium text-slate-700 mb-2">
-                Mensagem *
-              </label>
-              <textarea
-                id="contact-message"
-                required
-                value={formData.message}
-                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                rows={5}
-                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-950 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 transition-colors resize-none"
-                placeholder="Descreva seu projeto ou necessidade..."
-              />
-            </div>
-
-            <div className="flex items-start gap-3">
-              <input
-                type="checkbox"
-                required
-                id="privacy"
-                className="mt-1 h-4 w-4 rounded border-slate-300 bg-white text-cyan-500 focus:ring-cyan-500"
-              />
-              <label htmlFor="privacy" className="text-sm text-slate-600">
-                Li e concordo com a <Link href="/politica-privacidade" className="text-cyan-600 hover:text-cyan-700 underline">Política de Privacidade</Link> e os <Link href="/termos-de-uso" className="text-cyan-600 hover:text-cyan-700 underline">Termos de Uso</Link>.
-              </label>
-            </div>
-
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              size="lg"
-              className="w-full h-14 text-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold"
+        <div className="grid gap-5 sm:grid-cols-2">
+          <div className="space-y-2">
+            <label htmlFor="contact-city" className="block text-sm font-semibold text-slate-800">
+              Cidade
+            </label>
+            <input
+              id="contact-city"
+              type="text"
+              autoComplete="address-level2"
+              value={formData.city}
+              onChange={handleInputChange}
+              className="w-full h-12 px-4 rounded-2xl bg-white border border-slate-200 text-slate-950 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100 transition-all duration-200"
+              placeholder="Sua cidade"
+            />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="contact-state" className="block text-sm font-semibold text-slate-800">
+              Estado
+            </label>
+            <select
+              id="contact-state"
+              value={formData.state}
+              onChange={handleInputChange}
+              className="w-full h-12 px-4 rounded-2xl bg-white border border-slate-200 text-slate-950 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100 transition-all duration-200"
             >
-              {isSubmitting ? (
-                'Enviando...'
-              ) : (
-                <>
-                  Enviar Mensagem
-                  <Send className="w-5 h-5" />
-                </>
-              )}
-            </Button>
-          </form>
+              <option value="">Selecione um estado</option>
+              <option value="AC">Acre</option>
+              <option value="AL">Alagoas</option>
+              <option value="AP">Amapá</option>
+              <option value="AM">Amazonas</option>
+              <option value="BA">Bahia</option>
+              <option value="CE">Ceará</option>
+              <option value="DF">Distrito Federal</option>
+              <option value="ES">Espírito Santo</option>
+              <option value="GO">Goiás</option>
+              <option value="MA">Maranhão</option>
+              <option value="MT">Mato Grosso</option>
+              <option value="MS">Mato Grosso do Sul</option>
+              <option value="MG">Minas Gerais</option>
+              <option value="PA">Pará</option>
+              <option value="PB">Paraíba</option>
+              <option value="PR">Paraná</option>
+              <option value="PE">Pernambuco</option>
+              <option value="PI">Piauí</option>
+              <option value="RJ">Rio de Janeiro</option>
+              <option value="RN">Rio Grande do Norte</option>
+              <option value="RS">Rio Grande do Sul</option>
+              <option value="RO">Rondônia</option>
+              <option value="RR">Roraima</option>
+              <option value="SC">Santa Catarina</option>
+              <option value="SP">São Paulo</option>
+              <option value="SE">Sergipe</option>
+              <option value="TO">Tocantins</option>
+            </select>
+          </div>
         </div>
-      </div>
+
+        <div className="space-y-2">
+          <label htmlFor="contact-segment" className="block text-sm font-semibold text-slate-800">
+            Segmento
+          </label>
+          <select
+            id="contact-segment"
+            value={formData.segment}
+            onChange={handleInputChange}
+            className="w-full h-12 px-4 rounded-2xl bg-white border border-slate-200 text-slate-950 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100 transition-all duration-200"
+          >
+            <option value="">Selecione um segmento</option>
+            <option value="industria">Indústria</option>
+            <option value="agro">Agronegócio</option>
+            <option value="hospitalar">Hospitalar</option>
+            <option value="hotelaria">Hotelaria</option>
+            <option value="condominios">Condomínios</option>
+            <option value="outro">Outro</option>
+          </select>
+        </div>
+
+        <div className="space-y-2">
+          <label htmlFor="contact-message" className="block text-sm font-semibold text-slate-800">
+            Mensagem <span className="text-rose-500">*</span>
+          </label>
+          <textarea
+            id="contact-message"
+            required
+            value={formData.message}
+            onChange={handleInputChange}
+            rows={5}
+            aria-describedby={errors.message ? 'message-error' : undefined}
+            aria-invalid={!!errors.message}
+            className={`w-full px-4 py-3 rounded-2xl bg-white border transition-all duration-200 resize-none ${errors.message ? 'border-rose-300 focus:border-rose-500 focus:ring-2 focus:ring-rose-100' : 'border-slate-200 text-slate-950 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100'}`}
+            placeholder="Descreva seu projeto ou necessidade..."
+          />
+          {errors.message && (
+            <p id="message-error" className="text-xs text-rose-600 font-semibold">
+              {errors.message}
+            </p>
+          )}
+        </div>
+
+        <div className="flex items-start gap-3">
+          <input
+            type="checkbox"
+            required
+            id="privacy"
+            className="mt-1 h-5 w-5 rounded-lg border-slate-300 bg-white text-cyan-500 focus:ring-cyan-500 cursor-pointer"
+          />
+          <label htmlFor="privacy" className="text-sm text-slate-600 cursor-pointer leading-relaxed">
+            Li e concordo com a <Link href="/politica-privacidade" className="text-cyan-600 hover:text-cyan-700 underline font-semibold transition-colors">Política de Privacidade</Link> e os <Link href="/termos-de-uso" className="text-cyan-600 hover:text-cyan-700 underline font-semibold transition-colors">Termos de Uso</Link>.
+          </label>
+        </div>
+
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full h-14 text-base md:text-lg bg-slate-950 hover:bg-slate-800 text-white font-bold rounded-full transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="w-6 h-6 animate-spin" />
+              Enviando...
+            </>
+          ) : (
+            <>
+              Enviar Mensagem
+              <Send className="w-5 h-5" />
+            </>
+          )}
+        </button>
+      </form>
     </div>
   );
 }

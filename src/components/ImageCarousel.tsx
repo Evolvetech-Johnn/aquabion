@@ -1,6 +1,7 @@
+
 'use client';
 
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';        
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import CloudinaryImage from './media/CloudinaryImage';
 
@@ -15,9 +16,9 @@ interface ImageCarouselProps {
   autoPlayInterval?: number;
 }
 
-export default function ImageCarousel({ 
-  images, 
-  autoPlayInterval = 4000 
+export default function ImageCarousel({
+  images,
+  autoPlayInterval = 5000 
 }: ImageCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -59,31 +60,27 @@ export default function ImageCarousel({
   }
 
   return (
-    <section 
+    <section
       className="relative w-full overflow-hidden bg-slate-900"
       aria-roledescription="carrossel"
       aria-label="Imagens em destaque da Aquabion"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
-      onTouchStart={() => setIsPaused(true)}
-      onTouchEnd={() => setIsPaused(false)}
     >
-      <div 
-        className="flex transition-transform duration-1000 ease-in-out h-[400px] md:h-[500px] lg:h-[600px]"
+      <div
+        className="flex transition-transform duration-700 ease-out h-[400px] md:h-[500px] lg:h-[600px]"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
       >
         {validImages.map((image, index) => (
-          <div 
-            key={index} 
+          <div
+            key={index}
             className="w-full flex-shrink-0 relative h-full"
             aria-hidden={index !== currentIndex}
           >
-            <CloudinaryImage 
+            <CloudinaryImage
               url={image.url}
               publicId={image.publicId}
               alt={image.alt || `Imagem ${index + 1} do carrossel`}
-              width={1920}
-              height={1080}
               fill
               crop="fill"
               className="object-cover object-center"
@@ -113,8 +110,8 @@ export default function ImageCarousel({
           </button>
 
           {/* Indicators */}
-          <div 
-            className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3"
+          <div
+            className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3"  
             role="tablist"
             aria-label="Indicadores de slides"
           >
@@ -122,9 +119,9 @@ export default function ImageCarousel({
               <button
                 key={index}
                 onClick={() => goToSlide(index)}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                  index === currentIndex 
-                    ? 'bg-white scale-125' 
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${ 
+                  index === currentIndex
+                    ? 'bg-white scale-125'
                     : 'bg-white/40 hover:bg-white/70'
                 }`}
                 role="tab"

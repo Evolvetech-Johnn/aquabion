@@ -1,78 +1,69 @@
+
+'use client';
+
+import React from 'react';
 import Link from 'next/link';
-import NextImage from 'next/image';
-import { Mail, Phone, MapPin } from 'lucide-react';
+import Image from 'next/image';
 
 export default function Footer() {
   return (
-    <footer className="bg-slate-50 border-t border-slate-200">
-      <div className="container mx-auto px-6 py-16">
+    <footer className="bg-slate-950 text-slate-400 py-16">
+      <div className="max-w-7xl mx-auto px-6 md:px-12">
         <div className="grid md:grid-cols-4 gap-12 mb-12">
           <div className="md:col-span-1">
-            <Link href="/" className="flex items-center gap-4 mb-4">
-              <NextImage src="/logoaquabion.png" alt="Aquabion Brasil" width={64} height={64} className="object-contain" />
-              <span className="text-2xl font-semibold tracking-tight text-slate-950">
-                <span className="bg-gradient-to-r from-cyan-600 via-cyan-500 to-slate-900 bg-clip-text text-transparent">
-                  Aquabion Brasil
-                </span>
-              </span>
+            <Link href="/" className="flex items-center gap-3 mb-6">
+              <div className="relative w-10 h-10">
+                <Image
+                  src="/logoaquabion.png"
+                  alt="Aquabion Brasil"
+                  fill
+                  className="object-contain brightness-150"
+                />
+              </div>
+              <span className="text-xl font-bold text-white">Aquabion</span>
             </Link>
-            <p className="text-slate-600 mb-6">
-              A nova engenharia da água com inovação alemã e entrega confiável.
+            <p className="text-sm leading-relaxed">
+              Tecnologia alemã de tratamento de água sustentável, presente em mais de 50 países.
             </p>
           </div>
 
           <div>
-            <h4 className="text-lg font-semibold text-slate-950 mb-4">Produto</h4>
+            <h4 className="text-white font-semibold mb-6">Links Rápidos</h4>
             <ul className="space-y-3">
-              <li><Link href="/tecnologia" className="text-slate-600 hover:text-slate-950 transition-colors">Tecnologia</Link></li>
-              <li><Link href="/beneficios" className="text-slate-600 hover:text-slate-950 transition-colors">Benefícios</Link></li>
-              <li><Link href="/aplicacoes" className="text-slate-600 hover:text-slate-950 transition-colors">Aplicações</Link></li>
-              <li><Link href="/cases" className="text-slate-600 hover:text-slate-950 transition-colors">Casos de Sucesso</Link></li>
-              <li><Link href="/blog" className="text-slate-600 hover:text-slate-950 transition-colors">Blog</Link></li>
-              <li><Link href="/faq" className="text-slate-600 hover:text-slate-950 transition-colors">FAQ</Link></li>
+              {['Início', 'Tecnologia', 'Benefícios', 'Contato'].map((item) => (
+                <li key={item}>
+                  <Link href={item === 'Início' ? '/' : `/${item.toLowerCase()}`} className="hover:text-cyan-400 transition-colors">
+                    {item}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
           <div>
-            <h4 className="text-lg font-semibold text-slate-950 mb-4">Empresa</h4>
+            <h4 className="text-white font-semibold mb-6">Legal</h4>
             <ul className="space-y-3">
-              <li><Link href="/sobre" className="text-slate-600 hover:text-slate-950 transition-colors">Sobre Nós</Link></li>
-              <li><Link href="/contato" className="text-slate-600 hover:text-slate-950 transition-colors">Contato</Link></li>
-              <li><Link href="/admin" className="text-slate-600 hover:text-slate-950 transition-colors">Área Administrativa</Link></li>
+              <li><Link href="/politica-privacidade" className="hover:text-cyan-400 transition-colors">Política de Privacidade</Link></li>
+              <li><Link href="/termos-de-uso" className="hover:text-cyan-400 transition-colors">Termos de Uso</Link></li>
             </ul>
           </div>
 
           <div>
-            <h4 className="text-lg font-semibold text-slate-950 mb-4">Contato</h4>
-            <ul className="space-y-3 text-slate-600">
-              <li className="flex items-center gap-3">
-                <Phone className="w-4 h-4 text-cyan-600" />
-                <span>(43) 99917-1010</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Mail className="w-4 h-4 text-cyan-600" />
-                <span>contato@aquabion.com.br</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <MapPin className="w-4 h-4 text-cyan-600 mt-1" />
-                <span className="flex flex-col gap-1">
-                  <span>Londrina, PR - Brasil</span>
-                  <span>Bauneário Camboriú, SC - Brasil</span>
-                  <span>São Paulo - Capital, SP - Brasil</span>
-                </span>
-              </li>
-            </ul>
+            <h4 className="text-white font-semibold mb-6">Contato</h4>
+            <p className="text-sm mb-2">contato@aquabion.com.br</p>
+            <p className="text-sm mb-2">(43) 99917-1010</p>
+            <div className="text-sm space-y-1 mt-4">
+              <p>Londrina, PR - Brasil</p>
+              <p>Balneário Camboriú, SC - Brasil</p>
+              <p>São Paulo - Capital, SP - Brasil</p>
+            </div>
           </div>
         </div>
 
-        <div className="pt-8 border-t border-slate-200 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-slate-500 text-sm">
-            © {new Date().getFullYear()} Aquabion Brasil. Todos os direitos reservados.
+        <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-sm text-slate-500">
+            © 2025 Aquabion Brasil. Todos os direitos reservados.
           </p>
-          <div className="flex gap-6 text-slate-500 text-sm">
-            <Link href="/politica-privacidade" className="hover:text-slate-900 transition-colors">Política de Privacidade</Link>
-            <Link href="/termos-de-uso" className="hover:text-slate-900 transition-colors">Termos de Uso</Link>
-          </div>
         </div>
       </div>
     </footer>

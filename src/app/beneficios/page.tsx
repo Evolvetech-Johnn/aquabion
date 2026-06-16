@@ -1,7 +1,10 @@
+
 import Link from 'next/link';
-import { TrendingUp, Droplets, Zap, Shield, Leaf, Clock } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { TrendingUp, Droplets, Zap, Shield, Leaf, Clock, ChevronLeft } from 'lucide-react';
 import ImageCard from '@/components/ImageCard';
+import Reveal from '@/components/ui/Reveal';
+import AnimatedButton from '@/components/ui/AnimatedButton';
+import AnimatedCard from '@/components/ui/AnimatedCard';
 import { getPageImages } from '@/services/media.service';
 
 export const metadata = {
@@ -47,90 +50,126 @@ export default async function BenefitsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-950 py-24">
-      <div className="container mx-auto px-6">
-        <div className="max-w-4xl mx-auto rounded-[2rem] bg-white border border-slate-200 p-12 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.18)] text-center mb-16">
-          <Link href="/" className="inline-flex items-center gap-2 text-cyan-600 hover:text-cyan-700 mb-6">
-            ← Voltar para a página inicial
-          </Link>
-          <h1 className="text-4xl md:text-6xl font-semibold mb-6">Benefícios da tecnologia Aquabion</h1>
-          <p className="text-lg leading-8 text-slate-600 mx-auto max-w-3xl">
-            Resultados mensuráveis com menor custo, maior confiabilidade e impacto ambiental reduzido.
-          </p>
-        </div>
+    <div className="min-h-screen bg-slate-50 text-slate-950 pt-20">
+      {/* Hero Section */}
+      <section className="py-16 md:py-24">
+        <div className="max-w-7xl mx-auto px-6 md:px-12">
+          <Reveal>
+            <Link href="/" className="inline-flex items-center gap-2 text-cyan-600 hover:text-cyan-700 mb-8">
+              <ChevronLeft className="w-4 h-4" />
+              Voltar para a página inicial
+            </Link>
+          </Reveal>
 
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mb-16">
-          {benefits.map((benefit, index) => (
-            <div key={index} className="rounded-[1.75rem] border border-slate-200 bg-white p-8 shadow-sm transition-all duration-300 hover:-translate-y-1">
-              <benefit.icon className="w-12 h-12 text-cyan-600 mb-6" />
-              <h3 className="text-2xl font-semibold mb-4 text-slate-950">{benefit.title}</h3>
-              <p className="text-slate-600 leading-7">{benefit.description}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Showcase Image */}
-        <div className="mb-16 relative">
-          <ImageCard 
-            locationId="benefits_showcase"
-            imageUrl={pageImages['benefits_showcase']?.url}
-            publicId={pageImages['benefits_showcase']?.publicId}
-            aspectRatio="video"
-            className="w-full max-h-[450px] object-cover"
-          />
-          <div className="absolute -bottom-8 -left-8 w-64 h-64 bg-cyan-100/50 rounded-full blur-3xl -z-10 pointer-events-none" />
-        </div>
-
-        <div className="rounded-[2rem] border border-slate-200 bg-white p-12 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.18)] mb-16">
-          <div className="grid gap-12 lg:grid-cols-2 items-center">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-semibold mb-6">Comparativo de mercado</h2>
-              <p className="text-lg leading-8 text-slate-600 mb-8">
-                Veja como a solução Aquabion entrega desempenho superior sem custos adicionais ou riscos ambientais.
+          <Reveal>
+            <div className="text-center max-w-4xl mx-auto">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
+                Benefícios da tecnologia Aquabion
+              </h1>
+              <p className="text-lg md:text-xl text-slate-600 leading-relaxed max-w-2xl mx-auto">
+                Resultados mensuráveis com menor custo, maior confiabilidade e impacto ambiental reduzido.
               </p>
-              <ul className="space-y-4 text-slate-600">
-                {[
-                  'CAPEX médio, OPEX reduzido',
-                  'Zero consumo de água extra',
-                  'Sem manutenção frequente',
-                  'Impacto ambiental positivo',
-                ].map((item, i) => (
-                  <li key={i} className="flex items-center gap-3">
-                    <div className="w-2 h-2 rounded-full bg-cyan-600" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
             </div>
-            <div className="rounded-[1.75rem] border border-slate-200 bg-slate-50 p-6">
-              <table className="w-full text-left">
-                <thead>
-                  <tr className="border-b border-slate-200">
-                    <th className="py-4 px-4 text-cyan-600 font-semibold">Critério</th>
-                    <th className="py-4 px-4 text-cyan-950 font-semibold text-center">Aquabion</th>
-                  </tr>
-                </thead>
-                <tbody className="text-slate-600">
-                  {['OPEX', 'Consumo de água', 'Manutenção', 'Impacto ambiental'].map((row, i) => (
-                    <tr key={i} className="border-b border-slate-200">
-                      <td className="py-4 px-4">{row}</td>
-                      <td className="py-4 px-4 text-center font-semibold text-slate-950">Zero</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Benefits Grid */}
+      <section className="py-12 md:py-16">
+        <div className="max-w-7xl mx-auto px-6 md:px-12">
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {benefits.map((benefit, index) => (
+              <Reveal key={index} delay={index * 0.1}>
+                <AnimatedCard>
+                  <benefit.icon className="w-14 h-14 text-cyan-600 mb-6" />
+                  <h3 className="text-2xl font-bold text-slate-950 mb-4">{benefit.title}</h3>
+                  <p className="text-slate-600 leading-relaxed">{benefit.description}</p>
+                </AnimatedCard>
+              </Reveal>
+            ))}
           </div>
         </div>
+      </section>
 
-        <div className="text-center">
-          <Link href="/contato">
-            <Button size="lg" className="h-14 px-10 text-lg bg-cyan-600 hover:bg-cyan-500 text-white font-semibold">
-              Agendar Diagnóstico Técnico
-            </Button>
-          </Link>
+      {/* Showcase Image */}
+      <section className="py-12 md:py-16">
+        <div className="max-w-7xl mx-auto px-6 md:px-12">
+          <Reveal>
+            <div className="relative">
+              <ImageCard 
+                locationId="benefits_showcase"
+                imageUrl={pageImages['benefits_showcase']?.url}
+                publicId={pageImages['benefits_showcase']?.publicId}
+                aspectRatio="video"
+                className="w-full"
+              />
+              <div className="absolute -bottom-10 -left-10 w-80 h-80 bg-cyan-100/50 rounded-full blur-3xl -z-10" />
+            </div>
+          </Reveal>
         </div>
-      </div>
+      </section>
+
+      {/* Comparativo */}
+      <section className="py-12 md:py-24">
+        <div className="max-w-7xl mx-auto px-6 md:px-12">
+          <Reveal>
+            <div className="premium-card">
+              <div className="grid gap-12 lg:grid-cols-2 items-center">
+                <div>
+                  <h2 className="text-3xl md:text-4xl font-bold text-slate-950 mb-6">Comparativo de mercado</h2>
+                  <p className="text-lg text-slate-600 mb-8 leading-relaxed">
+                    Veja como a solução Aquabion entrega desempenho superior sem custos adicionais ou riscos ambientais.
+                  </p>
+                  <ul className="space-y-4 text-slate-600">
+                    {[
+                      'CAPEX médio, OPEX reduzido',
+                      'Zero consumo de água extra',
+                      'Sem manutenção frequente',
+                      'Impacto ambiental positivo',
+                    ].map((item, i) => (
+                      <li key={i} className="flex items-center gap-3 text-lg">
+                        <div className="w-3 h-3 rounded-full bg-cyan-600" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="premium-card bg-slate-50 p-6 md:p-8">
+                  <table className="w-full text-left">
+                    <thead>
+                      <tr className="border-b border-slate-200">
+                        <th className="py-4 px-2 text-cyan-600 font-bold text-lg">Critério</th>
+                        <th className="py-4 px-2 text-slate-950 font-bold text-center text-lg">Aquabion</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-slate-600">
+                      {['OPEX', 'Consumo de água', 'Manutenção', 'Impacto ambiental'].map((row, i) => (
+                        <tr key={i} className="border-b border-slate-200">
+                          <td className="py-4 px-2 text-lg">{row}</td>
+                          <td className="py-4 px-2 text-center font-bold text-slate-950 text-lg">Zero</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* CTA Final */}
+      <section className="py-12 md:py-24">
+        <div className="max-w-4xl mx-auto px-6 md:px-12 text-center">
+          <Reveal>
+            <Link href="/contato">
+              <AnimatedButton size="lg" showArrow>
+                Agendar Diagnóstico Técnico
+              </AnimatedButton>
+            </Link>
+          </Reveal>
+        </div>
+      </section>
     </div>
   );
 }

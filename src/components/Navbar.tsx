@@ -1,105 +1,118 @@
+
 'use client';
 
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Button } from './ui/button';
 import Image from 'next/image';
 import { Menu, X, ChevronRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import AnimatedButton from './ui/AnimatedButton';
+import { cn } from '@/lib/utils';
+
+const navItems = [
+  { name: 'Início', href: '/' },
+  { name: 'Tecnologia', href: '/tecnologia' },
+  { name: 'Benefícios', href: '/beneficios' },
+  { name: 'Aplicações', href: '/aplicacoes' },
+  { name: 'Contato', href: '/contato' },
+];
 
 export default function Navbar() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
-  const navLinks = [
-    { name: 'Sobre', href: '/sobre' },
-    { name: 'Tecnologia', href: '/tecnologia' },
-    { name: 'Benefícios', href: '/beneficios' },
-    { name: 'Aplicações', href: '/aplicacoes' },
-    { name: 'Cases', href: '/cases' },
-    { name: 'Blog', href: '/blog' },
-    { name: 'FAQ', href: '/faq' },
-    { name: 'Termos de Uso', href: '/termos-de-uso' },
-    { name: 'Contato', href: '/contato' },
-  ];
-
-  const pathname = usePathname();
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-slate-200/70 bg-white/85 backdrop-blur-xl shadow-sm">
-      <div className="container mx-auto px-6">
+    <nav
+      className={cn(
+        'fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-transparent',
+        scrolled
+          ? 'bg-white/90 backdrop-blur-xl border-slate-200 shadow-sm'
+          : 'bg-transparent'
+      )}
+    >
+      <div className="max-w-7xl mx-auto px-6 md:px-12">
         <div className="flex items-center justify-between h-20">
-          <Link href="/" className="flex items-center gap-3" aria-label="Aquabion Brasil - Página Inicial">
-            <Image src="/logoaquabion.png" alt="Aquabion Brasil" width={54} height={54} className="w-[54px] h-[54px] object-contain" />
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-3">
+            <div className="relative w-10 h-10">
+              <Image
+                src="/logoaquabion.png"
+                alt="Aquabion Brasil"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
+            <span className="text-xl font-bold tracking-tight text-slate-950">
+              Aquabion
+            </span>
           </Link>
 
+          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => {
-              const isActive = pathname === link.href;
-              const isLegal = link.href === '/termos-de-uso';
-              return (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  className={`text-slate-600 transition-colors ${
-                    isActive
-                      ? 'rounded-full border border-slate-200/90 bg-slate-100 px-3 py-1 text-slate-950 shadow-sm'
-                      : isLegal
-                      ? 'rounded-full border border-slate-200/80 bg-slate-100 px-3 py-1 hover:bg-slate-200'
-                      : 'hover:text-slate-950'
-                  }`}
-                >
-                  {link.name}
-                </Link>
-              );
-            })}
-            <Link href="/contato">
-              <Button size="lg" variant="default" className="shadow-none">
-                Agendar Diagnóstico
-                <ChevronRight className="w-4 h-4" />
-              </Button>
-            </Link>
+            {navItems.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                className="text-sm font-medium text-slate-600 hover:text-cyan-600 transition-colors"
+              >
+                {item.name}
+              </Link>
+            ))}
+            <AnimatedButton size="sm">
+              Agendar Visita
+            </AnimatedButton>
           </div>
 
+          {/* Mobile Menu Button */}
           <button
-            className="md:hidden text-slate-900"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label={isMenuOpen ? 'Fechar menu' : 'Abrir menu'}
-            aria-expanded={isMenuOpen}
-            aria-controls="mobile-menu"
+            className="md:hidden p-2 text-slate-900"
+            onClick={() => setIsOpen(!isOpen)}
           >
-            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {isOpen ? <X /> : <Menu />}
           </button>
         </div>
       </div>
 
-      {isMenuOpen && (
-        <div id="mobile-menu" className="md:hidden bg-white border-t border-slate-200/80 shadow-sm">
-          <div className="container mx-auto px-6 py-4 space-y-4">
-            {navLinks.map((link) => {
-              const isActive = pathname === link.href;
-              return (
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden bg-white border-b border-slate-200 overflow-hidden"
+          >
+            <div className="px-6 py-8 space-y-4">
+              {navItems.map((item) => (
                 <Link
-                  key={link.name}
-                  href={link.href}
-                  className={`block rounded-2xl px-3 py-2 transition-all ${
-                    isActive
-                      ? 'bg-slate-100 text-slate-950 shadow-sm'
-                      : 'text-slate-700 hover:text-slate-950 hover:bg-slate-50'
-                  }`}
-                  onClick={() => setIsMenuOpen(false)}
+                  key={item.name}
+                  href={item.href}
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center justify-between py-3 text-lg font-medium text-slate-900 border-b border-slate-100"
                 >
-                  {link.name}
+                  {item.name}
+                  <ChevronRight className="w-5 h-5 text-slate-400" />
                 </Link>
-              );
-            })}
-            <Link href="/contato" onClick={() => setIsMenuOpen(false)}>
-              <Button size="lg" className="w-full shadow-none">
-                Agendar Diagnóstico
-              </Button>
-            </Link>
-          </div>
-        </div>
-      )}
+              ))}
+              <div className="pt-4">
+                <AnimatedButton className="w-full" onClick={() => setIsOpen(false)}>
+                  Agendar Visita
+                </AnimatedButton>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }
+

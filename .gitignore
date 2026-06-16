@@ -31,3 +31,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# data directories
+/crm_data
+/audit_data
+/src/crm_data
+
+# skill files
+LLM_LEAD_ACQUISITION.md
+UI_UX_Pro_Max_SKILL.md

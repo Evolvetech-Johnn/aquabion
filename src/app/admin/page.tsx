@@ -1689,7 +1689,7 @@ Atividades sincronizadas: ${json.syncedActivities}`);
         )}
 
         {/* 🎴 TAB 4: GERENCIADOR DE CARDS DAS PÁGINAS */}
-        {activeTab === "cards" && currentUser.toLowerCase() !== process.env.NEXT_PUBLIC_ADMIN_USERNAME_RESTRICTED?.toLowerCase() && (
+        {activeTab === "cards" && (
           <div className="space-y-8 animate-fade-in flex-grow flex flex-col justify-between">
             {/* Top Bar / Filter */}
             <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
@@ -1900,7 +1900,7 @@ Atividades sincronizadas: ${json.syncedActivities}`);
         )}
 
         {/* 📝 TAB 5: AUDITORIA & LOGS */}
-        {activeTab === "audit" && currentUser.toLowerCase() !== process.env.NEXT_PUBLIC_ADMIN_USERNAME_RESTRICTED?.toLowerCase() && (
+        {activeTab === "audit" && (
           <div className="space-y-8 animate-fade-in flex-grow flex flex-col">
             {/* Filters Bar */}
             <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm">
