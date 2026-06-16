@@ -14,6 +14,8 @@ const navItems = [
   { name: 'Tecnologia', href: '/tecnologia' },
   { name: 'Benefícios', href: '/beneficios' },
   { name: 'Aplicações', href: '/aplicacoes' },
+  { name: 'Blog', href: '/blog' },
+  { name: 'FAQ', href: '/faq' },
   { name: 'Contato', href: '/contato' },
 ];
 
