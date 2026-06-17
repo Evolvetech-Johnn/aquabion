@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { CheckCircle, TrendingUp, Award } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-
+import { Inter } from 'next/font/google';
+const inter = Inter({ subsets: ['latin'], weight: ['400','600','700'], variable: '--font-inter' });
 export const metadata = {
   title: 'Cases de Sucesso | Aquabion Brasil',
   description: 'Cases de sucesso da tecnologia Aquabion ao redor do mundo',
@@ -68,16 +69,18 @@ export default function CasesPage() {
           </p>
         </div>
 
+        {/* Cases Grid */}
         <div className="grid gap-8 md:grid-cols-2 mb-16">
           {cases.map((caseStudy, index) => (
-            <div key={index} className="rounded-[1.75rem] border border-slate-200 bg-white p-8 shadow-sm transition-all duration-300 hover:-translate-y-1">
+            <div
+              key={index}
+              className="relative rounded-[1.75rem] bg-white/30 backdrop-blur-xl border border-white/20 p-8 shadow-lg transition-transform duration-300 ease-out hover:-translate-y-1 hover:shadow-2xl"
+            >
               <div className="flex items-start justify-between mb-6 gap-6">
                 <div>
-                  <h3 className="text-2xl font-semibold mb-2 text-slate-950">{caseStudy.company}</h3>
-                  <p className="text-slate-600 mb-2">{caseStudy.location}</p>
-                  <span className="inline-flex rounded-full bg-cyan-50 px-3 py-1 text-sm font-medium text-cyan-700">
-                    {caseStudy.segment}
-                  </span>
+                  <h3 className="text-2xl font-semibold mb-2 text-slate-950 font-inter">{caseStudy.company}</h3>
+                  <p className="text-slate-600 mb-2 font-inter">{caseStudy.location}</p>
+                  <span className="inline-flex rounded-full bg-cyan-50 px-3 py-1 text-sm font-medium text-cyan-700">{caseStudy.segment}</span>
                 </div>
                 <Award className="w-10 h-10 text-amber-500" />
               </div>
@@ -86,17 +89,17 @@ export default function CasesPage() {
                 {caseStudy.results.map((result, i) => (
                   <div key={i} className="flex items-start gap-3">
                     <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-1" />
-                    <span>{result}</span>
+                    <span className="font-inter">{result}</span>
                   </div>
                 ))}
               </div>
 
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+              <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-5 backdrop-filter backdrop-blur-lg">
                 <div className="flex items-center gap-3">
                   <TrendingUp className="w-6 h-6 text-emerald-500" />
                   <div>
-                    <p className="text-sm text-slate-600">Economia anual estimada</p>
-                    <p className="text-2xl font-semibold text-slate-950">{caseStudy.savings}</p>
+                    <p className="text-sm text-slate-600 font-inter">Economia anual estimada</p>
+                    <p className="text-2xl font-semibold text-slate-950 font-inter">{caseStudy.savings}</p>
                   </div>
                 </div>
               </div>
@@ -104,25 +107,26 @@ export default function CasesPage() {
           ))}
         </div>
 
-        <div className="rounded-[2rem] border border-slate-200 bg-white p-12 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.18)] text-center">
+        {/* Stats Section */}
+        <div className="rounded-[2rem] border border-slate-200 bg-gradient-to-r from-cyan-100 to-cyan-200 p-12 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.18)] text-center">
           <div className="grid gap-8 md:grid-cols-3 mb-8">
             {[
               { number: '+50', label: 'Países atendidos' },
               { number: '100K+', label: 'Instalações globais' },
               { number: '25+', label: 'Anos de mercado' },
             ].map((stat, i) => (
-              <div key={i}>
-                <div className="text-4xl font-semibold text-cyan-600 mb-2">{stat.number}</div>
-                <div className="text-slate-600">{stat.label}</div>
+              <div key={i} className="text-center">
+                <div className="text-4xl font-semibold text-cyan-600 mb-2 font-inter">{stat.number}</div>
+                <div className="text-slate-600 font-inter">{stat.label}</div>
               </div>
             ))}
           </div>
           <h2 className="text-3xl font-semibold mb-6">Seja o próximo case de sucesso</h2>
-          <p className="text-lg leading-8 text-slate-600 mb-8 max-w-3xl mx-auto">
+          <p className="text-lg leading-8 text-slate-600 mb-8 max-w-3xl mx-auto font-inter">
             Agende seu diagnóstico técnico e descubra como sua empresa pode economizar com água mais limpa e processos mais confiáveis.
           </p>
           <Link href="/contato">
-            <Button size="lg" className="h-14 px-10 text-lg bg-cyan-600 hover:bg-cyan-500 text-white font-semibold">
+            <Button size="lg" className="h-14 px-10 text-lg bg-cyan-600 hover:bg-cyan-500 text-white font-semibold transition-colors">
               Agendar diagnóstico
             </Button>
           </Link>
