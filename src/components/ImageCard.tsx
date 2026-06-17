@@ -21,47 +21,44 @@ function ImageCard({
   aspectRatio = "video",
   priority = false
 }: ImageCardProps) {
-  // Don't apply aspect-ratio if the className includes h-full or explicit height
-  const hasExplicitHeight = className.includes('h-full') || className.includes('h-[');
-  const aspectClass = hasExplicitHeight ? 'min-h-[300px]' : {
-    'video': 'aspect-video',
-    'square': 'aspect-square',
-    'portrait': 'aspect-[3/4]',
-    'auto': 'aspect-auto'
-  }[aspectRatio];
+  // Determine CSS class for the desired aspect ratio
+  const aspectClass =
+    aspectRatio === "video"
+      ? "aspect-w-16 aspect-h-9"
+      : aspectRatio === "square"
+      ? "aspect-w-1 aspect-h-1"
+      : aspectRatio === "portrait"
+      ? "aspect-w-3 aspect-h-4"
+      : ""; // auto – no forced ratio
 
-  if (!imageUrl && !publicId) {
+  // If we have a valid image source, render it via CloudinaryImage component
+  if (effectiveUrl || publicId) {
+    const src = effectiveUrl ? effectiveUrl : undefined; // CloudinaryImage will handle publicId fallback
     return (
-      <div 
-        className={`relative flex flex-col items-center justify-center bg-white/5 border-2 border-dashed border-white/10 rounded-2xl overflow-hidden p-6 text-center ${aspectClass} ${className}`}
-        role="region"
-        aria-label={`Espaço para imagem: ${locationId}`}
-      >
-        <ImageIcon className="w-10 h-10 text-[#86868B] mb-3" aria-hidden="true" />
-        <p className="text-sm font-medium text-[#F5F5F7]">Espaço para Imagem</p>
-        <p className="text-xs text-[#86868B] mt-1">ID: {locationId}</p>
-        <p className="text-xs text-cyan-400 mt-2 font-semibold">Insira no Dashboard</p>
+      <div className={`relative ${aspectClass} ${className}`}>
+        <CloudinaryImage
+          src={src}
+          publicId={publicId}
+          alt={alt}
+          priority={priority}
+          className="object-cover w-full h-full rounded-2xl"
+        />
       </div>
     );
   }
 
+  // Placeholder UI when no image is provided
   return (
-    <div 
-      className={`relative overflow-hidden rounded-2xl bg-white/5 shadow-lg ${aspectClass} ${className}`}
+    <div
+      className={`relative flex flex-col items-center justify-center bg-white/5 border-2 border-dashed border-white/10 rounded-2xl overflow-hidden p-6 text-center ${aspectClass} ${className}`}
+      role="region"
+      aria-label={`Espaço para imagem: ${locationId}`}
     >
-      <CloudinaryImage 
-        publicId={publicId}
-        url={imageUrl}
-        alt={alt}
-        width={1200}
-        height={800}
-        fill
-        className="object-cover"
-        crop="fill"
-        priority={priority}
-      />
+      <ImageIcon className="w-10 h-10 text-[#86868B] mb-3" aria-hidden="true" />
+      <p className="text-sm font-medium text-slate-600">Espaço para Imagem</p>
+      <p className="text-xs text-slate-500 mt-1">ID: {locationId}</p>
+      <p className="text-xs text-cyan-400 mt-2 font-semibold">Insira no Dashboard</p>
     </div>
   );
-}
 
 export default memo(ImageCard);
