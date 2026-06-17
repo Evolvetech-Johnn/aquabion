@@ -800,32 +800,32 @@ Atividades sincronizadas: ${json.syncedActivities}`);
 
   // --- DASHBOARD PRINCIPAL ---
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col">
+    <div className="min-h-screen bg-[#071B34] text-[#F5F5F7] flex flex-col">
       {/* Header do Painel */}
-      <header className="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-30 shadow-md">
-        <div className="container mx-auto px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex items-center gap-4">
+      <header className="bg-[#071B34] text-[#F5F5F7] border-b border-white/10 sticky top-0 z-[100] shadow-[0_8px_30px_rgba(0,0,0,0.3)]">
+        <div className="container mx-auto px-6 py-4 flex flex-col lg:flex-row justify-between items-center gap-4">
+          <div className="flex items-center gap-4 w-full lg:w-auto">
             <Link href="/" className="flex items-center gap-3">
               <Image src="/logoaquabion.png" alt="Aquabion" className="w-10 h-10 object-contain brightness-110" width={40} height={40} />
             </Link>
-            <div className="h-6 w-[1px] bg-slate-800 hidden md:block" />
-            <div>
-              <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+            <div className="h-6 w-[1px] bg-white/20 hidden lg:block" />
+            <div className="flex-1 min-w-0">
+              <h1 className="text-xl font-bold tracking-tight text-[#F5F5F7] flex items-center gap-2 flex-wrap">
                 Painel Administrativo & Executivo
                 <span className="text-xs bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 rounded-full px-2 py-0.5 font-medium">
                   Controle Total
                 </span>
               </h1>
-              <p className="text-xs text-slate-400 hidden md:block">
+              <p className="text-xs text-[#86868B] hidden lg:block truncate">
                 Logado como: <span className="text-cyan-400 font-semibold">{currentUser}</span> | Gestão de leads, métricas de negócio e mídias Cloudinary
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 w-full lg:w-auto flex-wrap justify-center">
             <button
               onClick={handleRefresh}
-              className="p-2 bg-slate-850 hover:bg-slate-800 text-slate-300 hover:text-white rounded-xl border border-slate-800 transition-colors flex items-center gap-2 text-sm"
+              className="p-2 bg-white/5 hover:bg-white/10 text-[#86868B] hover:text-[#F5F5F7] rounded-xl border border-white/10 transition-all duration-300 flex items-center gap-2 text-sm"
               title="Recarregar Dados"
             >
               <RefreshCw className={`w-4 h-4 ${loadingLeads || loadingMedia ? "animate-spin" : ""}`} />
@@ -833,7 +833,7 @@ Atividades sincronizadas: ${json.syncedActivities}`);
             </button>
             <button
               onClick={handleSync}
-              className="p-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl border border-blue-500 transition-colors flex items-center gap-2 text-sm"
+              className="p-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl border border-cyan-500 transition-all duration-300 flex items-center gap-2 text-sm shadow-[0_0_20px_rgba(6,182,212,0.2)]"
               title="Sincronizar JSON ↔ MongoDB"
             >
               <RefreshCw className={`w-4 h-4 ${syncing ? "animate-spin" : ""}`} />
@@ -843,7 +843,7 @@ Atividades sincronizadas: ${json.syncedActivities}`);
             {activeTab === "crm" && (
               <button
                 onClick={handleExportCSV}
-                className="p-2 bg-blue-650 hover:bg-blue-600 text-white rounded-xl transition-colors flex items-center gap-2 text-sm px-4"
+                className="p-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition-all duration-300 flex items-center gap-2 text-sm px-4 shadow-[0_0_20px_rgba(37,99,235,0.2)]"
               >
                 <Download className="w-4 h-4" />
                 <span className="hidden sm:inline">Exportar CSV</span>
@@ -852,7 +852,7 @@ Atividades sincronizadas: ${json.syncedActivities}`);
             {activeTab === "audit" && (
               <button
                 onClick={handleExportAuditCSV}
-                className="p-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl transition-colors flex items-center gap-2 text-sm px-4"
+                className="p-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl transition-all duration-300 flex items-center gap-2 text-sm px-4 shadow-[0_0_20px_rgba(147,51,234,0.2)]"
               >
                 <Download className="w-4 h-4" />
                 <span className="hidden sm:inline">Exportar Logs</span>
@@ -861,7 +861,7 @@ Atividades sincronizadas: ${json.syncedActivities}`);
 
             <button
               onClick={handleLogout}
-              className="p-2 bg-red-950/20 hover:bg-red-950/50 text-red-400 hover:text-red-300 rounded-xl border border-red-900/30 transition-colors flex items-center gap-2 text-sm px-4"
+              className="p-2 bg-red-900/30 hover:bg-red-900/50 text-red-400 hover:text-red-300 rounded-xl border border-red-800/50 transition-all duration-300 flex items-center gap-2 text-sm px-4"
             >
               <LogOut className="w-4 h-4" />
               <span>Sair</span>
@@ -873,13 +873,13 @@ Atividades sincronizadas: ${json.syncedActivities}`);
       {/* Abas e Visualização do Dashboard */}
       <div className="container mx-auto px-6 py-8 flex-grow flex flex-col gap-6">
         {/* Navegação de Abas */}
-        <div className="flex bg-slate-200/60 p-1.5 rounded-2xl self-start gap-1 border border-slate-300/40 w-full md:w-auto overflow-x-auto shadow-inner">
+        <div className="flex bg-white/5 p-1.5 rounded-2xl self-start gap-1 border border-white/10 w-full lg:w-auto overflow-x-auto shadow-inner">
           <button
             onClick={() => { setActiveTab("executive"); setSelectedLead(null); }}
-            className={`flex items-center gap-2.5 px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
+            className={`flex items-center gap-2.5 px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-300 whitespace-nowrap ${
               activeTab === "executive"
-                ? "bg-slate-900 text-white shadow-md shadow-slate-950/10 scale-[1.02]"
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-300/40"
+                ? "bg-cyan-600 text-white shadow-[0_0_20px_rgba(6,182,212,0.3)] scale-[1.02]"
+                : "text-[#86868B] hover:text-[#F5F5F7] hover:bg-white/10"
             }`}
           >
             <PieChart className="w-4 h-4" />
@@ -887,10 +887,10 @@ Atividades sincronizadas: ${json.syncedActivities}`);
           </button>
           <button
             onClick={() => { setActiveTab("crm"); setSelectedLead(null); }}
-            className={`flex items-center gap-2.5 px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
+            className={`flex items-center gap-2.5 px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-300 whitespace-nowrap ${
               activeTab === "crm"
-                ? "bg-slate-900 text-white shadow-md shadow-slate-950/10 scale-[1.02]"
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-300/40"
+                ? "bg-cyan-600 text-white shadow-[0_0_20px_rgba(6,182,212,0.3)] scale-[1.02]"
+                : "text-[#86868B] hover:text-[#F5F5F7] hover:bg-white/10"
             }`}
           >
             <Users className="w-4 h-4" />
@@ -898,10 +898,10 @@ Atividades sincronizadas: ${json.syncedActivities}`);
           </button>
           <button
             onClick={() => { setActiveTab("media"); setSelectedLead(null); }}
-            className={`flex items-center gap-2.5 px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
+            className={`flex items-center gap-2.5 px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-300 whitespace-nowrap ${
               activeTab === "media"
-                ? "bg-slate-900 text-white shadow-md shadow-slate-950/10 scale-[1.02]"
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-300/40"
+                ? "bg-cyan-600 text-white shadow-[0_0_20px_rgba(6,182,212,0.3)] scale-[1.02]"
+                : "text-[#86868B] hover:text-[#F5F5F7] hover:bg-white/10"
             }`}
           >
             <ImageIcon className="w-4 h-4" />
@@ -909,10 +909,10 @@ Atividades sincronizadas: ${json.syncedActivities}`);
           </button>
           <button
             onClick={() => { setActiveTab("cards"); setSelectedLead(null); }}
-            className={`flex items-center gap-2.5 px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
+            className={`flex items-center gap-2.5 px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-300 whitespace-nowrap ${
               activeTab === "cards"
-                ? "bg-slate-900 text-white shadow-md shadow-slate-950/10 scale-[1.02]"
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-300/40"
+                ? "bg-cyan-600 text-white shadow-[0_0_20px_rgba(6,182,212,0.3)] scale-[1.02]"
+                : "text-[#86868B] hover:text-[#F5F5F7] hover:bg-white/10"
             }`}
           >
             <Sliders className="w-4 h-4" />
@@ -920,10 +920,10 @@ Atividades sincronizadas: ${json.syncedActivities}`);
           </button>
           <button
             onClick={() => { setActiveTab("audit"); setSelectedLead(null); }}
-            className={`flex items-center gap-2.5 px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
+            className={`flex items-center gap-2.5 px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-300 whitespace-nowrap ${
               activeTab === "audit"
-                ? "bg-slate-900 text-white shadow-md shadow-slate-950/10 scale-[1.02]"
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-300/40"
+                ? "bg-cyan-600 text-white shadow-[0_0_20px_rgba(6,182,212,0.3)] scale-[1.02]"
+                : "text-[#86868B] hover:text-[#F5F5F7] hover:bg-white/10"
             }`}
           >
             <AlertTriangle className="w-4 h-4" />
