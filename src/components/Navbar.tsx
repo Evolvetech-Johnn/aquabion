@@ -17,6 +17,7 @@ const navItems = [
   { name: 'Blog', href: '/blog' },
   { name: 'FAQ', href: '/faq' },
   { name: 'Contato', href: '/contato' },
+  { name: 'Cases de Sucesso', href: '/cases' },
 ];
 
 export default function Navbar() {
