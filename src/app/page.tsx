@@ -7,6 +7,7 @@ import SocialProof from '@/components/sections/SocialProof';
 import Pricing from '@/components/sections/Pricing';
 import FAQ from '@/components/sections/FAQ';
 import DesafioSection from '@/components/sections/DesafioSection';
+import ROICalculator from '@/components/sections/ROICalculator';
 import { getPageImages } from '@/services/media.service';
 
 export const metadata: Metadata = {
@@ -41,6 +42,7 @@ export default async function Home() {
         publicId={pageImages['desafio-main']?.publicId}
       />
       <Features pageImages={pageImages} />
+      <ROICalculator />
       <SocialProof />
       <Pricing />
       <FAQ />

@@ -1,6 +1,8 @@
+
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
+import { useRef } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, PlayCircle, CheckCircle2 } from 'lucide-react';
@@ -19,75 +21,86 @@ export default function PremiumHero({ heroImageUrl, heroPublicId }: PremiumHeroP
     { text: 'Sem Química' },
   ];
 
+  const refLeft = useRef(null);
+  const refRight = useRef(null);
+  const isInViewLeft = useInView(refLeft, { once: true, margin: "-100px" });
+  const isInViewRight = useInView(refRight, { once: true, margin: "-100px" });
+
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-cyan-500 via-sky-500 to-slate-950 text-white">
-      <div className="absolute inset-x-0 top-0 h-80 bg-gradient-to-b from-cyan-400/40 via-transparent to-transparent pointer-events-none" />
-      <div className="absolute right-0 top-16 h-72 w-72 rounded-full bg-cyan-200/40 blur-3xl" />
-      <div className="absolute left-0 top-28 h-56 w-56 rounded-full bg-slate-100/20 blur-3xl" />
-      <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent pointer-events-none" />
+    <section className="relative overflow-hidden bg-[#071B34] animated-gradient">
+      {/* Decorative background elements */}
+      <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-cyan-500/10 to-transparent pointer-events-none" />
+      <div className="absolute right-20 top-32 h-80 w-80 rounded-full bg-cyan-400/10 blur-3xl" />
+      <div className="absolute left-20 bottom-20 h-96 w-96 rounded-full bg-emerald-400/10 blur-3xl" />
 
-      <div className="container mx-auto px-6 py-24 lg:py-32 relative">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
+      <div className="container mx-auto container-padding section-padding relative">
+        <div className="grid lg:grid-cols-2 gap-20 items-center">
           <motion.div
-            initial={{ opacity: 0, x: -32 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            ref={refLeft}
+            initial={{ opacity: 0, y: 40 }}
+            animate={isInViewLeft ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
           >
-            <div className="space-y-8 max-w-xl bg-white/10 backdrop-blur-sm p-6 rounded-lg">
-
-              <div className="flex flex-wrap gap-3 mb-4">
+            <div className="space-y-10">
+              <div className="flex flex-wrap gap-4">
                 {badges.map((badge, index) => (
-                  <span key={index} className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/15 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm">
-                    <CheckCircle2 className="w-3 h-3 text-cyan-100" />
+                  <span
+                    key={index}
+                    className="inline-flex items-center gap-2 hero-pill"
+                  >
+                    <CheckCircle2 className="w-4 h-4 text-cyan-400" />
                     {badge.text}
                   </span>
                 ))}
               </div>
 
-              <h1 className="text-4xl md:text-5xl font-semibold tracking-tight leading-snug text-white">
-                A solução de água mais moderna para operações que exigem confiança absoluta.
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tight leading-tight text-[#F5F5F7]">
+                A solução de água mais moderna para operações que exigem
+                <span className="gradient-text"> confiança absoluta</span>.
               </h1>
-              <p className="text-base md:text-lg text-cyan-100 leading-relaxed">
+              <p className="text-lg md:text-xl text-[#86868B] leading-relaxed max-w-2xl">
                 Aquabion transforma água e infraestrutura com um sistema galvânico passivo, sem energia ativa, sem química e com performance comprovada.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-5 items-start">
                 <Link href="/contato">
-                  <Button size="lg" className="h-14 px-6 bg-white text-slate-950 shadow-md hover:bg-slate-100">
+                  <Button className="btn-primary flex items-center gap-2 h-16 px-10">
                     Agendar Diagnóstico Técnico
-                    <ArrowRight className="w-4 h-4 ml-1" />
+                    <ArrowRight className="w-5 h-5" />
                   </Button>
                 </Link>
                 <Link href="/tecnologia">
-                  <Button size="lg" className="h-14 px-6 bg-white/20 text-white border border-white/30 hover:bg-white/30 backdrop-blur-sm shadow-md">
-                    <PlayCircle className="w-4 h-4 mr-1" />
+                  <Button className="btn-outline flex items-center gap-2 h-16 px-10">
+                    <PlayCircle className="w-5 h-5" />
                     Ver Como Funciona
                   </Button>
                 </Link>
-                <WhatsAppButton
-                  message="Olá! Gostaria de agendar um diagnóstico técnico."
-                  className="h-14 px-4 rounded-full shadow-lg hover:shadow-xl transition-shadow"
-                >
-                  Falar no WhatsApp
-                </WhatsAppButton>
               </div>
+
+              <WhatsAppButton
+                message="Olá! Gostaria de agendar um diagnóstico técnico."
+                className="h-16 px-8 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                Falar no WhatsApp
+              </WhatsAppButton>
             </div>
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, scale: 0.94 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.9, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            ref={refRight}
+            initial={{ opacity: 0, scale: 0.92 }}
+            animate={isInViewRight ? { opacity: 1, scale: 1 } : {}}
+            transition={{ duration: 1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
             className="relative"
           >
-            <div className="relative overflow-hidden rounded-[2.5rem] border border-white/15 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.18)] aspect-video flex items-center justify-center">
-              {/* ImageCard acting as the hero visual – use object-cover to avoid cropping */}
-              <ImageCard 
-                locationId="hero-main" 
-                imageUrl={heroImageUrl} 
+            <div className="premium-card overflow-hidden">
+              {/* ImageCard acting as the hero visual */}
+              <ImageCard
+                locationId="hero-main"
+                imageUrl={heroImageUrl}
                 publicId={heroPublicId}
                 aspectRatio="video"
-                className="w-full h-full object-contain rounded-none"
+                className="w-full h-full"
                 priority={true}
               />
             </div>

@@ -35,49 +35,49 @@ export default function Navbar() {
   return (
     <nav
       className={cn(
-        'fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-transparent',
+        'fixed top-0 left-0 right-0 z-50 transition-all duration-500 border-b border-transparent',
         scrolled
-          ? 'bg-white/90 backdrop-blur-xl border-slate-200 shadow-sm'
+          ? 'bg-[#071B34]/90 backdrop-blur-xl border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.25)]'
           : 'bg-transparent'
       )}
     >
-      <div className="max-w-7xl mx-auto px-6 md:px-12">
-        <div className="flex items-center justify-between h-20">
+      <div className="max-w-7xl mx-auto container-padding">
+        <div className="flex items-center justify-between h-24">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3">
-            <div className="relative w-10 h-10">
+            <div className="relative w-12 h-12">
               <Image
                 src="/logoaquabion.png"
                 alt="Aquabion Brasil"
                 fill
-                className="object-contain"
+                className="object-contain brightness-110"
                 priority
               />
             </div>
-            <span className="text-xl font-bold tracking-tight text-slate-950">
+            <span className="text-2xl font-bold tracking-tight text-[#F5F5F7]">
               Aquabion
             </span>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-10">
             {navItems.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-sm font-medium text-slate-600 hover:text-cyan-600 transition-colors"
+                className="text-sm font-medium text-[#86868B] hover:text-cyan-400 transition-colors duration-300"
               >
                 {item.name}
               </Link>
             ))}
-            <AnimatedButton size="sm">
+            <AnimatedButton size="sm" className="rounded-full">
               Agendar Visita
             </AnimatedButton>
           </div>
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2 text-slate-900"
+            className="md:hidden p-3 text-[#F5F5F7] bg-white/5 rounded-2xl border border-white/10"
             onClick={() => setIsOpen(!isOpen)}
           >
             {isOpen ? <X /> : <Menu />}
@@ -92,22 +92,22 @@ export default function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-white border-b border-slate-200 overflow-hidden"
+            className="md:hidden bg-[#071B34]/95 backdrop-blur-xl border-b border-white/10 overflow-hidden"
           >
-            <div className="px-6 py-8 space-y-4">
+            <div className="container-padding py-10 space-y-6">
               {navItems.map((item) => (
                 <Link
                   key={item.name}
                   href={item.href}
                   onClick={() => setIsOpen(false)}
-                  className="flex items-center justify-between py-3 text-lg font-medium text-slate-900 border-b border-slate-100"
+                  className="flex items-center justify-between py-4 text-xl font-medium text-[#F5F5F7] border-b border-white/5"
                 >
                   {item.name}
-                  <ChevronRight className="w-5 h-5 text-slate-400" />
+                  <ChevronRight className="w-6 h-6 text-[#86868B]" />
                 </Link>
               ))}
-              <div className="pt-4">
-                <AnimatedButton className="w-full" onClick={() => setIsOpen(false)}>
+              <div className="pt-6">
+                <AnimatedButton className="w-full rounded-full" onClick={() => setIsOpen(false)}>
                   Agendar Visita
                 </AnimatedButton>
               </div>
@@ -118,4 +118,3 @@ export default function Navbar() {
     </nav>
   );
 }
-
