@@ -47,15 +47,15 @@ function CloudinaryImage({
   if (!imageSrc || hasError) {
     return (
       <div
-        className={`relative flex flex-col items-center justify-center bg-slate-100 border-2 border-dashed border-slate-300 rounded-2xl overflow-hidden p-6 text-center ${className}`}
+        className={`relative flex flex-col items-center justify-center bg-white/5 border-2 border-dashed border-white/10 rounded-2xl overflow-hidden p-6 text-center ${className}`}
         style={fill ? undefined : { width, height }}
         role="img"
         aria-label={hasError ? "Falha ao carregar imagem" : "Sem imagem"}
       >
-        <svg className="w-10 h-10 text-slate-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-10 h-10 text-[#86868B] mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
-        <p className="text-sm font-medium text-slate-600">{hasError ? "Falha ao carregar" : "Sem imagem"}</p>
+        <p className="text-sm font-medium text-[#F5F5F7]">{hasError ? "Falha ao carregar" : "Sem imagem"}</p>
       </div>
     );
   }
@@ -76,7 +76,7 @@ function CloudinaryImage({
     return (
       <div className={`relative w-full h-full`}>
         {isLoading && (
-          <div className="absolute inset-0 bg-slate-200 animate-pulse rounded-2xl" />
+          <div className="absolute inset-0 bg-white/10 animate-pulse rounded-2xl" />
         )}
         <Image
           {...commonProps}
@@ -91,7 +91,7 @@ function CloudinaryImage({
   return (
     <div className={`relative ${className}`}>
       {isLoading && (
-        <div className="absolute inset-0 bg-slate-200 animate-pulse rounded-2xl" style={{ width, height }} />
+        <div className="absolute inset-0 bg-white/10 animate-pulse rounded-2xl" style={{ width, height }} />
       )}
       <Image
         {...commonProps}

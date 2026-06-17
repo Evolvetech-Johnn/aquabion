@@ -33,21 +33,21 @@ function ImageCard({
   if (!imageUrl && !publicId) {
     return (
       <div 
-        className={`relative flex flex-col items-center justify-center bg-slate-100 border-2 border-dashed border-slate-300 rounded-2xl overflow-hidden p-6 text-center ${aspectClass} ${className}`}
+        className={`relative flex flex-col items-center justify-center bg-white/5 border-2 border-dashed border-white/10 rounded-2xl overflow-hidden p-6 text-center ${aspectClass} ${className}`}
         role="region"
         aria-label={`Espaço para imagem: ${locationId}`}
       >
-        <ImageIcon className="w-10 h-10 text-slate-400 mb-3" aria-hidden="true" />
-        <p className="text-sm font-medium text-slate-600">Espaço para Imagem</p>
-        <p className="text-xs text-slate-500 mt-1">ID: {locationId}</p>
-        <p className="text-xs text-cyan-600 mt-2 font-semibold">Insira no Dashboard</p>
+        <ImageIcon className="w-10 h-10 text-[#86868B] mb-3" aria-hidden="true" />
+        <p className="text-sm font-medium text-[#F5F5F7]">Espaço para Imagem</p>
+        <p className="text-xs text-[#86868B] mt-1">ID: {locationId}</p>
+        <p className="text-xs text-cyan-400 mt-2 font-semibold">Insira no Dashboard</p>
       </div>
     );
   }
 
   return (
     <div 
-      className={`relative overflow-hidden rounded-2xl bg-slate-100 shadow-lg ${aspectClass} ${className}`}
+      className={`relative overflow-hidden rounded-2xl bg-white/5 shadow-lg ${aspectClass} ${className}`}
     >
       <CloudinaryImage 
         publicId={publicId}
