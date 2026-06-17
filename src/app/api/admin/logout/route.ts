@@ -7,6 +7,7 @@ export async function POST(request: NextRequest) {
   await AuditService.logLogout(username, request)
   
   const res = NextResponse.json({ ok: true })
-  res.headers.set('Set-Cookie', `admin_token=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax`)
+  const isProduction = process.env.NODE_ENV === 'production'
+  res.headers.set('Set-Cookie', `admin_token=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax${isProduction ? '; Secure' : ''}`)
   return res
 }

@@ -36,7 +36,8 @@ export async function POST(request: NextRequest) {
     await AuditService.logLogin(true, loginUsername, request)
     const token = issueToken(loginUsername)
     const res = NextResponse.json({ ok: true, username: loginUsername })
-    res.headers.set('Set-Cookie', `admin_token=${token}; HttpOnly; Path=/; Max-Age=${8*60*60}; SameSite=Lax`)
+    const isProduction = process.env.NODE_ENV === 'production'
+    res.headers.set('Set-Cookie', `admin_token=${token}; HttpOnly; Path=/; Max-Age=${8*60*60}; SameSite=Lax${isProduction ? '; Secure' : ''}`)
     return res
   } catch (e) {
     return NextResponse.json({ ok: false, error: String(e) }, { status: 500 })
