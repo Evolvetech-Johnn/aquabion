@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import PremiumCard from '@/components/ui/PremiumCard';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Leaf, Zap, DollarSign, Clock } from 'lucide-react';
 
@@ -66,7 +67,7 @@ export default function ROICalculator() {
     }).format(value);
 
   return (
-    <section className="py-32 bg-[#071B34] relative overflow-hidden">
+    <section className="py-32 bg-gradient-to-b from-[#F8FBFF] to-[#EEF5FF] relative overflow-hidden">
       {/* Decorative Background */}
       <div className="absolute left-0 top-1/3 w-96 h-96 bg-cyan-500/10 blur-3xl" />
       <div className="absolute right-0 bottom-1/3 w-96 h-96 bg-emerald-500/10 blur-3xl" />
@@ -94,7 +95,7 @@ export default function ROICalculator() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
-            className="premium-card"
+            className=""
           >
             <h3 className="text-2xl font-bold text-[#F5F5F7] mb-10 flex items-center gap-3">
               <Zap className="w-6 h-6 text-cyan-400" />
@@ -179,7 +180,7 @@ export default function ROICalculator() {
             viewport={{ once: true }}
             transition={{ duration: 0.7, delay: 0.2 }}
           >
-            <div className="premium-card border-cyan-500/20">
+            <PremiumCard className="border-cyan-500/20 p-6">
               <h3 className="text-2xl font-bold text-[#F5F5F7] mb-10 flex items-center gap-3">
                 <DollarSign className="w-6 h-6 text-emerald-400" />
                 Resultados Projetados
@@ -269,7 +270,7 @@ export default function ROICalculator() {
 
                 {/* CTA Button */}
                 <Link href="/contato" className="block">
-                  <Button className="w-full btn-primary text-xl py-8 gap-2">
+                  <Button className="w-full bg-gradient-to-r from-[#0A4FAF] to-[#0E73D8] text-xl py-8 gap-2 hover:scale-103 hover:shadow-[0_0_10px_rgba(10,79,175,0.4)] transition-transform duration-300">
                     Agendar Diagnóstico para Validar ROI
                     <ArrowRight className="w-6 h-6" />
                   </Button>
