@@ -21,7 +21,9 @@ function ImageCard({
   aspectRatio = "video",
   priority = false
 }: ImageCardProps) {
-  // Determine CSS class for the desired aspect ratio
+  // Determine if imageUrl is an external URL; otherwise we will rely on publicId
+  const isExternalUrl = imageUrl && !imageUrl.startsWith('/') && !imageUrl.startsWith('data:');
+  const effectiveUrl = isExternalUrl ? imageUrl : undefined;
   const aspectClass =
     aspectRatio === "video"
       ? "aspect-w-16 aspect-h-9"
@@ -37,7 +39,7 @@ function ImageCard({
     return (
       <div className={`relative ${aspectClass} ${className}`}>
         <CloudinaryImage
-          src={src}
+          url={src}
           publicId={publicId}
           alt={alt}
           priority={priority}
@@ -60,5 +62,7 @@ function ImageCard({
       <p className="text-xs text-cyan-400 mt-2 font-semibold">Insira no Dashboard</p>
     </div>
   );
+
+}
 
 export default memo(ImageCard);
