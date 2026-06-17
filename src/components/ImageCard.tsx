@@ -18,12 +18,12 @@ function ImageCard({
   publicId,
   alt = "Aquabion image",
   className = "",
-  aspectRatio = "auto",
+  aspectRatio = "video",
   priority = false
 }: ImageCardProps) {
-  // Não aplicar aspect-ratio se o className contiver h-full ou altura explícita para permitir preencher o container pai
+  // Don't apply aspect-ratio if the className includes h-full or explicit height
   const hasExplicitHeight = className.includes('h-full') || className.includes('h-[');
-  const aspectClass = hasExplicitHeight ? '' : {
+  const aspectClass = hasExplicitHeight ? 'min-h-[300px]' : {
     'video': 'aspect-video',
     'square': 'aspect-square',
     'portrait': 'aspect-[3/4]',

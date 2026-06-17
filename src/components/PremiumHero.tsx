@@ -93,7 +93,7 @@ export default function PremiumHero({ heroImageUrl, heroPublicId }: PremiumHeroP
             transition={{ duration: 1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
             className="relative"
           >
-            <div className="premium-card overflow-hidden">
+            <div className="premium-card overflow-hidden min-h-[400px] md:min-h-[500px]">
               {/* ImageCard acting as the hero visual */}
               <ImageCard
                 locationId="hero-main"
