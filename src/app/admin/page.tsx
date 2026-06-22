@@ -27,13 +27,21 @@ import {
   MessageSquare,
   ChevronLeft,
   Calendar,
-  Lock
+  Lock,
+  FileText,
+  Plus,
+  Eye,
+  Edit as EditIcon,
+  Copy as DuplicateIcon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from 'next/image';
 import type { CRMLead, CRMNote } from "@/crm/types";
 import type { CloudinaryMedia } from "@/lib/cloudinaryStore";
 import type { AuditLog } from "@/audit/types";
+import type { Budget, BudgetFormData } from "@/budgets/types";
+import { DEFAULT_PAYMENT_TERMS, DEFAULT_DELIVERY_TIME, INITIAL_CATALOG } from "@/budgets/types";
+import type { Product, ProductFormData } from "@/products/types";
 
 export default function UnifiedAdminDashboard() {
   const [isAuth, setIsAuth] = useState<boolean>(false);
@@ -42,7 +50,7 @@ export default function UnifiedAdminDashboard() {
   const [loginError, setLoginError] = useState<string>("");
   const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState<"executive" | "crm" | "media" | "cards" | "audit">("executive");
+  const [activeTab, setActiveTab] = useState<"executive" | "crm" | "media" | "cards" | "audit" | "budgets" | "produtos">("executive");
 
   // Audit State
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
@@ -92,6 +100,26 @@ export default function UnifiedAdminDashboard() {
   const [isLibraryModalOpen, setIsLibraryModalOpen] = useState(false);
   const [librarySearch, setLibrarySearch] = useState("");
   const slotFileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+
+  // Budgets State
+  const [budgets, setBudgets] = useState<Budget[]>([]);
+  const [loadingBudgets, setLoadingBudgets] = useState(false);
+  const [selectedBudget, setSelectedBudget] = useState<Budget | null>(null);
+  const [isBudgetFormOpen, setIsBudgetFormOpen] = useState(false);
+  const [isProductCatalogOpen, setIsProductCatalogOpen] = useState(false);
+  const [budgetsFilters, setBudgetsFilters] = useState({
+    client: "",
+    city: "",
+    date: "",
+    status: "",
+    responsible: ""
+  });
+
+  // Products State
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isProductFormOpen, setIsProductFormOpen] = useState(false);
 
   // Executive Stats
   const [execStats, setExecStats] = useState({
@@ -321,6 +349,40 @@ export default function UnifiedAdminDashboard() {
     }
   }, [isAuth, auditPage, auditPerPage, auditFilters]);
 
+  // Fetch Budgets
+  const fetchBudgets = useCallback(async () => {
+    if (!isAuth) return;
+    setLoadingBudgets(true);
+    try {
+      const res = await fetch("/api/budgets", { credentials: "same-origin" });
+      if (res.ok) {
+        const data = await res.json();
+        setBudgets(data);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingBudgets(false);
+    }
+  }, [isAuth]);
+
+  // Fetch Products
+  const fetchProducts = useCallback(async () => {
+    if (!isAuth) return;
+    setLoadingProducts(true);
+    try {
+      const res = await fetch("/api/products", { credentials: "same-origin" });
+      if (res.ok) {
+        const data = await res.json();
+        setProducts(data);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingProducts(false);
+    }
+  }, [isAuth]);
+
   // Export Audit Logs to CSV
   const handleExportAuditCSV = async () => {
     const params = new URLSearchParams();
@@ -354,8 +416,10 @@ export default function UnifiedAdminDashboard() {
       fetchAllLeadsForStats();
       fetchMediaData();
       fetchSlotsData();
+      fetchBudgets();
+      fetchProducts();
     }
-  }, [isAuth, fetchLeadsData, fetchAllLeadsForStats, fetchMediaData, fetchSlotsData]);
+  }, [isAuth, fetchLeadsData, fetchAllLeadsForStats, fetchMediaData, fetchSlotsData, fetchBudgets, fetchProducts]);
 
   // Fetch audit logs when active tab is audit
   useEffect(() => {
@@ -363,6 +427,20 @@ export default function UnifiedAdminDashboard() {
       fetchAuditLogs();
     }
   }, [isAuth, activeTab, fetchAuditLogs]);
+
+  // Fetch budgets when active tab is budgets
+  useEffect(() => {
+    if (isAuth && activeTab === "budgets") {
+      fetchBudgets();
+    }
+  }, [isAuth, activeTab, fetchBudgets]);
+
+  // Fetch products when active tab is produtos
+  useEffect(() => {
+    if (isAuth && activeTab === "produtos") {
+      fetchProducts();
+    }
+  }, [isAuth, activeTab, fetchProducts]);
 
   // Sync JSON ↔ MongoDB
   const [syncing, setSyncing] = useState(false);
@@ -400,6 +478,8 @@ Atividades sincronizadas: ${json.syncedActivities}`);
       fetchMediaData();
     } else if (activeTab === "audit") {
       fetchAuditLogs();
+    } else if (activeTab === "budgets") {
+      fetchBudgets();
     } else {
       fetchLeadsData();
       fetchAllLeadsForStats();
@@ -676,6 +756,256 @@ Atividades sincronizadas: ${json.syncedActivities}`);
     setTimeout(() => setCopiedId(null), 2000);
   };
 
+  // Format currency helper
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(value);
+  };
+
+  // Format date helper (PT-BR)
+  const formatDateBR = (date: Date | string) => {
+    const d = typeof date === 'string' ? new Date(date) : date;
+    return d.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  };
+
+  // Get status label
+  const getStatusLabel = (status: string) => {
+    const labels: Record<string, string> = {
+      draft: 'Rascunho',
+      sent: 'Enviado',
+      approved: 'Aprovado',
+      rejected: 'Reprovado',
+      expired: 'Expirado'
+    };
+    return labels[status] || status;
+  };
+
+  // Get status color
+  const getStatusColor = (status: string) => {
+    const colors: Record<string, { bg: string, text: string, border: string }> = {
+      draft: { bg: 'bg-gray-100', text: 'text-gray-700', border: 'border-gray-200' },
+      sent: { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200' },
+      approved: { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200' },
+      rejected: { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200' },
+      expired: { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200' }
+    };
+    return colors[status] || colors.draft;
+  };
+
+  // Handle create budget
+  const handleCreateBudget = () => {
+    const today = new Date();
+    const expiration = new Date(today.getTime() + 10 * 24 * 60 * 60 * 1000);
+    
+    setSelectedBudget({
+      id: '',
+      budget_number: '',
+      client_name: '',
+      client_document: '',
+      client_phone: '',
+      client_email: '',
+      client_address: '',
+      client_address_number: '',
+      client_address_complement: '',
+      client_address_neighborhood: '',
+      client_city: '',
+      client_state: '',
+      client_cep: '',
+      client_contact: '',
+      client_contact_role: '',
+      client_observations: '',
+      issue_date: today,
+      expiration_date: expiration,
+      subtotal: 0,
+      shipping_cost: 0,
+      discount: 0,
+      total_value: 0,
+      payment_terms: DEFAULT_PAYMENT_TERMS,
+      delivery_time: DEFAULT_DELIVERY_TIME,
+      status: 'draft',
+      created_by: '',
+      created_at: new Date(),
+      updated_at: new Date(),
+      items: []
+    });
+    setIsBudgetFormOpen(true);
+  };
+
+  // Handle save budget
+  const handleSaveBudget = async () => {
+    if (!selectedBudget) return;
+    
+    try {
+      // Convert to BudgetFormData format
+      const formData: BudgetFormData = {
+        client_name: selectedBudget.client_name,
+        client_document: selectedBudget.client_document,
+        client_phone: selectedBudget.client_phone,
+        client_email: selectedBudget.client_email,
+        client_address: selectedBudget.client_address,
+        client_address_number: selectedBudget.client_address_number,
+        client_address_complement: selectedBudget.client_address_complement,
+        client_address_neighborhood: selectedBudget.client_address_neighborhood,
+        client_city: selectedBudget.client_city,
+        client_state: selectedBudget.client_state,
+        client_cep: selectedBudget.client_cep,
+        client_contact: selectedBudget.client_contact,
+        client_contact_role: selectedBudget.client_contact_role,
+        client_observations: selectedBudget.client_observations,
+        issue_date: selectedBudget.issue_date.toISOString().split('T')[0],
+        expiration_date: selectedBudget.expiration_date.toISOString().split('T')[0],
+        subtotal: selectedBudget.subtotal,
+        shipping_cost: selectedBudget.shipping_cost,
+        discount: selectedBudget.discount,
+        total_value: selectedBudget.total_value,
+        payment_terms: selectedBudget.payment_terms,
+        delivery_time: selectedBudget.delivery_time,
+        status: selectedBudget.status,
+        items: selectedBudget.items.map(item => ({
+          ...item,
+          id: item.id || '',
+        }))
+      };
+      
+      const res = await fetch('/api/budgets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+        credentials: 'same-origin'
+      });
+      if (res.ok) {
+        await fetchBudgets();
+        setIsBudgetFormOpen(false);
+        setSelectedBudget(null);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  // Handle delete budget
+  const handleDeleteBudget = async (id: string) => {
+    if (!confirm('Deseja realmente excluir este orçamento?')) return;
+    try {
+      const res = await fetch(`/api/budgets/${id}`, {
+        method: 'DELETE',
+        credentials: 'same-origin'
+      });
+      if (res.ok) {
+        await fetchBudgets();
+        setSelectedBudget(null);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  // Handle duplicate budget
+  const handleDuplicateBudget = async (id: string) => {
+    try {
+      const res = await fetch(`/api/budgets/${id}/duplicate`, {
+        method: 'POST',
+        credentials: 'same-origin'
+      });
+      if (res.ok) {
+        await fetchBudgets();
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  // Handle view/print PDF (placeholder for now)
+  const handleViewPDF = (budget: Budget) => {
+    alert(`Visualizar/Imprimir Orçamento ${budget.budget_number} (PDF em desenvolvimento)`);
+  };
+
+  // Handle create product
+  const handleCreateProduct = () => {
+    setSelectedProduct({
+      id: "",
+      description: "",
+      capacity: "",
+      connection: "",
+      unit_price: 0,
+      created_at: new Date(),
+      updated_at: new Date(),
+    });
+    setIsProductFormOpen(true);
+  };
+
+  // Handle save product
+  const handleSaveProduct = async () => {
+    if (!selectedProduct) return;
+    
+    try {
+      const formData: ProductFormData = {
+        description: selectedProduct.description,
+        capacity: selectedProduct.capacity,
+        connection: selectedProduct.connection,
+        unit_price: selectedProduct.unit_price,
+      };
+      
+      if (selectedProduct.id) {
+        // Update existing product
+        const res = await fetch(`/api/products/${selectedProduct.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
+          credentials: 'same-origin'
+        });
+        if (res.ok) {
+          await fetchProducts();
+          setIsProductFormOpen(false);
+          setSelectedProduct(null);
+        }
+      } else {
+        // Create new product
+        const res = await fetch('/api/products', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
+          credentials: 'same-origin'
+        });
+        if (res.ok) {
+          await fetchProducts();
+          setIsProductFormOpen(false);
+          setSelectedProduct(null);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  // Handle edit product
+  const handleEditProduct = (product: Product) => {
+    setSelectedProduct(product);
+    setIsProductFormOpen(true);
+  };
+
+  // Handle delete product
+  const handleDeleteProduct = async (id: string) => {
+    if (!confirm('Deseja realmente excluir este produto?')) return;
+    try {
+      const res = await fetch(`/api/products/${id}`, {
+        method: 'DELETE',
+        credentials: 'same-origin'
+      });
+      if (res.ok) {
+        await fetchProducts();
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   // Format bytes helper
   const formatBytes = (bytes: number) => {
     if (bytes === 0) return "0 Bytes";
@@ -928,6 +1258,28 @@ Atividades sincronizadas: ${json.syncedActivities}`);
           >
             <AlertTriangle className="w-4 h-4" />
             Auditoria & Logs
+          </button>
+          <button
+            onClick={() => { setActiveTab("budgets"); setSelectedLead(null); }}
+            className={`flex items-center gap-2.5 px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-300 whitespace-nowrap ${
+              activeTab === "budgets"
+                ? "bg-cyan-600 text-white shadow-[0_0_20px_rgba(6,182,212,0.3)] scale-[1.02]"
+                : "text-[#86868B] hover:text-[#F5F5F7] hover:bg-white/10"
+            }`}
+          >
+            <FileText className="w-4 h-4" />
+            Orçamentos
+          </button>
+          <button
+            onClick={() => { setActiveTab("produtos"); setSelectedLead(null); }}
+            className={`flex items-center gap-2.5 px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-300 whitespace-nowrap ${
+              activeTab === "produtos"
+                ? "bg-cyan-600 text-white shadow-[0_0_20px_rgba(6,182,212,0.3)] scale-[1.02]"
+                : "text-[#86868B] hover:text-[#F5F5F7] hover:bg-white/10"
+            }`}
+          >
+            <Briefcase className="w-4 h-4" />
+            Produtos
           </button>
         </div>
 
@@ -2073,6 +2425,950 @@ Atividades sincronizadas: ${json.syncedActivities}`);
                 </div>
               )}
             </div>
+          </div>
+        )}
+
+        {/* 📋 TAB 6: ORÇAMENTOS */}
+        {activeTab === "budgets" && (
+          <div className="space-y-6 animate-fade-in flex-grow">
+            {/* Top Bar with Filters and Add Button */}
+            <div className="bg-white border border-slate-200/80 rounded-[2rem] p-8 shadow-sm">
+              <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+                <div>
+                  <h3 className="text-xl font-bold text-slate-950 flex items-center gap-2">
+                    <FileText className="w-5 h-5 text-cyan-600" />
+                    Gerenciador de Orçamentos
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Crie, edite e gerencie orçamentos para clientes Aquabion
+                  </p>
+                </div>
+                <button
+                  onClick={handleCreateBudget}
+                  className="flex items-center gap-2 px-6 py-3 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl font-semibold transition-all duration-300 shadow-md"
+                >
+                  <Plus className="w-4 h-4" />
+                  Novo Orçamento
+                </button>
+              </div>
+
+              {/* Filters */}
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div>
+                  <label className="text-xs font-semibold text-slate-600 mb-2 block">Cliente</label>
+                  <input
+                    type="text"
+                    value={budgetsFilters.client}
+                    onChange={(e) => setBudgetsFilters(f => ({ ...f, client: e.target.value }))}
+                    className="w-full h-10 px-3 rounded-lg border border-slate-200 bg-slate-50 text-sm text-slate-900 focus:outline-none focus:border-cyan-500"
+                    placeholder="Nome do cliente"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-slate-600 mb-2 block">Cidade</label>
+                  <input
+                    type="text"
+                    value={budgetsFilters.city}
+                    onChange={(e) => setBudgetsFilters(f => ({ ...f, city: e.target.value }))}
+                    className="w-full h-10 px-3 rounded-lg border border-slate-200 bg-slate-50 text-sm text-slate-900 focus:outline-none focus:border-cyan-500"
+                    placeholder="Cidade"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-slate-600 mb-2 block">Data</label>
+                  <input
+                    type="date"
+                    value={budgetsFilters.date}
+                    onChange={(e) => setBudgetsFilters(f => ({ ...f, date: e.target.value }))}
+                    className="w-full h-10 px-3 rounded-lg border border-slate-200 bg-slate-50 text-sm text-slate-900 focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-slate-600 mb-2 block">Status</label>
+                  <select
+                    value={budgetsFilters.status}
+                    onChange={(e) => setBudgetsFilters(f => ({ ...f, status: e.target.value }))}
+                    className="w-full h-10 px-3 rounded-lg border border-slate-200 bg-slate-50 text-sm text-slate-900 focus:outline-none focus:border-cyan-500"
+                  >
+                    <option value="">Todos</option>
+                    <option value="draft">Rascunho</option>
+                    <option value="sent">Enviado</option>
+                    <option value="approved">Aprovado</option>
+                    <option value="rejected">Reprovado</option>
+                    <option value="expired">Expirado</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-slate-600 mb-2 block">Responsável</label>
+                  <input
+                    type="text"
+                    value={budgetsFilters.responsible}
+                    onChange={(e) => setBudgetsFilters(f => ({ ...f, responsible: e.target.value }))}
+                    className="w-full h-10 px-3 rounded-lg border border-slate-200 bg-slate-50 text-sm text-slate-900 focus:outline-none focus:border-cyan-500"
+                    placeholder="Responsável"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Budgets Table */}
+            <div className="bg-white border border-slate-200/80 rounded-[2rem] p-8 shadow-sm flex-grow">
+              <h3 className="text-xl font-bold text-slate-950 mb-6">Orçamentos ({budgets.length})</h3>
+
+              {loadingBudgets ? (
+                <div className="flex flex-col items-center justify-center py-24 text-slate-400 text-xs gap-3">
+                  <RefreshCw className="w-8 h-8 animate-spin text-cyan-600" />
+                  <span>Carregando orçamentos...</span>
+                </div>
+              ) : budgets.length === 0 ? (
+                <div className="text-center py-24">
+                  <FileText className="w-16 h-16 mx-auto text-slate-300 mb-4" />
+                  <p className="text-slate-400 text-sm font-medium">Nenhum orçamento encontrado.</p>
+                  <button
+                    onClick={handleCreateBudget}
+                    className="mt-4 px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-sm font-semibold transition-colors"
+                  >
+                    Criar Primeiro Orçamento
+                  </button>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-slate-200">
+                        <th className="text-left text-xs font-semibold text-slate-600 pb-3">Número</th>
+                        <th className="text-left text-xs font-semibold text-slate-600 pb-3">Cliente</th>
+                        <th className="text-left text-xs font-semibold text-slate-600 pb-3">Cidade</th>
+                        <th className="text-left text-xs font-semibold text-slate-600 pb-3">Emissão</th>
+                        <th className="text-left text-xs font-semibold text-slate-600 pb-3">Validade</th>
+                        <th className="text-left text-xs font-semibold text-slate-600 pb-3">Valor Total</th>
+                        <th className="text-left text-xs font-semibold text-slate-600 pb-3">Status</th>
+                        <th className="text-right text-xs font-semibold text-slate-600 pb-3">Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {budgets.map((budget) => {
+                        const statusColor = getStatusColor(budget.status);
+                        return (
+                          <tr key={budget.id} className="hover:bg-slate-50">
+                            <td className="py-3">
+                              <span className="text-xs font-bold text-slate-900">{budget.budget_number}</span>
+                            </td>
+                            <td className="py-3">
+                              <span className="text-xs font-semibold text-slate-900">{budget.client_name || "-"}</span>
+                            </td>
+                            <td className="py-3">
+                              <span className="text-xs text-slate-600">{budget.client_city || "-"}</span>
+                            </td>
+                            <td className="py-3">
+                              <span className="text-xs text-slate-600">{formatDateBR(budget.issue_date)}</span>
+                            </td>
+                            <td className="py-3">
+                              <span className="text-xs text-slate-600">{formatDateBR(budget.expiration_date)}</span>
+                            </td>
+                            <td className="py-3">
+                              <span className="text-xs font-bold text-slate-900">{formatCurrency(budget.total_value)}</span>
+                            </td>
+                            <td className="py-3">
+                              <span className={`text-[10px] font-bold px-2 py-1 rounded-full border ${statusColor.bg} ${statusColor.text} ${statusColor.border}`}>
+                                {getStatusLabel(budget.status)}
+                              </span>
+                            </td>
+                            <td className="py-3">
+                              <div className="flex items-center justify-end gap-1">
+                                <button
+                                  onClick={() => handleViewPDF(budget)}
+                                  className="p-2 text-slate-500 hover:text-cyan-600 hover:bg-cyan-50 rounded-lg transition-all"
+                                  title="Visualizar / Imprimir PDF"
+                                >
+                                  <Eye className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => handleDuplicateBudget(budget.id)}
+                                  className="p-2 text-slate-500 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all"
+                                  title="Duplicar"
+                                >
+                                  <DuplicateIcon className="w-4 h-4" />
+                                </button>
+                                <button
+                                  className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                                  title="Editar"
+                                >
+                                  <EditIcon className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteBudget(budget.id)}
+                                  className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                                  title="Excluir"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
+            {/* Budget Form Modal */}
+            {isBudgetFormOpen && selectedBudget && (
+              <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[200] p-4">
+                <div className="bg-white rounded-3xl max-w-5xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+                  <div className="p-8 border-b border-slate-100">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="text-xl font-bold text-slate-950">Novo Orçamento</h3>
+                        <p className="text-xs text-slate-500 mt-1">Preencha os dados do orçamento</p>
+                      </div>
+                      <button
+                        onClick={() => { setIsBudgetFormOpen(false); setSelectedBudget(null); }}
+                        className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-500">
+                          <line x1="18" y1="6" x2="6" y2="18" />
+                          <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="p-8 space-y-8">
+                    {/* Cabeçalho - Dados da Empresa Emitente + Logo */}
+                    <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6">
+                      <h4 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                        <FileText className="w-5 h-5 text-cyan-600" />
+                        Dados da Empresa Emitente
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-3">
+                          <div>
+                            <label className="text-xs font-semibold text-slate-700">Empresa</label>
+                            <p className="text-sm font-medium text-slate-900">Racionale Soluções Sustentáveis Ltda</p>
+                          </div>
+                          <div>
+                            <label className="text-xs font-semibold text-slate-700">CNPJ</label>
+                            <p className="text-sm font-medium text-slate-900">21.986.493/0001-50</p>
+                          </div>
+                          <div>
+                            <label className="text-xs font-semibold text-slate-700">Cidade</label>
+                            <p className="text-sm font-medium text-slate-900">Londrina - PR</p>
+                          </div>
+                          <div>
+                            <label className="text-xs font-semibold text-slate-700">Telefone</label>
+                            <p className="text-sm font-medium text-slate-900">(43) 9917-1010</p>
+                          </div>
+                          <div>
+                            <label className="text-xs font-semibold text-slate-700">Responsável Técnico</label>
+                            <p className="text-sm font-medium text-slate-900">Ray Diniz</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-center border border-dashed border-slate-300 rounded-xl p-4">
+                          <div className="text-center">
+                            <div className="text-4xl mb-2">🏢</div>
+                            <p className="text-xs text-slate-500">Logos Racionale e Aquabion</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Dados do Cliente */}
+                    <div className="space-y-4">
+                      <h4 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
+                        <Users className="w-5 h-5 text-cyan-600" />
+                        Dados do Cliente
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-xs font-semibold text-slate-700 mb-1 block">Razão Social / Nome</label>
+                          <input
+                            type="text"
+                            value={selectedBudget.client_name}
+                            onChange={(e) => setSelectedBudget({ ...selectedBudget, client_name: e.target.value })}
+                            className="w-full h-10 px-4 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs font-semibold text-slate-700 mb-1 block">CNPJ / CPF</label>
+                          <input
+                            type="text"
+                            value={selectedBudget.client_document}
+                            onChange={(e) => setSelectedBudget({ ...selectedBudget, client_document: e.target.value })}
+                            className="w-full h-10 px-4 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs font-semibold text-slate-700 mb-1 block">Endereço</label>
+                          <input
+                            type="text"
+                            value={selectedBudget.client_address}
+                            onChange={(e) => setSelectedBudget({ ...selectedBudget, client_address: e.target.value })}
+                            className="w-full h-10 px-4 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="text-xs font-semibold text-slate-700 mb-1 block">Número</label>
+                            <input
+                              type="text"
+                              value={selectedBudget.client_address_number}
+                              onChange={(e) => setSelectedBudget({ ...selectedBudget, client_address_number: e.target.value })}
+                              className="w-full h-10 px-4 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-xs font-semibold text-slate-700 mb-1 block">Complemento</label>
+                            <input
+                              type="text"
+                              value={selectedBudget.client_address_complement}
+                              onChange={(e) => setSelectedBudget({ ...selectedBudget, client_address_complement: e.target.value })}
+                              className="w-full h-10 px-4 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="text-xs font-semibold text-slate-700 mb-1 block">Bairro</label>
+                          <input
+                            type="text"
+                            value={selectedBudget.client_address_neighborhood}
+                            onChange={(e) => setSelectedBudget({ ...selectedBudget, client_address_neighborhood: e.target.value })}
+                            className="w-full h-10 px-4 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="text-xs font-semibold text-slate-700 mb-1 block">Cidade</label>
+                            <input
+                              type="text"
+                              value={selectedBudget.client_city}
+                              onChange={(e) => setSelectedBudget({ ...selectedBudget, client_city: e.target.value })}
+                              className="w-full h-10 px-4 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-xs font-semibold text-slate-700 mb-1 block">Estado</label>
+                            <input
+                              type="text"
+                              value={selectedBudget.client_state}
+                              onChange={(e) => setSelectedBudget({ ...selectedBudget, client_state: e.target.value })}
+                              className="w-full h-10 px-4 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="text-xs font-semibold text-slate-700 mb-1 block">CEP</label>
+                          <input
+                            type="text"
+                            value={selectedBudget.client_cep}
+                            onChange={(e) => setSelectedBudget({ ...selectedBudget, client_cep: e.target.value })}
+                            className="w-full h-10 px-4 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs font-semibold text-slate-700 mb-1 block">Telefone</label>
+                          <input
+                            type="text"
+                            value={selectedBudget.client_phone}
+                            onChange={(e) => setSelectedBudget({ ...selectedBudget, client_phone: e.target.value })}
+                            className="w-full h-10 px-4 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs font-semibold text-slate-700 mb-1 block">Contato Responsável</label>
+                          <input
+                            type="text"
+                            value={selectedBudget.client_contact}
+                            onChange={(e) => setSelectedBudget({ ...selectedBudget, client_contact: e.target.value })}
+                            className="w-full h-10 px-4 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs font-semibold text-slate-700 mb-1 block">Email</label>
+                          <input
+                            type="email"
+                            value={selectedBudget.client_email}
+                            onChange={(e) => setSelectedBudget({ ...selectedBudget, client_email: e.target.value })}
+                            className="w-full h-10 px-4 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs font-semibold text-slate-700 mb-1 block">Cargo</label>
+                          <input
+                            type="text"
+                            value={selectedBudget.client_contact_role}
+                            onChange={(e) => setSelectedBudget({ ...selectedBudget, client_contact_role: e.target.value })}
+                            className="w-full h-10 px-4 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                          />
+                        </div>
+                        <div className="md:col-span-2">
+                          <label className="text-xs font-semibold text-slate-700 mb-1 block">Observações</label>
+                          <textarea
+                            value={selectedBudget.client_observations}
+                            onChange={(e) => setSelectedBudget({ ...selectedBudget, client_observations: e.target.value })}
+                            rows={3}
+                            className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Detalhes da Proposta */}
+                    <div className="space-y-4">
+                      <h4 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
+                        <FileText className="w-5 h-5 text-cyan-600" />
+                        Detalhes da Proposta
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <label className="text-xs font-semibold text-slate-700 mb-1 block">Número do Orçamento</label>
+                          <div className="w-full h-10 px-4 rounded-xl border border-slate-200 bg-slate-100 text-sm font-medium text-slate-700 flex items-center">
+                            {selectedBudget.budget_number || "Será gerado automaticamente"}
+                          </div>
+                        </div>
+                        <div>
+                          <label className="text-xs font-semibold text-slate-700 mb-1 block">Data de Emissão</label>
+                          <input
+                            type="date"
+                            value={selectedBudget.issue_date.toISOString().split('T')[0]}
+                            onChange={(e) => setSelectedBudget({ ...selectedBudget, issue_date: new Date(e.target.value) })}
+                            className="w-full h-10 px-4 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs font-semibold text-slate-700 mb-1 block">Validade</label>
+                          <input
+                            type="date"
+                            value={selectedBudget.expiration_date.toISOString().split('T')[0]}
+                            onChange={(e) => setSelectedBudget({ ...selectedBudget, expiration_date: new Date(e.target.value) })}
+                            className="w-full h-10 px-4 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Produtos e Serviços */}
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <h4 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
+                          <Briefcase className="w-5 h-5 text-cyan-600" />
+                          Produtos e Serviços
+                        </h4>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setIsProductCatalogOpen(true)}
+                            className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-semibold transition-all"
+                          >
+                            <Briefcase className="w-4 h-4" />
+                            Catálogo
+                          </button>
+                          <button
+                            onClick={() => {
+                              const newItem = { id: Date.now().toString(), description: '', quantity: 1, unit_price: 0, total_price: 0, created_at: new Date() };
+                              setSelectedBudget({ ...selectedBudget, items: [...selectedBudget.items, newItem] });
+                            }}
+                            className="flex items-center gap-2 px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-sm font-semibold transition-all"
+                          >
+                            <Plus className="w-4 h-4" />
+                            Adicionar Item
+                          </button>
+                        </div>
+                      </div>
+                      <div className="border border-slate-200 rounded-2xl overflow-hidden">
+                        <div className="grid grid-cols-12 gap-4 p-4 bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-700">
+                          <div className="col-span-5">Descrição</div>
+                          <div className="col-span-2">Quantidade</div>
+                          <div className="col-span-3">Valor Unitário</div>
+                          <div className="col-span-1">Total</div>
+                          <div className="col-span-1"></div>
+                        </div>
+                        {selectedBudget.items.map((item, index) => {
+                          const updatedItems = [...selectedBudget.items];
+                          return (
+                            <div key={item.id} className="grid grid-cols-12 gap-4 p-4 border-b border-slate-100">
+                              <div className="col-span-5">
+                                <input
+                                  type="text"
+                                  value={item.description}
+                                  onChange={(e) => {
+                                    updatedItems[index].description = e.target.value;
+                                    setSelectedBudget({ ...selectedBudget, items: updatedItems });
+                                  }}
+                                  className="w-full h-10 px-3 rounded-lg border border-slate-200 bg-white text-sm focus:outline-none focus:border-cyan-500"
+                                  placeholder="Descrição do item"
+                                />
+                              </div>
+                              <div className="col-span-2">
+                                <input
+                                  type="number"
+                                  value={item.quantity}
+                                  min={1}
+                                  onChange={(e) => {
+                                    const qty = Number(e.target.value);
+                                    updatedItems[index].quantity = qty;
+                                    updatedItems[index].total_price = qty * updatedItems[index].unit_price;
+                                    const subtotal = updatedItems.reduce((sum, i) => sum + i.total_price, 0);
+                                    setSelectedBudget({ ...selectedBudget, items: updatedItems, subtotal, total_value: subtotal - selectedBudget.discount + selectedBudget.shipping_cost });
+                                  }}
+                                  className="w-full h-10 px-3 rounded-lg border border-slate-200 bg-white text-sm focus:outline-none focus:border-cyan-500"
+                                />
+                              </div>
+                              <div className="col-span-3">
+                                <input
+                                  type="number"
+                                  value={item.unit_price}
+                                  step={0.01}
+                                  min={0}
+                                  onChange={(e) => {
+                                    const price = Number(e.target.value);
+                                    updatedItems[index].unit_price = price;
+                                    updatedItems[index].total_price = updatedItems[index].quantity * price;
+                                    const subtotal = updatedItems.reduce((sum, i) => sum + i.total_price, 0);
+                                    setSelectedBudget({ ...selectedBudget, items: updatedItems, subtotal, total_value: subtotal - selectedBudget.discount + selectedBudget.shipping_cost });
+                                  }}
+                                  className="w-full h-10 px-3 rounded-lg border border-slate-200 bg-white text-sm focus:outline-none focus:border-cyan-500"
+                                  placeholder="R$ 0,00"
+                                />
+                              </div>
+                              <div className="col-span-1 flex items-center">
+                                <span className="text-sm font-semibold text-slate-900">
+                                  {formatCurrency(item.total_price)}
+                                </span>
+                              </div>
+                              <div className="col-span-1 flex items-center justify-end">
+                                <button
+                                  onClick={() => {
+                                    const filteredItems = selectedBudget.items.filter((_, i) => i !== index);
+                                    const subtotal = filteredItems.reduce((sum, i) => sum + i.total_price, 0);
+                                    setSelectedBudget({ ...selectedBudget, items: filteredItems, subtotal, total_value: subtotal - selectedBudget.discount + selectedBudget.shipping_cost });
+                                  }}
+                                  className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Catálogo de Produtos Modal */}
+                    {isProductCatalogOpen && (
+                      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[200] p-4">
+                        <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[80vh] overflow-y-auto shadow-2xl">
+                          <div className="p-8 border-b border-slate-100">
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <h3 className="text-xl font-bold text-slate-950">Catálogo de Produtos</h3>
+                                <p className="text-xs text-slate-500 mt-1">Selecione produtos para adicionar ao orçamento</p>
+                              </div>
+                              <button
+                                onClick={() => setIsProductCatalogOpen(false)}
+                                className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-500">
+                                  <line x1="18" y1="6" x2="6" y2="18" />
+                                  <line x1="6" y1="6" x2="18" y2="18" />
+                                </svg>
+                              </button>
+                            </div>
+                          </div>
+
+                          <div className="p-8">
+                            {loadingProducts ? (
+                              <div className="flex flex-col items-center justify-center py-12 text-slate-400 text-sm gap-3">
+                                <RefreshCw className="w-8 h-8 animate-spin text-cyan-600" />
+                                <span>Carregando catálogo...</span>
+                              </div>
+                            ) : products.length === 0 ? (
+                              <div className="text-center py-12">
+                                <Briefcase className="w-16 h-16 mx-auto text-slate-300 mb-4" />
+                                <p className="text-slate-400 text-sm font-medium">Nenhum produto no catálogo.</p>
+                                <button
+                                  onClick={() => {
+                                    setIsProductCatalogOpen(false);
+                                    setActiveTab('produtos');
+                                  }}
+                                  className="mt-4 px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-sm font-semibold transition-colors"
+                                >
+                                  Adicionar Produtos
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="grid grid-cols-1 gap-4">
+                                {products.map((product) => (
+                                  <div key={product.id} className="border border-slate-200 rounded-2xl p-6 flex justify-between items-center hover:border-cyan-300 transition-all">
+                                    <div>
+                                      <h4 className="font-semibold text-slate-900">{product.description}</h4>
+                                      <div className="text-xs text-slate-500 mt-1">
+                                        {product.capacity && <span className="mr-4">Capacidade: {product.capacity}</span>}
+                                        {product.connection && <span>Conexão: {product.connection}</span>}
+                                      </div>
+                                      <div className="text-lg font-bold text-cyan-600 mt-2">{formatCurrency(product.unit_price)}</div>
+                                    </div>
+                                    <button
+                                      onClick={() => {
+                                        const newItem = { 
+                                          id: Date.now().toString(), 
+                                          description: product.description, 
+                                          quantity: 1, 
+                                          unit_price: product.unit_price, 
+                                          total_price: product.unit_price, 
+                                          created_at: new Date() 
+                                        };
+                                        const updatedItems = [...selectedBudget.items, newItem];
+                                        const subtotal = updatedItems.reduce((sum, i) => sum + i.total_price, 0);
+                                        setSelectedBudget({ ...selectedBudget, items: updatedItems, subtotal, total_value: subtotal - selectedBudget.discount + selectedBudget.shipping_cost });
+                                        setIsProductCatalogOpen(false);
+                                      }}
+                                      className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-sm font-semibold transition-all"
+                                    >
+                                      Adicionar
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Resumo Financeiro */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 space-y-4">
+                        <h4 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
+                          <DollarSign className="w-5 h-5 text-cyan-600" />
+                          Resumo Financeiro
+                        </h4>
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-slate-700">Subtotal</span>
+                            <span className="text-sm font-semibold text-slate-900">{formatCurrency(selectedBudget.subtotal)}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm text-slate-700">Frete / Outros</span>
+                              <input
+                                type="number"
+                                value={selectedBudget.shipping_cost}
+                                step={0.01}
+                                min={0}
+                                onChange={(e) => {
+                                  const cost = Number(e.target.value);
+                                  const newTotal = selectedBudget.subtotal - selectedBudget.discount + cost;
+                                  setSelectedBudget({ ...selectedBudget, shipping_cost: cost, total_value: newTotal });
+                                }}
+                                className="w-32 h-8 px-3 rounded-lg border border-slate-200 bg-white text-sm focus:outline-none focus:border-cyan-500"
+                              />
+                            </div>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm text-slate-700">Desconto</span>
+                              <input
+                                type="number"
+                                value={selectedBudget.discount}
+                                step={0.01}
+                                min={0}
+                                onChange={(e) => {
+                                  const discount = Number(e.target.value);
+                                  const newTotal = selectedBudget.subtotal - discount + selectedBudget.shipping_cost;
+                                  setSelectedBudget({ ...selectedBudget, discount, total_value: newTotal });
+                                }}
+                                className="w-32 h-8 px-3 rounded-lg border border-slate-200 bg-white text-sm focus:outline-none focus:border-cyan-500"
+                              />
+                            </div>
+                          </div>
+                          <hr className="border-slate-300" />
+                          <div className="flex justify-between items-center">
+                            <span className="text-lg font-semibold text-slate-900">Total Geral</span>
+                            <span className="text-2xl font-bold text-cyan-600">{formatCurrency(selectedBudget.total_value)}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Condições de Pagamento + Prazo de Entrega */}
+                      <div className="space-y-6">
+                        <div>
+                          <h4 className="text-lg font-semibold text-slate-900 mb-3">Condições de Pagamento</h4>
+                          <textarea
+                            value={selectedBudget.payment_terms}
+                            onChange={(e) => setSelectedBudget({ ...selectedBudget, payment_terms: e.target.value })}
+                            rows={3}
+                            className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                          />
+                        </div>
+                        <div>
+                          <h4 className="text-lg font-semibold text-slate-900 mb-3">Prazo de Entrega</h4>
+                          <textarea
+                            value={selectedBudget.delivery_time}
+                            onChange={(e) => setSelectedBudget({ ...selectedBudget, delivery_time: e.target.value })}
+                            rows={2}
+                            className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Descrição Técnica Automática */}
+                    <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-6">
+                      <h4 className="text-lg font-semibold text-emerald-800 mb-3 flex items-center gap-2">
+                        <CheckCircle2 className="w-5 h-5" />
+                        Tecnologia AQUABION® (Made in Germany)
+                      </h4>
+                      <p className="text-sm text-emerald-700 mb-4">
+                        Sistema patenteado com ânodo de zinco de sacrifício. O princípio científico consiste na modificação do calcário incrustante (Calcita) para não aderente (Aragonita/ZnCO₃).
+                      </p>
+                      <h5 className="text-md font-semibold text-emerald-800 mb-2">Benefícios:</h5>
+                      <ul className="list-disc list-inside text-sm text-emerald-700 space-y-1">
+                        <li>Sem manutenção</li>
+                        <li>Sem produtos químicos</li>
+                        <li>Sem eletricidade</li>
+                        <li>Sem ímãs</li>
+                        <li>Preserva a potabilidade da água</li>
+                        <li>Mantém os minerais essenciais</li>
+                      </ul>
+                    </div>
+
+                    {/* Assinaturas */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-slate-200">
+                      <div className="text-center">
+                        <div className="border-t-2 border-slate-400 pt-4">
+                          <p className="text-sm font-semibold text-slate-900">Racionale Soluções Sustentáveis</p>
+                          <p className="text-sm text-slate-700">Ray Diniz</p>
+                          <p className="text-xs text-slate-500">Dept. Técnico & Engenharia</p>
+                        </div>
+                      </div>
+                      <div className="text-center">
+                        <div className="border-t-2 border-slate-400 pt-4">
+                          <p className="text-sm font-semibold text-slate-900">De Acordo (Cliente)</p>
+                          <p className="text-xs text-slate-500">Data: __/__/____</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Botões de Ação */}
+                    <div className="mt-8 flex justify-end gap-4 pt-6 border-t border-slate-200">
+                      <button
+                        onClick={() => { setIsBudgetFormOpen(false); setSelectedBudget(null); }}
+                        className="px-6 py-2 border border-slate-200 text-slate-700 rounded-xl text-sm font-semibold hover:bg-slate-50 transition-colors"
+                      >
+                        Cancelar
+                      </button>
+                      <button
+                        onClick={handleSaveBudget}
+                        className="px-6 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-sm font-semibold transition-all shadow-lg"
+                      >
+                        Salvar Orçamento
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* 📦 TAB 7: PRODUTOS */}
+        {activeTab === "produtos" && (
+          <div className="space-y-6 animate-fade-in flex-grow">
+            {/* Top Bar with Add Button */}
+            <div className="bg-white border border-slate-200/80 rounded-[2rem] p-8 shadow-sm">
+              <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+                <div>
+                  <h3 className="text-xl font-bold text-slate-950 flex items-center gap-2">
+                    <Briefcase className="w-5 h-5 text-cyan-600" />
+                    Gerenciador de Produtos
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Adicione, edite e remova produtos do catálogo
+                  </p>
+                </div>
+                <button
+                  onClick={handleCreateProduct}
+                  className="flex items-center gap-2 px-6 py-3 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl font-semibold transition-all duration-300 shadow-md"
+                >
+                  <Plus className="w-4 h-4" />
+                  Novo Produto
+                </button>
+              </div>
+            </div>
+
+            {/* Products Table */}
+            <div className="bg-white border border-slate-200/80 rounded-[2rem] p-8 shadow-sm flex-grow">
+              <h3 className="text-xl font-bold text-slate-950 mb-6">Produtos ({products.length})</h3>
+
+              {loadingProducts ? (
+                <div className="flex flex-col items-center justify-center py-24 text-slate-400 text-xs gap-3">
+                  <RefreshCw className="w-8 h-8 animate-spin text-cyan-600" />
+                  <span>Carregando produtos...</span>
+                </div>
+              ) : products.length === 0 ? (
+                <div className="text-center py-24">
+                  <Briefcase className="w-16 h-16 mx-auto text-slate-300 mb-4" />
+                  <p className="text-slate-400 text-sm font-medium">Nenhum produto encontrado.</p>
+                  <button
+                    onClick={handleCreateProduct}
+                    className="mt-4 px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-sm font-semibold transition-colors"
+                  >
+                    Adicionar Primeiro Produto
+                  </button>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-slate-200">
+                        <th className="text-left text-xs font-semibold text-slate-600 pb-3">Descrição</th>
+                        <th className="text-left text-xs font-semibold text-slate-600 pb-3">Capacidade</th>
+                        <th className="text-left text-xs font-semibold text-slate-600 pb-3">Conexão</th>
+                        <th className="text-left text-xs font-semibold text-slate-600 pb-3">Preço Unitário</th>
+                        <th className="text-right text-xs font-semibold text-slate-600 pb-3">Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {products.map((product) => {
+                        return (
+                          <tr key={product.id} className="hover:bg-slate-50">
+                            <td className="py-3">
+                              <span className="text-sm font-semibold text-slate-950">{product.description}</span>
+                            </td>
+                            <td className="py-3">
+                              <span className="text-sm text-slate-600">{product.capacity || "-"}</span>
+                            </td>
+                            <td className="py-3">
+                              <span className="text-sm text-slate-600">{product.connection || "-"}</span>
+                            </td>
+                            <td className="py-3">
+                              <span className="text-sm font-bold text-slate-950">{formatCurrency(product.unit_price)}</span>
+                            </td>
+                            <td className="py-3">
+                              <div className="flex items-center justify-end gap-1">
+                                <button
+                                  onClick={() => handleEditProduct(product)}
+                                  className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                                  title="Editar"
+                                >
+                                  <EditIcon className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteProduct(product.id)}
+                                  className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                                  title="Excluir"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
+            {/* Product Form Modal */}
+            {isProductFormOpen && selectedProduct && (
+              <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[200] p-4">
+                <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+                  <div className="p-8 border-b border-slate-100">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="text-xl font-bold text-slate-950">
+                          {selectedProduct.id ? "Editar Produto" : "Novo Produto"}
+                        </h3>
+                        <p className="text-xs text-slate-500 mt-1">Preencha os dados do produto</p>
+                      </div>
+                      <button
+                        onClick={() => { setIsProductFormOpen(false); setSelectedProduct(null); }}
+                        className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-500">
+                          <line x1="18" y1="6" x2="6" y2="18" />
+                          <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="p-8 space-y-6">
+                    {/* Description */}
+                    <div>
+                      <label className="text-xs font-semibold text-slate-700 mb-1 block">Descrição</label>
+                      <input
+                        type="text"
+                        value={selectedProduct.description}
+                        onChange={(e) => setSelectedProduct({ ...selectedProduct, description: e.target.value })}
+                        className="w-full h-10 px-4 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                        placeholder="Ex: Aquabion ION AB-H32"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Capacity */}
+                      <div>
+                        <label className="text-xs font-semibold text-slate-700 mb-1 block">Capacidade</label>
+                        <input
+                          type="text"
+                          value={selectedProduct.capacity || ""}
+                          onChange={(e) => setSelectedProduct({ ...selectedProduct, capacity: e.target.value })}
+                          className="w-full h-10 px-4 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                          placeholder="Ex: 7m³/h"
+                        />
+                      </div>
+
+                      {/* Connection */}
+                      <div>
+                        <label className="text-xs font-semibold text-slate-700 mb-1 block">Conexão</label>
+                        <input
+                          type="text"
+                          value={selectedProduct.connection || ""}
+                          onChange={(e) => setSelectedProduct({ ...selectedProduct, connection: e.target.value })}
+                          className="w-full h-10 px-4 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                          placeholder="Ex: 1.1/4\""
+                        />
+                      </div>
+                    </div>
+
+                    {/* Unit Price */}
+                    <div>
+                      <label className="text-xs font-semibold text-slate-700 mb-1 block">Preço Unitário</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={selectedProduct.unit_price}
+                        onChange={(e) => setSelectedProduct({ ...selectedProduct, unit_price: Number(e.target.value) })}
+                        className="w-full h-10 px-4 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                        placeholder="R$ 0,00"
+                      />
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="mt-8 flex justify-end gap-4 pt-6 border-t border-slate-200">
+                      <button
+                        onClick={() => { setIsProductFormOpen(false); setSelectedProduct(null); }}
+                        className="px-6 py-2 border border-slate-200 text-slate-700 rounded-xl text-sm font-semibold hover:bg-slate-50 transition-colors"
+                      >
+                        Cancelar
+                      </button>
+                      <button
+                        onClick={handleSaveProduct}
+                        className="px-6 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-sm font-semibold transition-all shadow-lg"
+                      >
+                        Salvar Produto
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

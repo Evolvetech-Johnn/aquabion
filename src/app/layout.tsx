@@ -10,6 +10,7 @@ import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import AnimatedPageWrapper from "@/components/AnimatedPageWrapper";
 import { OrganizationSchema, WebSiteSchema } from "@/components/StructuredData";
+// import LGPDConsent from "@/components/LGPDConsent";
 
 export const metadata: Metadata = {
   title: {
@@ -101,6 +102,7 @@ export default function RootLayout({
         <AnimatedPageWrapper>{children}</AnimatedPageWrapper>
         <Footer />
         <WhatsAppButton variant="floating" />
+        {/* <LGPDConsent /> */}
       </body>
     </html>
   );

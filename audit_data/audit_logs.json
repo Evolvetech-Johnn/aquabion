@@ -1,1 +1,17 @@
-[]
+[
+  {
+    "id": "7ec20aae-4746-47dd-bcc4-29d49c22a423",
+    "username": "Johnn-aquabion",
+    "action": "LOGIN_SUCCESS",
+    "oldData": null,
+    "newData": null,
+    "status": "SUCCESS",
+    "ipAddress": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36",
+    "browser": "Chrome",
+    "operatingSystem": "Windows",
+    "requestMethod": "POST",
+    "requestUrl": "http://localhost:3000/api/admin/login",
+    "createdAt": "2026-06-18T15:19:19.837Z"
+  }
+]

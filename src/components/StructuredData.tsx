@@ -3,6 +3,8 @@ interface OrganizationProps {
   url: string;
   logo: string;
   description: string;
+  phone?: string;
+  email?: string;
   sameAs?: string[];
 }
 
@@ -25,15 +27,44 @@ interface ProductProps {
     '@type': string;
     name: string;
   };
+
+  aggregateRating?: {
+    '@type': string;
+    ratingValue: number;
+    reviewCount: number;
+  };
+
   offers?: {
     '@type': string;
     priceCurrency: string;
+    price: string;
     availability: string;
     url: string;
   };
 }
 
-export function OrganizationSchema({ name, url, logo, description, sameAs = [] }: OrganizationProps) {
+interface LocalBusinessProps {
+  name: string;
+  description: string;
+  url: string;
+  telephone: string;
+  email: string;
+  address: {
+    streetAddress: string;
+    addressLocality: string;
+    addressRegion: string;
+    postalCode: string;
+    addressCountry: string;
+  };
+  geo: {
+    latitude: number;
+    longitude: number;
+  };
+  openingHours: string;
+}
+
+
+export function OrganizationSchema({ name, url, logo, description, phone, email, sameAs = [] }: OrganizationProps) {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
@@ -41,9 +72,13 @@ export function OrganizationSchema({ name, url, logo, description, sameAs = [] }
     url,
     logo,
     description,
+    phone,
+    email,
     sameAs,
   };
 }
+
+
 
 export function WebSiteSchema({ name, url, description, potentialAction }: WebSiteProps) {
   return {
@@ -56,7 +91,7 @@ export function WebSiteSchema({ name, url, description, potentialAction }: WebSi
   };
 }
 
-export function ProductSchema({ name, description, image, brand, offers }: ProductProps) {
+export function ProductSchema({ name, description, image, brand, aggregateRating, offers }: ProductProps) {
   return {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -64,6 +99,7 @@ export function ProductSchema({ name, description, image, brand, offers }: Produ
     description,
     image,
     brand,
+    aggregateRating,
     offers,
   };
 }
