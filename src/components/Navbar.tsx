@@ -16,6 +16,7 @@ const navItems = [
   { name: 'Benefícios', href: '/beneficios' },
   { name: 'Aplicações', href: '/aplicacoes' },
   { name: 'Blog', href: '/blog' },
+  { name: 'Notícias', href: '/noticias' },
   { name: 'FAQ', href: '/faq' },
   { name: 'Contato', href: '/contato' },
   { name: 'Cases de Sucesso', href: '/cases' },
@@ -55,9 +56,6 @@ export default function Navbar() {
                 priority
               />
             </div>
-            <span className="text-2xl font-bold tracking-tight text-[#F5F5F7]">
-              Aquabion
-            </span>
           </Link>
 
           {/* Desktop Navigation */}

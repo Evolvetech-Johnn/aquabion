@@ -10,6 +10,7 @@ import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import AnimatedPageWrapper from "@/components/AnimatedPageWrapper";
 import { OrganizationSchema, WebSiteSchema } from "@/components/StructuredData";
+import { ReactQueryProvider } from "@/components/ReactQueryProvider";
 // import LGPDConsent from "@/components/LGPDConsent";
 
 export const metadata: Metadata = {
@@ -97,12 +98,14 @@ export default function RootLayout({
         ]) }} />
       </head>
       <body className={cn("min-h-screen bg-slate-50 text-slate-950 font-sans antialiased flex flex-col", inter.variable)}>
-        <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 rounded bg-slate-950 px-4 py-2 text-white">Pular para o conteúdo</a>
-        <Navbar />
-        <AnimatedPageWrapper>{children}</AnimatedPageWrapper>
-        <Footer />
-        <WhatsAppButton variant="floating" />
-        {/* <LGPDConsent /> */}
+        <ReactQueryProvider>
+          <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 rounded bg-slate-950 px-4 py-2 text-white">Pular para o conteúdo</a>
+          <Navbar />
+          <AnimatedPageWrapper>{children}</AnimatedPageWrapper>
+          <Footer />
+          <WhatsAppButton variant="floating" />
+          {/* <LGPDConsent /> */}
+        </ReactQueryProvider>
       </body>
     </html>
   );
