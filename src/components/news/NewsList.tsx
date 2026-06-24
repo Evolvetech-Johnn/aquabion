@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
+
 import { NewsArticle } from '@/types/news';
 import { NewsCard } from './NewsCard';
 

@@ -43,25 +43,6 @@ interface ProductProps {
   };
 }
 
-interface LocalBusinessProps {
-  name: string;
-  description: string;
-  url: string;
-  telephone: string;
-  email: string;
-  address: {
-    streetAddress: string;
-    addressLocality: string;
-    addressRegion: string;
-    postalCode: string;
-    addressCountry: string;
-  };
-  geo: {
-    latitude: number;
-    longitude: number;
-  };
-  openingHours: string;
-}
 
 
 export function OrganizationSchema({ name, url, logo, description, phone, email, sameAs = [] }: OrganizationProps) {

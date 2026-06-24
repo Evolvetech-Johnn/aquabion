@@ -1,8 +1,7 @@
 import Link from 'next/link';
 import { CheckCircle, TrendingUp, Award } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Inter } from 'next/font/google';
-const inter = Inter({ subsets: ['latin'], weight: ['400','600','700'], variable: '--font-inter' });
+
 export const metadata = {
   title: 'Cases de Sucesso | Aquabion Brasil',
   description: 'Cases de sucesso da tecnologia Aquabion ao redor do mundo',

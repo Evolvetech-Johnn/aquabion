@@ -1,4 +1,4 @@
-import { NewsArticle, NewsResponse, NewsFilterOptions, NEWS_KEYWORDS } from '@/types/news';
+import { NewsArticle, NewsResponse, NewsFilterOptions } from '@/types/news';
 
 // Sample data for demonstration (will be replaced with real API integration)
 const SAMPLE_NEWS: NewsArticle[] = [

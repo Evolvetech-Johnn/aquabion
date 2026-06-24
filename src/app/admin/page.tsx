@@ -40,7 +40,7 @@ import type { CRMLead, CRMNote } from "@/crm/types";
 import type { CloudinaryMedia } from "@/lib/cloudinaryStore";
 import type { AuditLog } from "@/audit/types";
 import type { Budget, BudgetFormData } from "@/budgets/types";
-import { DEFAULT_PAYMENT_TERMS, DEFAULT_DELIVERY_TIME, INITIAL_CATALOG } from "@/budgets/types";
+import { DEFAULT_PAYMENT_TERMS, DEFAULT_DELIVERY_TIME } from "@/budgets/types";
 import type { Product, ProductFormData } from "@/products/types";
 
 export default function UnifiedAdminDashboard() {
@@ -3331,7 +3331,7 @@ Atividades sincronizadas: ${json.syncedActivities}`);
                           value={selectedProduct.connection || ""}
                           onChange={(e) => setSelectedProduct({ ...selectedProduct, connection: e.target.value })}
                           className="w-full h-10 px-4 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
-                          placeholder="Ex: 1.1/4\""
+                          placeholder='Ex: 1 1/4"'
                         />
                       </div>
                     </div>
