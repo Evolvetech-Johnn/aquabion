@@ -3331,7 +3331,7 @@ Atividades sincronizadas: ${json.syncedActivities}`);
                           value={selectedProduct.connection || ""}
                           onChange={(e) => setSelectedProduct({ ...selectedProduct, connection: e.target.value })}
                           className="w-full h-10 px-4 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
-                          placeholder='Ex: 1 1/4"'
+                          placeholder="Ex: 1 1/4 polegadas"
                         />
                       </div>
                     </div>
