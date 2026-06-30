@@ -69,6 +69,47 @@ function mapMongoToBudget(doc: WithId<Document>, items: BudgetItem[]): Budget {
   };
 }
 
+function mapJsonToBudget(json: Partial<Budget> & { items?: Partial<BudgetItem>[] }): Budget {
+  return {
+    id: json.id || '',
+    budget_number: json.budget_number || '',
+    client_name: json.client_name || '',
+    client_document: json.client_document || '',
+    client_phone: json.client_phone || '',
+    client_email: json.client_email || '',
+    client_address: json.client_address || '',
+    client_address_number: json.client_address_number || '',
+    client_address_complement: json.client_address_complement || '',
+    client_address_neighborhood: json.client_address_neighborhood || '',
+    client_city: json.client_city || '',
+    client_state: json.client_state || '',
+    client_cep: json.client_cep || '',
+    client_contact: json.client_contact || '',
+    client_contact_role: json.client_contact_role || '',
+    client_observations: json.client_observations || '',
+    issue_date: json.issue_date ? new Date(json.issue_date) : new Date(),
+    expiration_date: json.expiration_date ? new Date(json.expiration_date) : new Date(),
+    subtotal: json.subtotal || 0,
+    shipping_cost: json.shipping_cost || 0,
+    discount: json.discount || 0,
+    total_value: json.total_value || 0,
+    payment_terms: json.payment_terms || '',
+    delivery_time: json.delivery_time || '',
+    status: json.status || 'draft',
+    created_by: json.created_by || '',
+    created_at: json.created_at ? new Date(json.created_at) : new Date(),
+    updated_at: json.updated_at ? new Date(json.updated_at) : new Date(),
+    items: json.items ? json.items.map(item => ({
+      id: item.id || '',
+      description: item.description || '',
+      quantity: item.quantity || 0,
+      unit_price: item.unit_price || 0,
+      total_price: item.total_price || 0,
+      created_at: item.created_at ? new Date(item.created_at) : new Date(),
+    })) : [],
+  };
+}
+
 export async function getNextBudgetNumber(): Promise<string> {
   const currentYear = new Date().getFullYear();
   const prefix = currentYear.toString();
@@ -145,7 +186,8 @@ export async function getBudgets(): Promise<Budget[]> {
     console.error('Failed to list budgets from MongoDB, falling back to JSON:', error);
   }
 
-  return readFile<Budget>('budgets.json');
+  const budgets = await readFile<Budget>('budgets.json');
+  return budgets.map(mapJsonToBudget);
 }
 
 export async function getBudgetById(id: string): Promise<Budget | null> {
@@ -183,7 +225,8 @@ export async function getBudgetById(id: string): Promise<Budget | null> {
   }
 
   const budgets = await readFile<Budget>('budgets.json');
-  return budgets.find(b => b.id === id) || null;
+  const found = budgets.find(b => b.id === id);
+  return found ? mapJsonToBudget(found) : null;
 }
 
 export async function createBudget(data: BudgetFormData, createdBy: string): Promise<Budget> {
@@ -330,6 +373,8 @@ export async function updateBudget(id: string, data: Partial<BudgetFormData>): P
   budgets[index] = {
     ...budgets[index],
     ...data,
+    issue_date: data.issue_date ? new Date(data.issue_date) : budgets[index].issue_date,
+    expiration_date: data.expiration_date ? new Date(data.expiration_date) : budgets[index].expiration_date,
     updated_at: now,
     items: data.items ? data.items.map(item => ({
       ...item,

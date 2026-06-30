@@ -46,6 +46,18 @@ function mapMongoToProduct(doc: WithId<Document>): Product {
   };
 }
 
+function mapJsonToProduct(json: Partial<Product>): Product {
+  return {
+    id: json.id || '',
+    description: json.description || '',
+    capacity: json.capacity,
+    connection: json.connection,
+    unit_price: json.unit_price || 0,
+    created_at: json.created_at ? new Date(json.created_at) : new Date(),
+    updated_at: json.updated_at ? new Date(json.updated_at) : new Date(),
+  };
+}
+
 export async function getProducts(): Promise<Product[]> {
   try {
     const db = await getDb();
@@ -69,7 +81,7 @@ export async function getProducts(): Promise<Product[]> {
     await writeFile('products.json', INITIAL_PRODUCTS);
     return INITIAL_PRODUCTS;
   }
-  return jsonProducts;
+  return jsonProducts.map(mapJsonToProduct);
 }
 
 export async function getProductById(id: string): Promise<Product | null> {
@@ -95,7 +107,8 @@ export async function getProductById(id: string): Promise<Product | null> {
   }
 
   const products = await readFile<Product>('products.json');
-  return products.find(p => p.id === id) || null;
+  const found = products.find(p => p.id === id);
+  return found ? mapJsonToProduct(found) : null;
 }
 
 export async function createProduct(data: ProductFormData): Promise<Product> {
