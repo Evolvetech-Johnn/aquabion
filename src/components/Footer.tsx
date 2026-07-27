@@ -64,6 +64,9 @@ export default function Footer() {
           <p className="text-sm">
             © 2025 Aquabion Brasil. Todos os direitos reservados.
           </p>
+          <p className="text-sm">
+            Desenvolvido por <a href="https://evolvetechsolutions.com.br" target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400 transition-colors duration-300">evolvetechsolutions.com.br</a>
+          </p>
         </div>
       </div>
     </footer>
